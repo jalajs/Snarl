@@ -32,7 +32,7 @@ public class Main {
 
     }
 
-    private static boolean isNumeric(String s) {
+    public static boolean isNumeric(String s) {
         try {
             int i = Integer.parseInt(s);
         } catch (NumberFormatException e){
@@ -42,7 +42,7 @@ public class Main {
     }
 
     // create { "object": … "total": # }
-    private static JSONObject numJSONTotal(String s, String operation) {
+    public static JSONObject numJSONTotal(String s, String operation) {
         JSONObject jo = new JSONObject();
         jo.put("object", s);
         jo.put("total", getJSONNums(s, operation));
@@ -59,7 +59,7 @@ public class Main {
     // we either sum or product the numbers (must find numbers!)
     // add to accumulator
 
-    private static int computeTotal(int total, int parseInt, String operation) {
+    public static int computeTotal(int total, int parseInt, String operation) {
         if (operation.equals("sum")) {
             return total + parseInt;
         } else  {
@@ -68,15 +68,19 @@ public class Main {
     }
 
     // gets only the numbers in the NumJSON associated to the key payload
-    private static int getJSONNums(String payload, String operation) {
+    public static int getJSONNums(String payload, String operation) {
         int total = 0;
+        if (operation.equals("product")) {
+            total = 1;
+        }
         if (isNumeric(payload)) {
             total = computeTotal(total, Integer.parseInt(payload), operation);
         }
         if (payload.charAt(0) == '[') {
             // need to remove first and last chars and split on commas
-            payload.replace("[", "");
-            String[] array = payload.split(", ");
+            payload = payload.replace("[", "");
+            payload = payload.replace("]", "");
+            String[] array = payload.split(",");
 
             for (String str: array) {
                 if(isNumeric(str)) {
@@ -92,13 +96,8 @@ public class Main {
             String input = itemObj.get("payload").toString();
             total = computeTotal(total, getJSONNums(input, operation), operation);
         }
-        else {
-            if (operation.equals("product")) {
-                total = 1;
-            }
-        }
+            return total;
 
-        return total;
     }
 
 }
