@@ -29,9 +29,11 @@ public class Main {
                 total = Integer.parseInt(item);
                 jo.put("object", total);
             }
-            if ( ) {
+            if (item.charAt(0) == '[') {
+                // need to remove first and last chars and split on commas
+                item.replace("[", "");
+                String[] array = item.split(", ");
 
-                String[] array = new String[];
                 for (String s: array) {
                     if(isNumeric(s)) {
                         total += Integer.parseInt(s);
@@ -39,11 +41,15 @@ public class Main {
                 }
                 jo.put("object", array); // => item needs to be right type
             }
-            if ( ) {
-                JSONObject itemObj = new JSONObject(item);
+            if (item.charAt(0) == '{') {
+                //
+                // JSONObject itemObj = new JSONObject(item);
                 jo.put("object", total); // => item needs to be right type
 
             } else {
+                if (operation.equals("product")) {
+                    total = 1;
+                }
                 jo.put("object", item);
             }
            // jo.put("object", item); // => item needs to be right type
