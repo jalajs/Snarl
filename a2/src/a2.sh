@@ -1,3 +1,2 @@
-#!/bin/sh
-cd ./out/artifacts/Laressea_jar
-java -jar Laressea.jar $1
+#!/bin/bash
+java -jar a2.jar $*
