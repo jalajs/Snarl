@@ -8,29 +8,24 @@ import java.util.Scanner;
 
 public class Main {
 
-    // input: 12 [2, "foo", 4]  { "name" : "SwDev", "payload" : [12, 33], "other" : { "payload" : [ 4, 7 ] } }
-    // output --sum:
-    //     [ { "object" : 12, "total" : 12 },
-    //       { "object" : [2, "foo", 4], "total" : 6 },
-    //       { "object" : { "name" : "SwDev", "payload" : [12, 33], "other" : { "payload" : [4, 7] } }, "total" : 45 } ]
+
     public static void main(String[] args) {
         // parse out first arg
         String operation = args[0];
-        System.out.print(operation);
+        operation = operation.replace("-", "");
 
         // write your code here
         JSONArray res = new JSONArray();
 
         Scanner scanner = new Scanner(System.in);
+
         while (scanner.hasNext()) {
             String item = scanner.next();
-            System.out.print(item);
             JSONObject jo = numJSONTotal(item, operation);
             res.put(jo);
-            System.out.print(jo.toString());
         }
         scanner.close();
-        System.out.print(res.toString());
+        System.out.print(res);
 
     }
 
@@ -53,10 +48,18 @@ public class Main {
             s = s.replace("[", "");
             s = s.replace("]", "");
             String[] array = s.split(",");
-            jo.put("object", array);
+            Object[] objects = new Object[array.length];
+            for (int i = 0; i < objects.length; i++) {
+                Object obj = createObject(array[i]);
+                objects[i] = obj;
+            }
+            jo.put("object", objects);
         }
         if (s.charAt(0) == '{') {
             jo.put("object", new JSONObject(s));
+        }
+        else {
+            jo.put("object", s.replace("\"", ""));
         }
 
         jo.put("total", getJSONNums(s, operation));
@@ -86,6 +89,8 @@ public class Main {
             payload = payload.replace("]", "");
             String[] array = payload.split(",");
 
+
+
             for (String str: array) {
                 if(isNumeric(str)) {
                     total = computeTotal(total, Integer.parseInt(str), operation);
@@ -102,6 +107,27 @@ public class Main {
         }
             return total;
 
+    }
+
+    private static Object createObject(String str) {
+        if (isNumeric(str)) {
+            return Integer.parseInt(str);
+        }
+        if (str.charAt(0) == '[') {
+            str = str.replace("[", "");
+            str = str.replace("]", "");
+            String[] array = str.split(",");
+            for (String ele : array) {
+                Object obj = createObject(ele);
+            }
+        }
+        if (str.charAt(0) == '{') {
+            JSONObject itemObj = new JSONObject(str);
+            return itemObj;
+        }
+        else {
+            return str.replace("\"", "");
+        }
     }
 
 }
