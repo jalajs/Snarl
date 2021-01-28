@@ -2,8 +2,10 @@ package a2;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -14,21 +16,50 @@ public class Main {
         String operation = args[0];
         operation = operation.replace("-", "");
 
-        // write your code here
         JSONArray res = new JSONArray();
 
         Scanner scanner = new Scanner(System.in);
 
-        while (scanner.hasNext()) {
-            String item = scanner.next();
-            JSONObject jo = numJSONTotal(item, operation);
-            res.put(jo);
+        String tokenerSource = "";
+        while (scanner.hasNextLine()) {
+            String next = scanner.nextLine();
+            tokenerSource += next + ' ';
+
+        }
+
+        JSONTokener tokener = new JSONTokener(tokenerSource.trim());
+
+        while (tokener.more()) {
+            Object value = tokener.nextValue();
+            String valueString = value.toString();
+            if (value instanceof String) {
+                if (!isListOfNumerics(valueString)) {
+                    valueString = "\"" + valueString + "\"";
+                }
+            }
+            List<JSONObject> joList = numJSONTotal(valueString, operation);
+            for(int i = 0; i < joList.size(); i ++) {
+                res.put(joList.get(i));
+            }
         }
         scanner.close();
         System.out.print(res);
 
     }
 
+    // return true if a string describes a seq of numbers delineated by white space
+    private static boolean isListOfNumerics(String s) {
+        boolean result = true;
+        String[] integers = s.split(" ");
+        for (String i: integers) {
+            if (!isNumeric(i)) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    // determine if a string is numeric
     public static boolean isNumeric(String s) {
         try {
             int i = Integer.parseInt(s);
@@ -38,35 +69,52 @@ public class Main {
         return true;
     }
 
-    // create { "object": … "total": # }
-    public static JSONObject numJSONTotal(String s, String operation) {
-        JSONObject jo = new JSONObject();
+    // create list of { "object": … "total": # } based on the value from the JSONtokener
+    public static List<JSONObject> numJSONTotal(String s, String operation) {
+        List<JSONObject> joList = new ArrayList<>();
         if (isNumeric(s)) {
+            JSONObject jo = new JSONObject();
             jo.put("object", Integer.parseInt(s));
+            jo.put("total", Integer.parseInt(s));
+            joList.add(jo);
         }
-        if (s.charAt(0) == '[') {
-            s = s.replace("[", "");
-            s = s.replace("]", "");
-            String[] array = s.split(",");
-            Object[] objects = new Object[array.length];
-            for (int i = 0; i < objects.length; i++) {
-                Object obj = createObject(array[i]);
-                objects[i] = obj;
-            }
-            jo.put("object", objects);
+        else if (s.charAt(0) == '[') {
+            JSONObject jo = new JSONObject();
+            int total = getJSONNums(s, operation);
+            jo.put("object", new JSONArray(s));
+            jo.put("total", total);
+            joList.add(jo);
         }
-        if (s.charAt(0) == '{') {
+        else if (s.charAt(0) == '{') {
+            JSONObject jo = new JSONObject();
+            int total = getJSONNums(s, operation);
             jo.put("object", new JSONObject(s));
+            jo.put("total", total);
+            joList.add(jo);
+        }
+        else if (s.charAt(0) == '\"') {
+            JSONObject jo = new JSONObject();
+            jo.put("object", s.replace("\"", ""));
+            jo.put("total", 0);
+            joList.add(jo);
         }
         else {
-            jo.put("object", s.replace("\"", ""));
+            String[] integers = s.split(" ");
+            for (String i: integers) {
+                if (isNumeric(i)) {
+                    JSONObject jo = new JSONObject();
+                    jo.put("object", Integer.parseInt(i));
+                    jo.put("total", Integer.parseInt(i));
+                    joList.add(jo);
+        }
+            }
         }
 
-        jo.put("total", getJSONNums(s, operation));
-        return jo;
+        return joList;
 
     }
 
+    // factor in the given int to the total based on the operation
     public static int computeTotal(int total, int parseInt, String operation) {
         if (operation.equals("sum")) {
             return total + parseInt;
@@ -105,8 +153,7 @@ public class Main {
             String input = itemObj.get("payload").toString();
             total = computeTotal(total, getJSONNums(input, operation), operation);
         }
-            return total;
-
+        return total;
     }
 
     private static Object createObject(String str) {
