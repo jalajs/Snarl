@@ -16,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
         // parse out first arg
         String operation = args[0];
-        //rem
+        System.out.print(operation);
 
         // write your code here
         JSONArray res = new JSONArray();
@@ -24,8 +24,10 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
             String item = scanner.next();
+            System.out.print(item);
             JSONObject jo = numJSONTotal(item, operation);
             res.put(jo);
+            System.out.print(jo.toString());
         }
         scanner.close();
         System.out.print(res.toString());
@@ -44,20 +46,23 @@ public class Main {
     // create { "object": … "total": # }
     public static JSONObject numJSONTotal(String s, String operation) {
         JSONObject jo = new JSONObject();
-        jo.put("object", s);
+        if (isNumeric(s)) {
+            jo.put("object", Integer.parseInt(s));
+        }
+        if (s.charAt(0) == '[') {
+            s = s.replace("[", "");
+            s = s.replace("]", "");
+            String[] array = s.split(",");
+            jo.put("object", array);
+        }
+        if (s.charAt(0) == '{') {
+            jo.put("object", new JSONObject(s));
+        }
+
         jo.put("total", getJSONNums(s, operation));
         return jo;
 
     }
-
-
-    // jo.put("object", item); // => item needs to be right type
-
-    // set item as object in return json
-
-
-    // we either sum or product the numbers (must find numbers!)
-    // add to accumulator
 
     public static int computeTotal(int total, int parseInt, String operation) {
         if (operation.equals("sum")) {
@@ -77,7 +82,6 @@ public class Main {
             total = computeTotal(total, Integer.parseInt(payload), operation);
         }
         if (payload.charAt(0) == '[') {
-            // need to remove first and last chars and split on commas
             payload = payload.replace("[", "");
             payload = payload.replace("]", "");
             String[] array = payload.split(",");
