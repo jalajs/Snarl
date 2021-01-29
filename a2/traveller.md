@@ -10,7 +10,7 @@ Our implementation must be able to support the following operations:
 
 -   Create a new character. Given a String for the *name*, return a Character.
 
--   Create a new town. Given a String for the *name* and a List<Town> for its neighbors, return a Town.
+-   Create a new town. Given a String for the *name* and a List of Towns for its neighbors, return a Town.
 
 -   Place a character in a town. Given a Character and a Town, set the given Character as the Town's *character*.
 
