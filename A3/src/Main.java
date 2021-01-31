@@ -51,11 +51,11 @@ public class Main {
           res.put(joList.get(i));
         }
       }
-      scanner.close();
 
       // write back to the client
       clientWriter.println(res.toString());
 
+      scanner.close();
       socket.close();
       serverSocket.close();
 
