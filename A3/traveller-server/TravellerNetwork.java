@@ -2,11 +2,27 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Network {
-  List<Town> towns;
-  List<Path> paths;
+public class TravellerNetwork {
+  private List<Town> towns;
+  private List<Path> paths;
 
-  public Network() {
+  public List<Town> getTowns() {
+    return towns;
+  }
+
+  public void setTowns(List<Town> towns) {
+    this.towns = towns;
+  }
+
+  public List<Path> getPaths() {
+    return paths;
+  }
+
+  public void setPaths(List<Path> paths) {
+    this.paths = paths;
+  }
+
+  public TravellerNetwork() {
     this.towns = new ArrayList<>();
     this.paths = new ArrayList<>();
   }
@@ -40,11 +56,11 @@ public class Network {
     Town startingPoint = null;
 
     boolean destinationExist = false;
+
     for(Town t: this.towns) {
       Person p = t.getCharacter();
-      if (p.getName().equals(characterName)) {
+      if (p != null && p.getName().equals(characterName)) {
         startingPoint = t;
-        break;
       }
       if(t.getName().equals(townName)) {
         destinationExist = true;
@@ -59,7 +75,7 @@ public class Network {
 
     LinkedList<Town> townQueue = new LinkedList<>();
     List<String> visitedTowns = new ArrayList<>();
-    towns.add(startingPoint);
+    townQueue.add(startingPoint);
 
     while(!townQueue.isEmpty()) {
       Town current = townQueue.removeFirst();
@@ -70,21 +86,23 @@ public class Network {
 
       visitedTowns.add(current.getName());
 
-      if (current.getName().equals(townName)) {
+      if (current.getName().equals(townName) && !current.isOccupied()) {
         return true;
       }
 
-      if(current.isOccupied()) {
+      if(!current.isOccupied() || current.getName().equals(startingPoint.getName())) {
         for (Path p: this.paths) {
           List<Town> neighbors = p.getTowns();
-          if(neighbors.contains(current)) {
-            for (Town t: neighbors) {
-              townQueue.add(t);
-            }
+
+          if(neighbors.get(0).getName().equals(current.getName())) {
+            townQueue.add(neighbors.get(1));
+          }
+          else if(neighbors.get(1).getName().equals(current.getName())) {
+            townQueue.add(neighbors.get(0));
+          }
           }
         }
       }
-    }
     return false;
   }
 

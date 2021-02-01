@@ -31,4 +31,10 @@ public class Person {
     this.Id = id;
     this.path = path;
   }
+
+  public Person(int id, String name) {
+    this.Id = id;
+    this.name = name;
+    this.path = null;
+  }
 }
