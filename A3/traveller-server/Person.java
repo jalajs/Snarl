@@ -3,6 +3,11 @@ public class Person {
   String name;
   Path path;
 
+  public Person(int id, String name, Path path) {
+    this.Id = id;
+    this.path = path;
+  }
+
   public int getId() {
     return Id;
   }
@@ -24,11 +29,6 @@ public class Person {
   }
 
   public void setPath(Path path) {
-    this.path = path;
-  }
-
-  public Person(int id, String name, Path path) {
-    this.Id = id;
     this.path = path;
   }
 }

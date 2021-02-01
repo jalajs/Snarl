@@ -1,9 +1,17 @@
 import java.util.List;
 
+// represents a path between two towns
 public class Path {
   int Id;
   boolean isOccupied;
   List<Town> towns;
+
+  // given an id and a list of towns, create a Path
+  public Path(int id, List<Town> towns) {
+    this.Id = id;
+    this.isOccupied = false;
+    this.towns = towns;
+  }
 
   public int getId() {
     return Id;
@@ -26,12 +34,6 @@ public class Path {
   }
 
   public void setTowns(List<Town> towns) {
-    this.towns = towns;
-  }
-
-  public Path(int id, List<Town> towns) {
-    this.Id = id;
-    this.isOccupied = false;
     this.towns = towns;
   }
 }

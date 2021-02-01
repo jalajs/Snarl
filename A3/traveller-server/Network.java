@@ -2,20 +2,24 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+// represents a network of towns connected by paths
 public class Network {
   List<Town> towns;
   List<Path> paths;
 
+  // creates an empty network
   public Network() {
     this.towns = new ArrayList<>();
     this.paths = new ArrayList<>();
   }
 
+  // adds an unconnected town to the network
   public void addTown(String name) {
     Town town = new Town(name);
     this.towns.add(town);
   }
 
+  // connects two towns
   public void addPath(String to, String from) {
     Town toTown;
     Town fromTown;
@@ -36,6 +40,7 @@ public class Network {
     this.paths.add(newPath);
   }
 
+  // determines if a character can reach a town without encountering another character
   public boolean isPassageSafe(String characterName, String townName) {
     Town startingPoint = null;
 
