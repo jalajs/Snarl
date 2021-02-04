@@ -45,8 +45,6 @@ public class Main {
       OutputStream output = socket.getOutputStream();
       PrintWriter clientWriter = new PrintWriter(output, true);
 
-      SocketChannel channel = socket.getChannel();
-
       Scanner userScanner = new Scanner(System.in);
 
       sendUserNameVerification(name);
@@ -68,10 +66,7 @@ public class Main {
         }
 
         if (isNotWellFormedRequest(currentJSONCommand)) {
-          JSONObject errorObject = new JSONObject();
-          errorObject.put("error", "not a request");
-          errorObject.put("object", currentJSONCommand);
-          System.out.print(errorObject);
+          printErrorJSONObjectToUser("not a request", currentJSONCommand);
         }
         else if (commandNumber == 0) {
           try {
@@ -79,11 +74,7 @@ public class Main {
             clientWriter.print(executable);
             commandNumber++;
           } catch (Exception e) {
-            JSONObject errorObject = new JSONObject();
-
-            errorObject.put("error", "first command must be roads, please try again");
-            errorObject.put("object", currentJSONCommand);
-            System.out.print(errorObject);
+            printErrorJSONObjectToUser("first command must be roads, please try again", currentJSONCommand);
           }
         }
         else if (isEndOfBatch(currentJSONCommand)){
@@ -116,7 +107,7 @@ public class Main {
   }
 
   // send the user name verification message
-  public static void sendUserNameVerification(String name) {
+  private static void sendUserNameVerification(String name) {
     JSONArray returnJSONArray = new JSONArray();
     returnJSONArray.put("the server will call me");
     returnJSONArray.put(name);
@@ -124,8 +115,16 @@ public class Main {
     System.out.print(returnJSONArray);
   }
 
+  // create and print the error JSONObject to the user
+  private static void printErrorJSONObjectToUser(String message, JSONObject object) {
+    JSONObject errorObject = new JSONObject();
+    errorObject.put("error", message);
+    errorObject.put("object", object);
+    System.out.print(errorObject);
+  }
+
   // return true if command is well-formed
-  public static boolean isNotWellFormedRequest(JSONObject commandJSONObject) {
+  private static boolean isNotWellFormedRequest(JSONObject commandJSONObject) {
     try {
       Object params = commandJSONObject.get("params");
       String command = (String) commandJSONObject.get("command");
@@ -150,7 +149,7 @@ public class Main {
   }
 
   // create the response to send to the user after executing a batch
-  public static JSONArray createUserOuputFromBatchResponse(String responseString, String character, String destination) {
+  private static JSONArray createUserOuputFromBatchResponse(String responseString, String character, String destination) {
     JSONObject responseObject = new JSONObject(responseString);
     JSONArray returnJSONArray = new JSONArray();
 
@@ -180,13 +179,13 @@ public class Main {
   }
 
   // check if command indicates end of batch
-  public static boolean isEndOfBatch(JSONObject currentObject) {
+  private static boolean isEndOfBatch(JSONObject currentObject) {
     String command =  (String) currentObject.get("command");
     return command.equals("passage-safe?");
   }
 
   // create the JSONObject containing the information to establish the roads network
-  public static JSONObject createRoadsCommand(JSONObject action) throws IllegalArgumentException {
+  private static JSONObject createRoadsCommand(JSONObject action) throws IllegalArgumentException {
     String command =  (String) action.get("command");
     if(command.equals("roads")){
       JSONArray params = (JSONArray) action.get("params");
@@ -219,7 +218,7 @@ public class Main {
   }
 
   // create the JSON object with all the batch information formatted to send to the server
-  public static JSONObject createBatchCommands(List<JSONObject> actions) {
+  private static JSONObject createBatchCommands(List<JSONObject> actions) {
     JSONObject returnJSONObject = new JSONObject();
     JSONArray characterArray = new JSONArray();
     JSONObject queryObject = new JSONObject();
