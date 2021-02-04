@@ -1,4 +1,5 @@
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -12,6 +13,12 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+// test input
+//   { "command" : "roads", "params" : [ {"from" : "Seattle", "to" : "NYC" }] }
+//   { "command": "place", "params": { "character": "beep bop", town: "NYC" } }
+//   { "command": "passage-safe?", "params": { "character": "beep bop", town: "Seattle" } }
+//   { "invalid" : [ ], "response" :  true }
 
 public class Main {
 
@@ -71,7 +78,7 @@ public class Main {
             JSONObject executable = createRoadsCommand(actions.get(0));
             clientWriter.print(executable);
             commandNumber++;
-          } catch (IllegalArgumentException e) {
+          } catch (Exception e) {
             JSONObject errorObject = new JSONObject();
 
             errorObject.put("error", "first command must be roads, please try again");
@@ -86,12 +93,14 @@ public class Main {
 
           String serverResponse = serverScanner.nextLine();
 
-          String character = (String) currentJSONCommand.get("character");
-          String destination = (String) currentJSONCommand.get("town");
+          JSONObject paramObject = (JSONObject) currentJSONCommand.get("params");
+          String character = (String) paramObject.get("character");
+          String destination = (String) paramObject.get("town");
 
           JSONArray userOutputJSONArray = createUserOuputFromBatchResponse(serverResponse, character, destination);
-
-          System.out.print(userOutputJSONArray);
+          for (int i = 0; i < userOutputJSONArray.length(); i++) {
+            System.out.print(userOutputJSONArray.get(i));
+          }
           commandNumber++;
         }
       }
@@ -110,38 +119,34 @@ public class Main {
   public static void sendUserNameVerification(String name) {
     JSONArray returnJSONArray = new JSONArray();
     returnJSONArray.put("the server will call me");
-    returnJSONArray.put("name");
+    returnJSONArray.put(name);
 
     System.out.print(returnJSONArray);
   }
 
   // return true if command is well-formed
   public static boolean isNotWellFormedRequest(JSONObject commandJSONObject) {
-    Object params = commandJSONObject.get("params");
-    String command = (String) commandJSONObject.get("command");
-    if (command.equals("roads")) {
-      if (!(params instanceof JSONArray)) {
-        return false;
-      }
-      JSONArray paramsArray = (JSONArray) params;
-      for(int i = 0; i < paramsArray.length(); i++) {
-        Object object = paramsArray.get(i);
-        if (!(object instanceof JSONObject)) {
-          return false;
+    try {
+      Object params = commandJSONObject.get("params");
+      String command = (String) commandJSONObject.get("command");
+      if (command.equals("roads")) {
+        JSONArray paramsArray = (JSONArray) params;
+        for (int i = 0; i < paramsArray.length(); i++) {
+          Object object = paramsArray.get(i);
+          if (!(object instanceof JSONObject)) {
+            return false;
+          }
+          JSONObject jsonObject = (JSONObject) object;
+          return !jsonObject.has("to") || !jsonObject.has("from");
         }
-        JSONObject jsonObject = (JSONObject) object;
-        return !jsonObject.has("to") || !jsonObject.has("from");
+      } else if (command.equals("place") || command.equals("passage-safe?")) {
+        JSONObject paramsObject = (JSONObject) params;
+        return !paramsObject.has("character") || !paramsObject.has("town");
       }
+      return false;
+    } catch (JSONException e) {
+      return false;
     }
-    else if (command.equals("place") || command.equals("passage-safe?")) {
-      if (!(params instanceof JSONObject)) {
-        return false;
-      }
-      JSONObject paramsObject= (JSONObject) params;
-      return !paramsObject.has("character") || !paramsObject.has("town");
-    }
-
-    return false;
   }
 
   // create the response to send to the user after executing a batch
@@ -171,7 +176,7 @@ public class Main {
 
     returnJSONArray.put(passageSafeResponse);
 
-    return returnJSONArray;
+    return passageSafeResponse;
   }
 
   // check if command indicates end of batch
