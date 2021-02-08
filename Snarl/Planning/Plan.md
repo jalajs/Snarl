@@ -1,8 +1,8 @@
 Subject: Outline of Milestones in the Development of Snarl <br><br>
 
-Dear Friends at Growl Inc,<br><br>
+Dear Friends at Growl Inc,<br>
 
-	This memo seeks to establish a series of milestones for the process of developing the dungeon crawler Snarl. Each milestone but the first has some element that can feasibly be demoed during a code walk, either through graphics or unit tests. The milestones are as follows: <br><br>
+   This memo seeks to establish a series of milestones for the process of developing the dungeon crawler Snarl. Each milestone but the first has some element that can feasibly be demoed during a code walk, either through graphics or unit tests. The milestones are as follows: <br><br>
 
 1. Implement the model of the game, including all specified data structures.
 2. Establish connection from a client to server and allow for the creation of a user. This step requires a client that allows a user to submit their name. The name must then be sent to the server, who will create a Player object with that name. This is the first ‘demoable’ milestone.
