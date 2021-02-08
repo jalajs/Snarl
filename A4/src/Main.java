@@ -9,21 +9,15 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-// test input
-//   { "command" : "roads", "params" : [ {"from" : "Seattle", "to" : "NYC" }] }
-//   { "command": "place", "params": { "character": "beep bop", town: "NYC" } }
-//   { "command": "passage-safe?", "params": { "character": "beep bop", town: "Seattle" } }
-//   { "invalid" : [ ], "response" :  true }
 
 public class Main {
 
   public static void main(String[] args) {
-    // pars args
+    // parse args
     String ipAddress = "127.0.0.1";
     String port = "8000";
     String name = "Glorifrir Flintshoulder";
@@ -48,10 +42,13 @@ public class Main {
       Scanner userScanner = new Scanner(System.in);
 
       sendUserNameVerification(name);
+      // send name to server and receive sessionID
+      clientWriter.println(name);
+      String sessionId = serverScanner.nextLine();
 
       int commandNumber = 0;
+      List<JSONObject> actions = new ArrayList<>();
       while (userScanner.hasNextLine()) {
-        List<JSONObject> actions = new ArrayList<>();
         String commands = userScanner.nextLine();
 
         JSONTokener tokener = new JSONTokener(commands.trim());
@@ -65,22 +62,27 @@ public class Main {
           actions.add(currentJSONCommand);
         }
 
-        if (isNotWellFormedRequest(currentJSONCommand)) {
+        if (!isWellFormedRequest(currentJSONCommand)) {
           printErrorJSONObjectToUser("not a request", currentJSONCommand);
+          actions.remove(actions.size() - 1);
+
         }
+
         else if (commandNumber == 0) {
           try {
             JSONObject executable = createRoadsCommand(actions.get(0));
-            clientWriter.print(executable);
+            clientWriter.println(executable);
             commandNumber++;
+            actions.clear();
           } catch (Exception e) {
             printErrorJSONObjectToUser("first command must be roads, please try again", currentJSONCommand);
           }
         }
         else if (isEndOfBatch(currentJSONCommand)){
           JSONObject executable = createBatchCommands(actions);
+          actions.clear();
           // send executable to server
-          clientWriter.print(executable);
+          clientWriter.println(executable);
 
           String serverResponse = serverScanner.nextLine();
 
@@ -89,9 +91,7 @@ public class Main {
           String destination = (String) paramObject.get("town");
 
           JSONArray userOutputJSONArray = createUserOuputFromBatchResponse(serverResponse, character, destination);
-          for (int i = 0; i < userOutputJSONArray.length(); i++) {
-            System.out.print(userOutputJSONArray.get(i));
-          }
+          System.out.print(userOutputJSONArray);
           commandNumber++;
         }
       }
@@ -124,7 +124,7 @@ public class Main {
   }
 
   // return true if command is well-formed
-  private static boolean isNotWellFormedRequest(JSONObject commandJSONObject) {
+  private static boolean isWellFormedRequest(JSONObject commandJSONObject) {
     try {
       Object params = commandJSONObject.get("params");
       String command = (String) commandJSONObject.get("command");
@@ -136,11 +136,11 @@ public class Main {
             return false;
           }
           JSONObject jsonObject = (JSONObject) object;
-          return !jsonObject.has("to") || !jsonObject.has("from");
+          return jsonObject.has("to") && jsonObject.has("from");
         }
       } else if (command.equals("place") || command.equals("passage-safe?")) {
         JSONObject paramsObject = (JSONObject) params;
-        return !paramsObject.has("character") || !paramsObject.has("town");
+        return paramsObject.has("character") && paramsObject.has("town");
       }
       return false;
     } catch (JSONException e) {
@@ -223,15 +223,14 @@ public class Main {
     JSONArray characterArray = new JSONArray();
     JSONObject queryObject = new JSONObject();
 
-    for(int i = 0; i < actions.size() - 1; i++) {
+    for(int i = 0; i < actions.size(); i++) {
       JSONObject obj = actions.get(i);
       String command =  (String) obj.get("command");
 
+      JSONObject paramObj = (JSONObject) obj.get("params");
+      String characterName = (String) paramObj.get("character");
+      String townName = (String) paramObj.get("town");
       if(command.equals("place")){
-        JSONObject paramObj = (JSONObject) obj.get("params");
-        String characterName = (String) paramObj.get("character");
-        String townName = (String) paramObj.get("town");
-
         JSONObject placeCharacterObject = new JSONObject();
         placeCharacterObject.put("town", townName);
         placeCharacterObject.put("name", characterName);
@@ -239,10 +238,6 @@ public class Main {
         characterArray.put(placeCharacterObject);
       }
       if(command.equals("passage-safe?")){
-        JSONObject paramObj = (JSONObject) obj.get("params");
-        String characterName = (String) paramObj.get("character");
-        String townName = (String) paramObj.get("town");
-
         queryObject.put("character", characterName);
         queryObject.put("town", townName);
       }
