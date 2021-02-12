@@ -89,4 +89,16 @@ public class Room {
     }
     return roomAcc;
   }
+
+  public List<ArrayList<String>> renderRoom() {
+    List<ArrayList<String>> roomAcc = new ArrayList<ArrayList<String>>();
+    for (int i = 0; i < tileGrid.size(); i ++) {
+      ArrayList<String> rowAcc = new ArrayList<>();
+      for (int j = 0; j < tileGrid.get(i).size(); j ++) {
+        rowAcc.add(tileGrid.get(i).get(j).toString());
+      }
+     roomAcc.add(rowAcc);
+    }
+    return roomAcc;
+  }
 }

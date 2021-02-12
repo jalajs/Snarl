@@ -1,14 +1,14 @@
 public class Tile {
-  private Humanoid occupier;
+  private Actor occupier;
   private Collectable collectable;
   private Door door;
   private boolean isWall;
 
-  public Humanoid getOccupier() {
+  public Actor getOccupier() {
     return occupier;
   }
 
-  public void setOccupier(Humanoid occupier) {
+  public void setOccupier(Actor occupier) {
     this.occupier = occupier;
   }
 
