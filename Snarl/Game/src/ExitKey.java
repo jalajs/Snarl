@@ -1,4 +1,4 @@
-public class ExitKey extends Collectables {
+public class ExitKey implements Collectable {
   private boolean isCollected;
   private Posn tileLocation;
 
@@ -22,5 +22,10 @@ public class ExitKey extends Collectables {
 
   public void setTileLocation(Posn tileLocation) {
     this.tileLocation = tileLocation;
+  }
+
+  @Override
+  public String toString(){
+    return "K";
   }
 }

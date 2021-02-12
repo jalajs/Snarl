@@ -6,7 +6,7 @@ public class Room {
   private Posn upperLeft;
   private int xDim;
   private int yDim;
-  private List<Collectables> collectables;
+  private List<Collectable> collectables;
   private List<Door> doors;
 
 
@@ -19,7 +19,7 @@ public class Room {
     this.doors = new ArrayList<>();
   }
 
-  public Room(List<ArrayList<Tile>> tileGrid, Posn upperLeft, int xDim, int yDim, List<Collectables> collectables, List<Door> doors) {
+  public Room(List<ArrayList<Tile>> tileGrid, Posn upperLeft, int xDim, int yDim, List<Collectable> collectables, List<Door> doors) {
     this.tileGrid = tileGrid;
     this.upperLeft = upperLeft;
     this.xDim = xDim;
@@ -60,11 +60,11 @@ public class Room {
     this.yDim = yDim;
   }
 
-  public List<Collectables> getCollectables() {
+  public List<Collectable> getCollectables() {
     return collectables;
   }
 
-  public void setCollectables(List<Collectables> collectables) {
+  public void setCollectables(List<Collectable> collectables) {
     this.collectables = collectables;
   }
 
@@ -74,5 +74,19 @@ public class Room {
 
   public void setDoorPositions(List<Door> doorPositions) {
     this.doors = doors;
+  }
+
+  @Override
+  public String toString() {
+    String roomAcc = "";
+    for (int i = 0; i < tileGrid.size(); i ++) {
+      for (int j = 0; j < tileGrid.get(i).size(); j ++) {
+        roomAcc += tileGrid.get(i).get(j).toString();
+      }
+      if (i != tileGrid.size() - 1) {
+        roomAcc += "\n";
+      }
+    }
+    return roomAcc;
   }
 }

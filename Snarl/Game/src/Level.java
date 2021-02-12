@@ -28,9 +28,17 @@ public class Level {
     this.hallways = hallways;
   }
 
-  static boolean levelValid() {
+  public boolean levelValid() {
     // check the upper-left Cartesian postions of each rooms and determine if any rooms in this level
     // overlap
     return false;
-   }
+  }
+
+  public void drawLevel() {
+    // figures out the plane
+    System.out.print("Created level string");
+
+  }
+
+
 }

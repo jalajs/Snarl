@@ -33,4 +33,9 @@ public class Door {
   public void setLevelExit(boolean levelExit) {
     isLevelExit = levelExit;
   }
+
+  @Override
+  public String toString() {
+    return "|";
+  }
 }

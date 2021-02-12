@@ -32,4 +32,8 @@ public class Hallway {
     // (as delimited by subsequent points1) is either horizontal or vertical (i.e., perpendicular with the x or y axis).
     return false;
   }
+
+  public String representHallway() {
+    return "X";
+  }
 }
