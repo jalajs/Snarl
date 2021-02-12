@@ -210,17 +210,16 @@ public class LevelTest {
 
   door2.setTileCoord(new Posn(1, 1));
   roomWithDoor.setDoorPositions(doorPos);
-  roomWithDoor.setyDim(2);
+  roomWithDoor.setxDim(2);
   roomWithDoor.setyDim(2);
 
 
   roomsWithDoors.add(roomWithDoor);
   roomsWithDoors.add(complicatedRoom);
   level3.setRooms(roomsWithDoors);
-  System.out.print(roomsWithDoors.size());
 
   assertEquals("..        \n" +
-          "..        \n" +
+          ".|        \n" +
           "          \n" +
           "          \n" +
           "          \n" +
@@ -229,6 +228,28 @@ public class LevelTest {
           "      |.. \n" +
           "      ..X \n" +
           "          ", level3.createLevelString());
+
+  Hallway hallway1 = new Hallway();
+  List<Posn> waypoints = new ArrayList<>();
+  waypoints.add(new Posn(1, 3));
+  waypoints.add(new Posn(7, 3));
+  hallway1.setWaypoints(waypoints);
+
+  List<Hallway> hallwaysLevel3 = new ArrayList<>();
+  hallwaysLevel3.add(hallway1);
+  level3.setHallways(hallwaysLevel3);
+
+  assertEquals("..        \n" +
+          ".|        \n" +
+          "          \n" +
+          "          \n" +
+          "          \n" +
+          "      K.. \n" +
+          "      XX. \n" +
+          "      |.. \n" +
+          "      ..X \n" +
+          "          ", level3.createLevelString());
+
 
   }
 

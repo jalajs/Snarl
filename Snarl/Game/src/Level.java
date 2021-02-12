@@ -51,8 +51,13 @@ public class Level {
         }
       }
     }
-
     // Todo: add hallways to level grid
+    for (Hallway hallway : this.hallways) {
+          List<Posn> waypoints = hallway.getWaypoints();
+          for (Posn posn : waypoints) {
+            this.levelGrid[posn.getX()][posn.getY()] = "+";
+          }
+    }
   }
 
   public boolean levelValid() {
