@@ -159,12 +159,12 @@ public class LevelRepresentationTest {
     room1Row1.add(new Tile(false));
 
     room1Row2.add(new Tile(false));
-    room1Row2.add(new Tile(true));
     room1Row2.add(new Tile(false));
+    room1Row2.add(new Tile(true));
 
     room1Row3.add(new Tile(false));
-    room1Row1.add(new Tile(false));
-    room1Row1.add(room1DoorTile);
+    room1Row3.add(new Tile(false));
+    room1Row3.add(room1DoorTile);
 
     room1TileGrid.add(room1Row1);
     room1TileGrid.add(room1Row2);
@@ -201,59 +201,36 @@ public class LevelRepresentationTest {
     room2Row1.add(new Tile(false));
 
     room2Row2.add(new Tile(false));
-    room2Row2.add(new Tile(true));
+    room2Row2.add(new Tile(false));
     room2Row2.add(new Tile(false));
 
     room2Row3.add(room2DoorTile1);
-    room2Row1.add(new Tile(false));
-    room2Row1.add(room2DoorTile2);
+    room2Row3.add(new Tile(false));
+    room2Row3.add(room2DoorTile2);
+
+    room2TileGrid.add(room2Row1);
+    room2TileGrid.add(room2Row2);
+    room2TileGrid.add(room2Row3);
 
     room2.setDoorPositions(room2DoorPos);
     room2.setTileGrid(room2TileGrid);
-    room2.setUpperLeft(new Posn(7,0));
+    room2.setUpperLeft(new Posn(0,7));
     room2.setxDim(3);
     room2.setyDim(3);
-
-
-    Room room4 = new Room();
-
-    List<ArrayList<Tile>> room4TileGrid = new ArrayList<>();
-    Door room4d1 = new Door();
-    Door room4d2 = new Door();
-    room4d1.setTileCoord(new Posn(7, 13));
-    room4d2.setTileCoord(new Posn(9, 14));
-
-    List<Door> room4doorPos = new ArrayList<>();
-    room4doorPos.add(room4d1);
-    room4doorPos.add(room4d2);
-
-    ArrayList<Tile> room4row1 = new ArrayList<>();
-    ArrayList<Tile> room4row2 = new ArrayList<>();
-
-    room4row1.add(new Tile(false));
-    room4row1.add(new Tile(false));
-
-    room4row2.add(new Tile(false));
-
-    room4TileGrid.add(room4row1);
-    room4TileGrid.add(room4row2);
-
-    room4.setDoorPositions(room4doorPos);
-    room4.setUpperLeft(new Posn(7, 13));
-    room4.setTileGrid(room4TileGrid);
-    room4.setxDim(2);
-    room4.setyDim(2);
-
-
-
 
     Room room3 = new Room();
 
     List<ArrayList<Tile>> room3TileGrid = new ArrayList<>();
+    Tile room3DoorTile1 = new Tile();
+    Tile room3DoorTile2 = new Tile();
+
     Door room3d1 = new Door();
     Door room3d2 = new Door();
     room3d1.setTileCoord(new Posn(3, 6));
     room3d2.setTileCoord(new Posn(3, 9));
+
+    room3DoorTile1.setDoor(room3d1);
+    room3DoorTile2.setDoor(room3d2);
 
     List<Door> room3doorPos = new ArrayList<>();
     room3doorPos.add(room3d1);
@@ -267,6 +244,8 @@ public class LevelRepresentationTest {
     room3row1.add(new Tile(false));
     room3row1.add(new Tile(false));
     room3row1.add(new Tile(false));
+    room3row1.add(room3DoorTile1);
+
 
     room3row2.add(new Tile(true));
     room3row2.add(new Tile(true));
@@ -281,6 +260,8 @@ public class LevelRepresentationTest {
     room3row4.add(new Tile(false));
     room3row4.add(new Tile(false));
     room3row4.add(new Tile(false));
+    room3row4.add(room3DoorTile2);
+
 
     room3TileGrid.add(room3row1);
     room3TileGrid.add(room3row2);
@@ -288,18 +269,58 @@ public class LevelRepresentationTest {
     room3TileGrid.add(room3row4);
 
     room3.setDoorPositions(room3doorPos);
-    room3.setUpperLeft(new Posn(0, 6));
+    room3.setUpperLeft(new Posn(6, 0));
     room3.setTileGrid(room3TileGrid);
     room3.setxDim(4);
     room3.setyDim(4);
 
+    Room room4 = new Room();
+
+    List<ArrayList<Tile>> room4TileGrid = new ArrayList<>();
+    Door room4d1 = new Door();
+    Door room4d2 = new Door();
+    room4d1.setTileCoord(new Posn(7, 13));
+    room4d2.setTileCoord(new Posn(9, 14));
+
+    Tile room4DoorTile1 = new Tile();
+    Tile room4DoorTile2 = new Tile();
+
+    room4DoorTile1.setDoor(room4d1);
+    room4DoorTile2.setDoor(room4d2);
+
+    List<Door> room4doorPos = new ArrayList<>();
+    room4doorPos.add(room4d1);
+    room4doorPos.add(room4d2);
+
+    ArrayList<Tile> room4row1 = new ArrayList<>();
+    ArrayList<Tile> room4row2 = new ArrayList<>();
+
+    room4row1.add(room4DoorTile1);
+    room4row1.add(new Tile(false));
+    room4row1.add(new Tile(false));
+
+
+    room4row2.add(new Tile(false));
+    room4row2.add(new Tile(false));
+    room4row2.add(room4DoorTile2);
+
+
+    room4TileGrid.add(room4row1);
+    room4TileGrid.add(room4row2);
+
+    room4.setDoorPositions(room4doorPos);
+    room4.setUpperLeft(new Posn(13, 7));
+    room4.setTileGrid(room4TileGrid);
+    room4.setxDim(3);
+    room4.setyDim(3);
+    
 
     rooms.add(room1);
-    //rooms.add(room3);
+    rooms.add(room2);
+    rooms.add(room3);
+    rooms.add(room4);
 
     complicatedLevel.setRooms(rooms);
-
-    System.out.println(room1.renderRoom());
 
     assertEquals(
             "...    ...\n" +
@@ -316,7 +337,7 @@ public class LevelRepresentationTest {
                     "   .      \n" +
                     "   .      \n" +
                     "   +...|..\n" +
-                    "        .|", complicatedLevel.createLevelString());
+                    "       ..|", complicatedLevel.createLevelString());
 
 
   }

@@ -59,10 +59,10 @@ public class Level {
       List<ArrayList<String>> roomGrid = room.renderRoom();
       Posn upperLeft = room.getUpperLeft();
       for (int x = 0; x < room.getxDim(); x++) {
-        System.out.println("x:" + x);
+        // System.out.println("x:" + x);
 
         for (int y = 0; y < room.getyDim(); y++) {
-          System.out.println("y: " + y);
+          //System.out.println("y: " + y);
 
           this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid.get(x).get(y);
         }
