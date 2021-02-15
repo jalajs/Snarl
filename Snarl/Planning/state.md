@@ -1,6 +1,6 @@
 Dear friends at Growl Inc,<br>
 
-	The following memo contains information on the behaviors and fields in a Snarl GameState. A GameState is a representation of the current time-slice of the game. A GameState is a private field of the GameManager, but other components, such as players and adversaries, can query information from the GameState when relevant. The behaviors defined the GameStateInterface and implemented in the GameStateClass are as follows:<br>
+The following memo contains information on the behaviors and fields in a Snarl GameState. A GameState is a representation of the current time-slice of the game. A GameState is a private field of the GameManager, but other components, such as players and adversaries, can query information from the GameState when relevant. The behaviors defined the GameStateInterface and implemented in the GameStateClass are as follows:<br>
 * Void setLevel(Level newLevel):
   * Level object is created by random level generator in GameManager
   * Also resets all the other fields according to the generated Level
@@ -18,6 +18,7 @@ Dear friends at Growl Inc,<br>
   * Updates and rerenders the level with the newest data
 * Void endGame()
   * Returns to the gameManager that game is done and the conditions that resulted in game finishing (loss/win)<br>
+
 Other components, such as the GameManager, will need to call these methods to advance the game. Along with the implementations of these methods, the GameStateClass will have the following fields: <br>
 * Level Object
 * Boolean isExitable representing if the exit door can be reached
