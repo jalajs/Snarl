@@ -73,7 +73,7 @@ public class Room {
   }
 
   public void setDoorPositions(List<Door> doorPositions) {
-    this.doors = doors;
+    this.doors = doorPositions;
   }
 
   @Override

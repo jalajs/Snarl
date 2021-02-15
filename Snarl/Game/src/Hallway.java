@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Hallway {
   private List<Posn> wayPoints;
-  private List<Door> roomsConnected;
+  private List<Door> doors;
   private List<ArrayList<Tile>> tileSegments;
 
   public Hallway() {
@@ -29,12 +29,12 @@ public class Hallway {
     this.wayPoints = waypoints;
   }
 
-  public List<Door> getRoomsConnected() {
-    return roomsConnected;
+  public List<Door> getDoors() {
+    return doors;
   }
 
-  public void setRoomsConnected(List<Door> roomsConnected) {
-    this.roomsConnected = roomsConnected;
+  public void setDoors(List<Door> doors) {
+    this.doors = doors;
   }
 
 

@@ -56,7 +56,10 @@ public class TestUtils {
     List<Door> doorPos = new ArrayList<>();
 
     door.setTileCoord(new Posn(1, 1));
+    doorPos.add(door);
+
     roomWithDoor.setDoorPositions(doorPos);
+
     roomWithDoor.setxDim(2);
     roomWithDoor.setyDim(2);
 
@@ -67,12 +70,20 @@ public class TestUtils {
     Room complicatedRoom = new Room();
     ExitKey key = new ExitKey();
     Door door = new Door();
+
+    List<Door> doorPos = new ArrayList<>();
+
+    door.setTileCoord(new Posn(6, 7));
+    doorPos.add(door);
+
+
     Actor player = new Player();
     Tile keyTile = new Tile(false);
     Tile playerTile = new Tile(false);
     Tile doorTile = new Tile(false);
     keyTile.setCollectable(key);
     doorTile.setDoor(door);
+
     playerTile.setOccupier(player);
     List<ArrayList<Tile>> complicatedTileGrid = new ArrayList<>();
     ArrayList<Tile> complicatedTileRow1 = new ArrayList<>();
@@ -99,6 +110,7 @@ public class TestUtils {
     complicatedRoom.setUpperLeft(new Posn(5, 6));
     complicatedRoom.setxDim(4);
     complicatedRoom.setyDim(3);
+    complicatedRoom.setDoorPositions(doorPos);
 
     return complicatedRoom;
   }

@@ -8,7 +8,7 @@ public class Level {
   private int levelY;
   private String[][] levelGrid;
 
-
+  // this basic no input constructor creates an empty 10x10 level
   public Level() {
     this.rooms = new ArrayList<>();
     this.hallways = new ArrayList<>();
@@ -21,7 +21,6 @@ public class Level {
       }
     }
   }
-
 
   public List<Room> getRooms() {
     return rooms;
@@ -55,12 +54,49 @@ public class Level {
     for (Hallway hallway : this.hallways) {
           List<Posn> waypoints = hallway.getWaypoints();
           List<ArrayList<Tile>> segments = hallway.getTileSegments();
+          List<Door> doors = hallway.getDoors();
           // populate waypoints
           for (Posn posn : waypoints) {
             this.levelGrid[posn.getX()][posn.getY()] = "+";
           }
+
+          // add door to list of points
+          waypoints.add(0, doors.get(0).getTileCoord());
+          waypoints.add(doors.get(1).getTileCoord());
+
+
           // populate tiles between waypoints
-          for ()
+          for (int i = 0; i < segments.size(); i ++) {
+            ArrayList<Tile> tileSegement = segments.get(i);
+            Posn start = waypoints.get(i);
+            Posn end = waypoints.get(i + 1);
+
+            if (start.getX() == end.getX()) {
+              for (int t = 0; t < tileSegement.size(); t ++) {
+                Tile tile = tileSegement.get(i);
+
+                int direction = 1;
+                if (start.getY() > end.getY()) {
+                  direction = -1;
+                }
+
+                this.levelGrid[start.getX()][start.getY() + ((t + 1) * direction)] = tile.toString();
+              }
+            } else if (start.getY() == end.getY()) {
+              for (int t = 0; t < tileSegement.size(); t ++) {
+                Tile tile = tileSegement.get(i);
+
+                int direction = 1;
+                if (start.getX() > end.getX()) {
+                  direction = -1;
+                }
+
+                this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
+              }
+            }
+
+
+          }
     }
   }
 

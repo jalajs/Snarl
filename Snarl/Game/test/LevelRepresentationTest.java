@@ -101,14 +101,47 @@ public class LevelRepresentationTest {
             "      O.X \n" +
             "          ", level.createLevelString());
 
-    Hallway hallway1 = new Hallway();
+    Hallway hallway = new Hallway();
     List<Posn> waypoints = new ArrayList<>();
     waypoints.add(new Posn(1, 3));
     waypoints.add(new Posn(7, 3));
-    hallway1.setWaypoints(waypoints);
+    hallway.setWaypoints(waypoints);
 
+    List<ArrayList<Tile>> segments = new ArrayList<>();
+    ArrayList<Tile> segment1 = new ArrayList<>();
+    ArrayList<Tile> segment2 = new ArrayList<>();
+    ArrayList<Tile> segment3 = new ArrayList<>();
+
+    segment1.add(new Tile(false));
+
+    segment2.add(new Tile(false));
+    segment2.add(new Tile(false));
+    segment2.add(new Tile(false));
+    segment2.add(new Tile(false));
+    segment2.add(new Tile(false));
+
+    segment3.add(new Tile(false));
+    segment3.add(new Tile(false));
+
+    segments.add(segment1);
+    segments.add(segment2);
+    segments.add(segment3);
+
+    List<Door> doors = new ArrayList<>();
+
+    Door door1 = roomWithDoor.getDoorPositions().get(0);
+    Door door2 = complicatedRoom.getDoorPositions().get(0);
+
+    doors.add(door1);
+    doors.add(door2);
+
+
+    hallway.setDoors(doors);
+    hallway.setTileSegments(segments);
     List<Hallway> hallways = new ArrayList<>();
-    hallways.add(hallway1);
+    hallways.add(hallway);
+
+    System.out.println();
     level.setHallways(hallways);
 
     assertEquals("..        \n" +
