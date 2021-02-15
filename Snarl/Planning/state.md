@@ -26,7 +26,8 @@ Other components, such as the GameManager, will need to call these methods to ad
 * Map of Collectable Objects to Posn
 * List of Ejected Actors <br>
 See the included diagram for more information on the Objects mentioned in the GameStateClass fields. <br>
-<img src="milestone2uml.jpg" alt="UML Diagram" />
-
 Warm regards, <br>
 	Jalaj Singh & Megan Larson <br>
+<img src="milestone2uml.jpg" alt="UML Diagram" />
+
+
