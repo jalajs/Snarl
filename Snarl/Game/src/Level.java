@@ -8,12 +8,26 @@ public class Level {
   private int levelY;
   private String[][] levelGrid;
 
-  // this basic no input constructor creates an empty 10x10 level
+  // this basic no input constructor creates an empty 10x10 level (mostly used for testing)
   public Level() {
     this.rooms = new ArrayList<>();
     this.hallways = new ArrayList<>();
     this.levelX = 10;
     this.levelY = 10;
+    this.levelGrid = new String[levelX][levelY];
+    for (int i = 0; i < levelX; i++) {
+      for (int j = 0; j < levelY; j++) {
+        levelGrid[i][j] = " ";
+      }
+    }
+  }
+
+  // this constructor allows for manual setting of x & y dimensions
+  public Level(int levelX, int levelY) {
+    this.rooms = new ArrayList<>();
+    this.hallways = new ArrayList<>();
+    this.levelX = levelX;
+    this.levelY = levelY;
     this.levelGrid = new String[levelX][levelY];
     for (int i = 0; i < levelX; i++) {
       for (int j = 0; j < levelY; j++) {
@@ -45,12 +59,15 @@ public class Level {
       List<ArrayList<String>> roomGrid = room.renderRoom();
       Posn upperLeft = room.getUpperLeft();
       for (int x = 0; x < room.getxDim(); x++) {
+        System.out.println("x:" + x);
+
         for (int y = 0; y < room.getyDim(); y++) {
+          System.out.println("y: " + y);
+
           this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid.get(x).get(y);
         }
       }
     }
-    // Todo: add hallways to level grid
     for (Hallway hallway : this.hallways) {
           List<Posn> waypoints = hallway.getWaypoints();
           List<ArrayList<Tile>> segments = hallway.getTileSegments();
@@ -64,7 +81,6 @@ public class Level {
           waypoints.add(0, doors.get(0).getTileCoord());
           waypoints.add(doors.get(1).getTileCoord());
 
-
           // populate tiles between waypoints
           for (int i = 0; i < segments.size(); i ++) {
             ArrayList<Tile> tileSegement = segments.get(i);
@@ -73,7 +89,7 @@ public class Level {
 
             if (start.getX() == end.getX()) {
               for (int t = 0; t < tileSegement.size(); t ++) {
-                Tile tile = tileSegement.get(i);
+                Tile tile = tileSegement.get(t);
 
                 int direction = 1;
                 if (start.getY() > end.getY()) {
@@ -94,8 +110,6 @@ public class Level {
                 this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
               }
             }
-
-
           }
     }
   }

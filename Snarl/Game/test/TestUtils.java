@@ -73,7 +73,7 @@ public class TestUtils {
 
     List<Door> doorPos = new ArrayList<>();
 
-    door.setTileCoord(new Posn(6, 7));
+    door.setTileCoord(new Posn(7, 6));
     doorPos.add(door);
 
 
@@ -113,5 +113,49 @@ public class TestUtils {
     complicatedRoom.setDoorPositions(doorPos);
 
     return complicatedRoom;
+  }
+
+  public Hallway createHallway() {
+    Room roomWithDoor = createSimpleRoomWithDoor();
+    Room complicatedRoom = createComplicatedRoom();
+
+    Hallway hallway = new Hallway();
+    List<Posn> waypoints = new ArrayList<>();
+    waypoints.add(new Posn(1, 3));
+    waypoints.add(new Posn(7, 3));
+    hallway.setWaypoints(waypoints);
+
+    List<ArrayList<Tile>> segments = new ArrayList<>();
+    ArrayList<Tile> segment1 = new ArrayList<>();
+    ArrayList<Tile> segment2 = new ArrayList<>();
+    ArrayList<Tile> segment3 = new ArrayList<>();
+
+    segment1.add(new Tile(false));
+
+    segment2.add(new Tile(false));
+    segment2.add(new Tile(false));
+    segment2.add(new Tile(false));
+    segment2.add(new Tile(false));
+    segment2.add(new Tile(false));
+
+    segment3.add(new Tile(false));
+    segment3.add(new Tile(false));
+
+    segments.add(segment1);
+    segments.add(segment2);
+    segments.add(segment3);
+
+    List<Door> doors = new ArrayList<>();
+
+    Door door1 = roomWithDoor.getDoorPositions().get(0);
+    Door door2 = complicatedRoom.getDoorPositions().get(0);
+
+    doors.add(door1);
+    doors.add(door2);
+
+    hallway.setDoors(doors);
+    hallway.setTileSegments(segments);
+
+    return hallway;
   }
 }
