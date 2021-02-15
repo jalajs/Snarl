@@ -1,11 +1,10 @@
-public class Adversary implements Actor {
+public class Adversary extends Actor {
 
 
   public Adversary() {
   }
 
-  @Override
-  public String toString() {
+  public String representation() {
     return "#";
   }
 }

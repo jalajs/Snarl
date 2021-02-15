@@ -112,13 +112,13 @@ public class LevelRepresentationTest {
     level.setHallways(hallways);
 
     assertEquals("..        \n" +
-            ".| +      \n" +
-            "          \n" +
-            "          \n" +
-            "          \n" +
-            "      K.. \n" +
-            "      XXO \n" +
-            "   +  |O. \n" +
+            ".|.+      \n" +
+            "   .      \n" +
+            "   .      \n" +
+            "   .      \n" +
+            "   .  K.. \n" +
+            "   .  XXO \n" +
+            "   +..|O. \n" +
             "      O.X \n" +
             "          ", level.createLevelString());
   }

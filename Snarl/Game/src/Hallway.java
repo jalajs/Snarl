@@ -6,10 +6,19 @@ public class Hallway {
   private List<Door> roomsConnected;
   private List<ArrayList<Tile>> tileSegments;
 
-
   public Hallway() {
-    this.wayPoints = new ArrayList<>();
 
+    this.wayPoints = new ArrayList<>();
+    this.tileSegments = new ArrayList<>();
+
+  }
+
+  public List<ArrayList<Tile>> getTileSegments() {
+    return tileSegments;
+  }
+
+  public void setTileSegments(List<ArrayList<Tile>> tileSegments) {
+    this.tileSegments = tileSegments;
   }
 
   public List<Posn> getWaypoints() {
@@ -29,23 +38,15 @@ public class Hallway {
   }
 
 
-
-  // each arraylist in the tileSegments is a horizontal/vertical segment and it changes direction once
-  // it hits a waypoint
-
-
   // populate the hallway with tiles between the rooms it connects
   private void initHallway() {
+
   }
 
   public static boolean isValidHallway() {
-    // nice to have
     // a hallway is valid if it connects two rooms at its endpoints. each segment
     // (as delimited by subsequent points1) is either horizontal or vertical (i.e., perpendicular with the x or y axis).
-    return false;
+    return true;
   }
 
-  public String representHallway() {
-  return "";
-  }
 }

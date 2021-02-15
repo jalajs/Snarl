@@ -1,4 +1,6 @@
-public interface Actor {
+public abstract class Actor {
+
+  public abstract String representation();
 
 }
 

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestUtils {
+
   public Room createSimpleRoom() {
     Room simpleRoom = new Room();
     List<ArrayList<Tile>> simpleTileGrid = new ArrayList<>();

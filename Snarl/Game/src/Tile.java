@@ -50,7 +50,7 @@ public class Tile {
       return "X";
     }
     else if (occupier != null) {
-      return occupier.toString();
+      return occupier.representation();
     }
     else if (collectable != null) {
       return collectable.toString();
