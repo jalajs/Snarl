@@ -1,6 +1,22 @@
 import java.util.ArrayList;
 import java.util.List;
-
+// represents a game level, including all rooms, hallways, dimensions, and the grid
+// an example level could look like this
+//     ...    ...
+//     ..X    ...               this level has 4 rooms and 3 hallways
+//     ..|....|.|
+//              .               KEY
+//              .               . = unoccuppied tile
+//              .               X = wall
+//     ...|.....+               + = waypoint
+//     XX.X                     | = door
+//     ....                     empty space = no tiles
+//     ...|
+//        .
+//        .
+//        .
+//        +...|..
+//            ..|
 public class Level {
   private List<Room> rooms;
   private List<Hallway> hallways;
@@ -15,12 +31,8 @@ public class Level {
     this.levelX = 10;
     this.levelY = 10;
     this.levelGrid = new String[levelX][levelY];
-    for (int i = 0; i < levelX; i++) {
-      for (int j = 0; j < levelY; j++) {
-        levelGrid[i][j] = " ";
-      }
+    this.initGridSpace();
     }
-  }
 
   // this constructor allows for manual setting of x & y dimensions
   public Level(int levelX, int levelY) {
@@ -29,9 +41,14 @@ public class Level {
     this.levelX = levelX;
     this.levelY = levelY;
     this.levelGrid = new String[this.levelX][this.levelY];
+    this.initGridSpace();
+  }
+
+  // populates the entire grid of the level with an initial value of "  "
+  private void initGridSpace() {
     for (int i = 0; i < this.levelX; i++) {
       for (int j = 0; j < this.levelY; j++) {
-        levelGrid[i][j] = " ";
+        this.levelGrid[i][j] = " ";
       }
     }
   }
@@ -54,20 +71,13 @@ public class Level {
 
   // populate our level grid with rooms (and hallways)
   private void initLevelGrid() {
-    for (int i = 0; i < this.rooms.size(); i++) {
-      Room room = this.rooms.get(i);
-      List<ArrayList<String>> roomGrid = room.renderRoom();
-      Posn upperLeft = room.getUpperLeft();
-      for (int x = 0; x < room.getxDim(); x++) {
-        // System.out.println("x:" + x);
+    this.addRooms();
+    this.addHallways();
+  }
 
-        for (int y = 0; y < room.getyDim(); y++) {
-          //System.out.println("y: " + y);
 
-          this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid.get(x).get(y);
-        }
-      }
-    }
+  // populates the levelGrid with hallways using the List<Hallway> in this level
+  private void addHallways() {
     for (Hallway hallway : this.hallways) {
       List<Posn> waypoints = hallway.getWaypoints();
       List<ArrayList<Tile>> segments = hallway.getTileSegments();
@@ -109,6 +119,24 @@ public class Level {
 
             this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
           }
+        }
+      }
+    }
+  }
+
+  // populates the levelGrid with rooms using the List<Rooms> field
+  private void addRooms() {
+    for (int i = 0; i < this.rooms.size(); i++) {
+      Room room = this.rooms.get(i);
+      List<ArrayList<String>> roomGrid = room.renderRoom();
+      Posn upperLeft = room.getUpperLeft();
+      for (int x = 0; x < room.getxDim(); x++) {
+        // System.out.println("x:" + x);
+
+        for (int y = 0; y < room.getyDim(); y++) {
+          //System.out.println("y: " + y);
+
+          this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid.get(x).get(y);
         }
       }
     }
