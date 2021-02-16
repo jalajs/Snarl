@@ -80,7 +80,7 @@ public class Level {
       // add door to list of points
       waypoints.add(0, doors.get(0).getTileCoord());
       waypoints.add(doors.get(1).getTileCoord());
-      
+
       // populate tiles between waypoints
       for (int i = 0; i < segments.size(); i++) {
         ArrayList<Tile> tileSegement = segments.get(i);
