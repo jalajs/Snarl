@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a room in the level dungeon. Each room has a tile grid, upper-left Cartesian position,
+ * dimensions, a list of collectables, and one or more doors.
+ */
 public class Room {
   private List<ArrayList<Tile>> tileGrid;
   private Posn upperLeft;
@@ -76,6 +80,11 @@ public class Room {
     this.doors = doorPositions;
   }
 
+
+  /**
+   * toString for an individual room.
+   * @return One string rendering the visual contents of this room
+   */
   @Override
   public String toString() {
     String roomAcc = "";
@@ -90,6 +99,10 @@ public class Room {
     return roomAcc;
   }
 
+  /**
+   * Renders a room and its contents.
+   * @return A 2D list for all of the String representations of the tiles in the room
+   */
   public List<ArrayList<String>> renderRoom() {
     List<ArrayList<String>> roomAcc = new ArrayList<ArrayList<String>>();
     for (int i = 0; i < tileGrid.size(); i ++) {

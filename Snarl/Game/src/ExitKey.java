@@ -1,3 +1,6 @@
+/**
+ * Represents the key players can connect to unlock the exit.
+ */
 public class ExitKey implements Collectable {
   private boolean isCollected;
 
