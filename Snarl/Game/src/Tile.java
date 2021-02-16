@@ -1,4 +1,4 @@
-/*
+/**
  * Represents a game tile and contains information on if it is a wall and what is on the tile
  */
 public class Tile {
@@ -7,7 +7,7 @@ public class Tile {
   private Door door;
   private boolean isWall;
 
-  /*
+  /**
    * Default tile constructor
    */
   public Tile() {
@@ -17,9 +17,9 @@ public class Tile {
     this.isWall = false;
   }
 
-  /*
+  /**
    * Tile constructor that allows specification if it is a wall or not
-   * @param boolean indicating if it is a wall or not
+   * @param isWall indicating if it is a wall or not
    */
   public Tile(boolean isWall) {
    this.isWall = isWall;
@@ -30,7 +30,7 @@ public class Tile {
 
 
   @Override
-  /*
+  /**
    * Returns string representation of the tile, dependent on what is on the tile
    */
   public String toString() {

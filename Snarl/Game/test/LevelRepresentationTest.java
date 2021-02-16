@@ -5,14 +5,14 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
+/**
  * Contains all tests for level representation
  */
 public class LevelRepresentationTest {
   private TestUtils testUtils = new TestUtils();
 
   @Test
-  /*
+  /**
    * this test verifies the representation of a variety of rooms
    */
   public void testRoomToString() {
@@ -30,7 +30,7 @@ public class LevelRepresentationTest {
   }
 
   @Test
-  /*
+  /**
    * this test verifies the representation of an empty level
    */
   public void testEmptyLevel() {
@@ -50,7 +50,7 @@ public class LevelRepresentationTest {
   }
 
   @Test
-  /*
+  /**
    * this test adds rooms to a level and verifies the representation is correct
    */
   public void testLevelWithManyRooms() {
@@ -87,7 +87,7 @@ public class LevelRepresentationTest {
   }
 
   @Test
-  /*
+  /**
    * adds rooms and hallways to level and verifies representation
    */
   public void testLevelWithHallwaysAndRooms() {
@@ -130,7 +130,7 @@ public class LevelRepresentationTest {
   }
 
   @Test
-  /*
+  /**
    * tests the representation of a complicated level with given dimensions and many rooms and hallways
    */
   public void testComplicatedLevel() {

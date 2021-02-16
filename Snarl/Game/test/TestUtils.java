@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/*
+/**
  * Contains utils methods for creating data so that the tests are more readable
  */
 public class TestUtils {
 
-  /*
+  /**
    * Create a simple 2x2 room with no walls
    */
   public Room createSimpleRoom() {
@@ -25,7 +25,7 @@ public class TestUtils {
     return simpleRoom;
   }
 
-  /*
+  /**
    * Create a 3x3 room with wals
    */
   public Room createWalledRoom() {
@@ -42,7 +42,7 @@ public class TestUtils {
     return walledRoom;
   }
 
-  /*
+  /**
    * Create a simple room with a door
    */
   public Room createSimpleRoomWithDoor() {
@@ -78,7 +78,7 @@ public class TestUtils {
     return roomWithDoor;
   }
 
-  /*
+  /**
    * Create a complicated room with different kinds of tiles
    */
   public Room createComplicatedRoom() {
@@ -130,7 +130,7 @@ public class TestUtils {
     return complicatedRoom;
   }
 
-  /*
+  /**
    * Create a hallway that connects two rooms with one waypoint
    */
   public Hallway createHallway() {
@@ -177,7 +177,7 @@ public class TestUtils {
     return hallway;
   }
 
-  /*
+  /**
    * Create a complicated level with many rooms and hallways
    */
   public Level createComplicatedLevel() {
@@ -343,11 +343,9 @@ public class TestUtils {
     room4row1.add(new Tile(false));
     room4row1.add(new Tile(false));
 
-
     room4row2.add(new Tile(false));
     room4row2.add(new Tile(false));
     room4row2.add(room4DoorTile2);
-
 
     room4TileGrid.add(room4row1);
     room4TileGrid.add(room4row2);
@@ -358,12 +356,10 @@ public class TestUtils {
     room4.setxDim(2);
     room4.setyDim(3);
 
-
     rooms.add(room1);
     rooms.add(room2);
     rooms.add(room3);
     rooms.add(room4);
-
 
     Hallway hallway1 = new Hallway();
     List<Door> hallway1Doors = new ArrayList<>();
@@ -407,7 +403,6 @@ public class TestUtils {
     hallway2Segment2.add(new Tile(false));
     hallway2TileSegments.add(hallway2Segment2);
 
-
     hallway1.setTileSegments(hallway1TileSegments);
     hallway2.setTileSegments(hallway2TileSegments);
     hallway2.setWaypoints(hallway2Waypoints);
@@ -428,7 +423,6 @@ public class TestUtils {
     h3Segment2.add(new Tile(false));
     h3Segment2.add(new Tile(false));
     h3Segment2.add(new Tile(false));
-
 
     h3Segments.add(h3Segment1);
     h3Segments.add(h3Segment2);

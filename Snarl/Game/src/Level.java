@@ -1,23 +1,26 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/* represents a game level, including all rooms, hallways, dimensions, and the grid
-   an example level could look like this:
-     ...    ...
-     ..X    ...               this level has 4 rooms and 3 hallways
-     ..|....|.|
-              .               KEY
-              .               . = unoccuppied tile
-              .               X = wall
-     ...|.....+               + = waypoint
-     XX.X                     | = door
-     ....                     empty space = no tiles
-     ...|
-        .
-        .
-        .
-        +...|..
-            ..|
+/**
+ *  represents a game level, including all rooms, hallways, dimensions, and the grid
+ *  an example level could look like this:
+ *   ...    ...
+ *   ..X    ...               this level has 4 rooms and 3 hallways
+ *   ..|....|.|
+ *            .               KEY
+ *            .               . = unoccuppied tile
+ *            .               X = wall
+ *   ...|.....+               + = waypoint
+ *   XX.X                     | = door
+ *   ....                     empty space = no tiles
+ *   ...|
+ *   .
+ *   .
+ *   .
+ *   +...|..
+ *       ..|
+ *
+ *   This representation is produced and tested in .../test/LevelRepresentationTest.java
 */
 public class Level {
   private List<Room> rooms;
@@ -26,7 +29,7 @@ public class Level {
   private int levelY;
   private String[][] levelGrid;
 
-  /*
+  /**
   * this basic no input constructor creates an empty 10x10 level (mostly used for testing)
   */
   public Level() {
@@ -38,9 +41,10 @@ public class Level {
     this.initGridSpace();
   }
 
-  /*
+  /**
    * this constructor allows for manual setting of x & y dimensions
-   * @param the x and the y dimensions for the level
+   * @param levelX the x dimensions for the level
+   * @param levelY the y dimensions for the level
    */
   public Level(int levelX, int levelY) {
     this.rooms = new ArrayList<>();
@@ -52,7 +56,7 @@ public class Level {
   }
 
 
-  /*
+  /**
    * populates the entire grid of the level with an initial value of "  "
    */
   private void initGridSpace() {
@@ -63,7 +67,7 @@ public class Level {
     }
   }
 
-  /*
+  /**
    * populate our level grid with rooms (and hallways)
    */
   private void initLevelGrid() {
@@ -71,7 +75,7 @@ public class Level {
     this.addHallways();
   }
 
-  /*
+  /**
    * populates the levelGrid with hallways using the List<Hallway> in this level
    */
   private void addHallways() {
@@ -91,9 +95,9 @@ public class Level {
     }
   }
 
-  /*
+  /**
    * place waypoints in level grid
-   * @param the positions of the waypoints to be placed in the grid
+   * @param waypoints the positions of the waypoints to be placed in the grid
    */
   private void addWayPoints(List<Posn> waypoints) {
     for (Posn posn : waypoints) {
@@ -101,9 +105,10 @@ public class Level {
     }
   }
 
-  /*
+  /**
    * place all tiles down between the waypoints
-   * @param the tile segements and all the points to place them between
+   * @param segments the tile segements to place between the points
+   * @param allPoints the points to lay the segments between
    */
   private void addSegements(List<ArrayList<Tile>> segments, List<Posn> allPoints) {
     for (int i = 0; i < segments.size(); i++) {
@@ -129,15 +134,16 @@ public class Level {
     }
   }
 
-  /*
+  /**
    * returns the direction (+/-) to place the segment tiles
-   * @param the start and end values
+   * @param start point
+   * @param end point
    */
   private int calcDirection(int start, int end) {
     return start > end ? -1 : 1;
   }
 
-  /*
+  /**
    * populates the levelGrid with rooms using the List<Rooms> field
    */
   private void addRooms() {
@@ -153,7 +159,7 @@ public class Level {
     }
   }
 
-  /*
+  /**
    * Creates the ASCII string representation of a Level and all its data
    */
   public String createLevelString() {
