@@ -28,6 +28,6 @@ Other components, such as the GameManager, will need to call these methods to ad
 See the included diagram for more information on the Objects mentioned in the GameStateClass fields. <br>
 Warm regards, <br>
 	Jalaj Singh & Megan Larson <br>
-<img src="milestone2uml.jpg" alt="UML Diagram" />
+<img src="milestone2uml.png" alt="UML Diagram" />
 
 
