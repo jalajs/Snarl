@@ -1,3 +1,7 @@
+/**
+ * Represents a door within our level structure. Doors allow rooms to be connected via hallways, and
+ * could also lead to the exit of the level for Players.
+ */
 public class Door {
   private Posn tileCoord;
   private Hallway hallway;
@@ -34,6 +38,10 @@ public class Door {
     isLevelExit = levelExit;
   }
 
+  /**
+   * Outputs how a door would be rendered as a String visually
+   * @return a door as a string
+   */
   @Override
   public String toString() {
     return "|";

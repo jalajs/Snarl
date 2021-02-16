@@ -1,3 +1,6 @@
+/**
+ * Represents a cartesian position.
+ */
 public class Posn {
   private int x;
   private int y;
