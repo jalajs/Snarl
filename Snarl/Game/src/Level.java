@@ -28,9 +28,9 @@ public class Level {
     this.hallways = new ArrayList<>();
     this.levelX = levelX;
     this.levelY = levelY;
-    this.levelGrid = new String[levelX][levelY];
-    for (int i = 0; i < levelX; i++) {
-      for (int j = 0; j < levelY; j++) {
+    this.levelGrid = new String[this.levelX][this.levelY];
+    for (int i = 0; i < this.levelX; i++) {
+      for (int j = 0; j < this.levelY; j++) {
         levelGrid[i][j] = " ";
       }
     }
@@ -69,48 +69,48 @@ public class Level {
       }
     }
     for (Hallway hallway : this.hallways) {
-          List<Posn> waypoints = hallway.getWaypoints();
-          List<ArrayList<Tile>> segments = hallway.getTileSegments();
-          List<Door> doors = hallway.getDoors();
-          // populate waypoints
-          for (Posn posn : waypoints) {
-            this.levelGrid[posn.getX()][posn.getY()] = "+";
-          }
+      List<Posn> waypoints = hallway.getWaypoints();
+      List<ArrayList<Tile>> segments = hallway.getTileSegments();
+      List<Door> doors = hallway.getDoors();
+      // populate waypoints
+      for (Posn posn : waypoints) {
+        this.levelGrid[posn.getX()][posn.getY()] = "+";
+      }
 
-          // add door to list of points
-          waypoints.add(0, doors.get(0).getTileCoord());
-          waypoints.add(doors.get(1).getTileCoord());
+      // add door to list of points
+      waypoints.add(0, doors.get(0).getTileCoord());
+      waypoints.add(doors.get(1).getTileCoord());
+      
+      // populate tiles between waypoints
+      for (int i = 0; i < segments.size(); i++) {
+        ArrayList<Tile> tileSegement = segments.get(i);
+        Posn start = waypoints.get(i);
+        Posn end = waypoints.get(i + 1);
 
-          // populate tiles between waypoints
-          for (int i = 0; i < segments.size(); i ++) {
-            ArrayList<Tile> tileSegement = segments.get(i);
-            Posn start = waypoints.get(i);
-            Posn end = waypoints.get(i + 1);
+        if (start.getX() == end.getX()) {
+          for (int t = 0; t < tileSegement.size(); t++) {
+            Tile tile = tileSegement.get(t);
 
-            if (start.getX() == end.getX()) {
-              for (int t = 0; t < tileSegement.size(); t ++) {
-                Tile tile = tileSegement.get(t);
-
-                int direction = 1;
-                if (start.getY() > end.getY()) {
-                  direction = -1;
-                }
-
-                this.levelGrid[start.getX()][start.getY() + ((t + 1) * direction)] = tile.toString();
-              }
-            } else if (start.getY() == end.getY()) {
-              for (int t = 0; t < tileSegement.size(); t ++) {
-                Tile tile = tileSegement.get(i);
-
-                int direction = 1;
-                if (start.getX() > end.getX()) {
-                  direction = -1;
-                }
-
-                this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
-              }
+            int direction = 1;
+            if (start.getY() > end.getY()) {
+              direction = -1;
             }
+
+            this.levelGrid[start.getX()][start.getY() + ((t + 1) * direction)] = tile.toString();
           }
+        } else if (start.getY() == end.getY()) {
+          for (int t = 0; t < tileSegement.size(); t++) {
+            Tile tile = tileSegement.get(i);
+
+            int direction = 1;
+            if (start.getX() > end.getX()) {
+              direction = -1;
+            }
+
+            this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
+          }
+        }
+      }
     }
   }
 
@@ -128,8 +128,8 @@ public class Level {
   public String createLevelString() {
     this.initLevelGrid();
     String levelAcc = "";
-    for (int i = 0; i < levelX; i ++) {
-      for (int j = 0; j < levelY; j ++) {
+    for (int i = 0; i < levelX; i++) {
+      for (int j = 0; j < levelY; j++) {
         levelAcc += this.levelGrid[i][j];
       }
       if (i != this.levelGrid.length - 1) {

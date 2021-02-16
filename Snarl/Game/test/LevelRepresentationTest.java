@@ -148,7 +148,7 @@ public class LevelRepresentationTest {
     ArrayList<Tile> room1Row3 = new ArrayList<>();
     Door room1Door = new Door();
     Tile room1DoorTile = new Tile();
-    room1Door.setTileCoord(new Posn(3,3));
+    room1Door.setTileCoord(new Posn(2,2));
     room1DoorTile.setDoor(room1Door);
 
     List<Door> room1DoorPos = new ArrayList<>();
@@ -184,8 +184,8 @@ public class LevelRepresentationTest {
     Door room2Door1 = new Door();
     Door room2Door2 = new Door();
 
-    room2Door1.setTileCoord(new Posn(7,3));
-    room2Door2.setTileCoord(new Posn(9,3));
+    room2Door1.setTileCoord(new Posn(2,6));
+    room2Door2.setTileCoord(new Posn(2,9));
 
     Tile room2DoorTile1 = new Tile();
     Tile room2DoorTile2 = new Tile();
@@ -226,8 +226,8 @@ public class LevelRepresentationTest {
 
     Door room3d1 = new Door();
     Door room3d2 = new Door();
-    room3d1.setTileCoord(new Posn(3, 6));
-    room3d2.setTileCoord(new Posn(3, 9));
+    room3d1.setTileCoord(new Posn(6, 3));
+    room3d2.setTileCoord(new Posn(9, 3));
 
     room3DoorTile1.setDoor(room3d1);
     room3DoorTile2.setDoor(room3d2);
@@ -279,7 +279,7 @@ public class LevelRepresentationTest {
     List<ArrayList<Tile>> room4TileGrid = new ArrayList<>();
     Door room4d1 = new Door();
     Door room4d2 = new Door();
-    room4d1.setTileCoord(new Posn(7, 13));
+    room4d1.setTileCoord(new Posn(13, 7));
     room4d2.setTileCoord(new Posn(9, 14));
 
     Tile room4DoorTile1 = new Tile();
@@ -311,16 +311,105 @@ public class LevelRepresentationTest {
     room4.setDoorPositions(room4doorPos);
     room4.setUpperLeft(new Posn(13, 7));
     room4.setTileGrid(room4TileGrid);
-    room4.setxDim(3);
+    room4.setxDim(2);
     room4.setyDim(3);
-    
+
 
     rooms.add(room1);
     rooms.add(room2);
     rooms.add(room3);
     rooms.add(room4);
 
+
+    Hallway hallway1 = new Hallway();
+    List<Door> hallway1Doors = new ArrayList<>();
+    hallway1Doors.add(room1Door);
+    hallway1Doors.add(room2Door1);
+    hallway1.setDoors(hallway1Doors);
+
+    List<ArrayList<Tile>> hallway1TileSegments = new ArrayList<>();
+    ArrayList<Tile> hallway1Segment = new ArrayList<>();
+    hallway1Segment.add(new Tile(false));
+    hallway1Segment.add(new Tile(false));
+    hallway1Segment.add(new Tile(false));
+    hallway1Segment.add(new Tile(false));
+    hallway1TileSegments.add(hallway1Segment);
+
+    hallway1.setTileSegments(hallway1TileSegments);
+
+    Hallway hallway2 = new Hallway();
+    List<Door> hallway2Doors = new ArrayList<>();
+    hallway2Doors.add(room2Door2);
+    hallway2Doors.add(room3d1);
+    hallway2.setDoors(hallway2Doors);
+
+    List<Posn> hallway2Waypoints = new ArrayList<>();
+    Posn hallway2Waypoint = new Posn(6,9);
+    hallway2Waypoints.add(hallway2Waypoint);
+
+    List<ArrayList<Tile>> hallway2TileSegments = new ArrayList<>();
+    ArrayList<Tile> hallway2Segment1 = new ArrayList<>();
+    ArrayList<Tile> hallway2Segment2 = new ArrayList<>();
+
+    hallway2Segment1.add(new Tile(false));
+    hallway2Segment1.add(new Tile(false));
+    hallway2Segment1.add(new Tile(false));
+    hallway2TileSegments.add(hallway2Segment1);
+
+    hallway2Segment2.add(new Tile(false));
+    hallway2Segment2.add(new Tile(false));
+    hallway2Segment2.add(new Tile(false));
+    hallway2Segment2.add(new Tile(false));
+    hallway2Segment2.add(new Tile(false));
+    hallway2TileSegments.add(hallway2Segment2);
+
+
+    hallway1.setTileSegments(hallway1TileSegments);
+    hallway2.setTileSegments(hallway2TileSegments);
+    hallway2.setWaypoints(hallway2Waypoints);
+
+    Hallway hallway3 = new Hallway();
+    List<Posn> waypoints3 = new ArrayList<>();
+    waypoints3.add(new Posn(13, 3));
+    hallway3.setWaypoints(waypoints3);
+
+    List<ArrayList<Tile>> h3Segments = new ArrayList<>();
+    ArrayList<Tile> h3Segment1 = new ArrayList<>();
+    ArrayList<Tile> h3Segment2 = new ArrayList<>();
+
+    h3Segment1.add(new Tile(false));
+    h3Segment1.add(new Tile(false));
+    h3Segment1.add(new Tile(false));
+
+    h3Segment2.add(new Tile(false));
+    h3Segment2.add(new Tile(false));
+    h3Segment2.add(new Tile(false));
+
+
+    h3Segments.add(h3Segment1);
+    h3Segments.add(h3Segment2);
+
+    List<Door> doors3 = new ArrayList<>();
+    doors3.add(room3d2);
+    doors3.add(room4d1);
+
+    hallway3.setDoors(doors3);
+    hallway3.setTileSegments(h3Segments);
+
+    hallways.add(hallway3);
+
+
+
+
+    hallways.add(hallway1);
+    hallways.add(hallway2);
+
     complicatedLevel.setRooms(rooms);
+    complicatedLevel.setHallways(hallways);
+
+
+
+
 
     assertEquals(
             "...    ...\n" +
@@ -330,7 +419,7 @@ public class LevelRepresentationTest {
                     "         .\n" +
                     "         .\n" +
                     "...|.....+\n" +
-                    "XXX.       \n" +
+                    "XX.X      \n" +
                     "....      \n" +
                     "...|      \n" +
                     "   .      \n" +
@@ -338,8 +427,6 @@ public class LevelRepresentationTest {
                     "   .      \n" +
                     "   +...|..\n" +
                     "       ..|", complicatedLevel.createLevelString());
-
-
   }
 
 
