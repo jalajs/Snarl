@@ -5,11 +5,16 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * Contains all tests for level representation
+ */
 public class LevelRepresentationTest {
   private TestUtils testUtils = new TestUtils();
 
   @Test
-  // this test verifies the representation of a variety of rooms
+  /*
+   * this test verifies the representation of a variety of rooms
+   */
   public void testRoomToString() {
     Room simpleRoom = testUtils.createSimpleRoom();
     assertEquals(simpleRoom.toString(), "..\n..");
@@ -25,7 +30,9 @@ public class LevelRepresentationTest {
   }
 
   @Test
-  // this test verifies the representation of an empty level
+  /*
+   * this test verifies the representation of an empty level
+   */
   public void testEmptyLevel() {
     Level level = new Level();
     assertEquals(
@@ -43,7 +50,9 @@ public class LevelRepresentationTest {
   }
 
   @Test
-  // this test adds rooms to a level and verifies the representation is correct
+  /*
+   * this test adds rooms to a level and verifies the representation is correct
+   */
   public void testLevelWithManyRooms() {
     Level complicatedLevel = new Level();
     Room simpleRoom = testUtils.createSimpleRoom();
@@ -78,7 +87,9 @@ public class LevelRepresentationTest {
   }
 
   @Test
-  // adds rooms and hallways to level and verifies representation
+  /*
+   * adds rooms and hallways to level and verifies representation
+   */
   public void testLevelWithHallwaysAndRooms() {
     Room complicatedRoom = testUtils.createComplicatedRoom();
     Room roomWithDoor = testUtils.createSimpleRoomWithDoor();
@@ -119,6 +130,9 @@ public class LevelRepresentationTest {
   }
 
   @Test
+  /*
+   * tests the representation of a complicated level with given dimensions and many rooms and hallways
+   */
   public void testComplicatedLevel() {
     Level complicatedLevel = new Level(15, 10);
     assertEquals(

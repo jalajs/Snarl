@@ -1,8 +1,14 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * Contains utils methods for creating data so that the tests are more readable
+ */
 public class TestUtils {
 
+  /*
+   * Create a simple 2x2 room with no walls
+   */
   public Room createSimpleRoom() {
     Room simpleRoom = new Room();
     List<ArrayList<Tile>> simpleTileGrid = new ArrayList<>();
@@ -19,6 +25,9 @@ public class TestUtils {
     return simpleRoom;
   }
 
+  /*
+   * Create a 3x3 room with wals
+   */
   public Room createWalledRoom() {
     Room walledRoom = new Room();
     List<ArrayList<Tile>> walledTileGrid = new ArrayList<>();
@@ -33,6 +42,9 @@ public class TestUtils {
     return walledRoom;
   }
 
+  /*
+   * Create a simple room with a door
+   */
   public Room createSimpleRoomWithDoor() {
     Room roomWithDoor = new Room();
     roomWithDoor.setUpperLeft(new Posn(0, 0));
@@ -66,6 +78,9 @@ public class TestUtils {
     return roomWithDoor;
   }
 
+  /*
+   * Create a complicated room with different kinds of tiles
+   */
   public Room createComplicatedRoom() {
     Room complicatedRoom = new Room();
     ExitKey key = new ExitKey();
@@ -115,6 +130,9 @@ public class TestUtils {
     return complicatedRoom;
   }
 
+  /*
+   * Create a hallway that connects two rooms with one waypoint
+   */
   public Hallway createHallway() {
     Room roomWithDoor = createSimpleRoomWithDoor();
     Room complicatedRoom = createComplicatedRoom();
@@ -159,6 +177,9 @@ public class TestUtils {
     return hallway;
   }
 
+  /*
+   * Create a complicated level with many rooms and hallways
+   */
   public Level createComplicatedLevel() {
     Level complicatedLevel = new Level(15, 10);
     List<Room> rooms = new ArrayList<>();
