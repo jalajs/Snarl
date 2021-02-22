@@ -9,7 +9,7 @@ import java.util.List;
  * Contains all tests for level representation
  */
 public class LevelRepresentationTest {
-  private TestUtils testUtils = new TestUtils();
+  private final TestUtils testUtils = new TestUtils();
 
   @Test
   /**
@@ -153,7 +153,8 @@ public class LevelRepresentationTest {
                     "          ", complicatedLevel.createLevelString());
 
     complicatedLevel = testUtils.createComplicatedLevel();
-
+    String complicatedLevelString = complicatedLevel.createLevelString();
+    System.out.print(complicatedLevelString);
     assertEquals(
             "...    ...\n" +
                     "..X    ...\n" +
@@ -169,6 +170,7 @@ public class LevelRepresentationTest {
                     "   .      \n" +
                     "   .      \n" +
                     "   +...|..\n" +
-                    "       ..|", complicatedLevel.createLevelString());
+                    "       ..|", complicatedLevelString);
+
   }
 }

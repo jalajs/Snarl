@@ -68,6 +68,23 @@ public class Level {
   }
 
   /**
+   * Creates the ASCII string representation of a Level and all its data
+   */
+  public String createLevelString() {
+    this.initLevelGrid();
+    String levelAcc = "";
+    for (int i = 0; i < levelX; i++) {
+      for (int j = 0; j < levelY; j++) {
+        levelAcc += this.levelGrid[i][j];
+      }
+      if (i != this.levelGrid.length - 1) {
+        levelAcc += "\n";
+      }
+    }
+    return levelAcc;
+  }
+
+  /**
    * populate our level grid with rooms (and hallways)
    */
   private void initLevelGrid() {
@@ -76,21 +93,37 @@ public class Level {
   }
 
   /**
+   * populates the levelGrid with rooms using the List<Room> field
+   */
+  private void addRooms() {
+    for (int i = 0; i < this.rooms.size(); i++) {
+      Room room = this.rooms.get(i);
+      List<ArrayList<String>> roomGrid = room.renderRoom();
+      Posn upperLeft = room.getUpperLeft();
+      for (int x = 0; x < room.getxDim(); x++) {
+        for (int y = 0; y < room.getyDim(); y++) {
+          this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid.get(x).get(y);
+        }
+      }
+    }
+  }
+
+  /**
    * populates the levelGrid with hallways using the List<Hallway> in this level
    */
   private void addHallways() {
     for (Hallway hallway : this.hallways) {
       List<Posn> waypoints = hallway.getWaypoints();
-      List<ArrayList<Tile>> segments = hallway.getTileSegments();
+      List<ArrayList<Tile>> segments = hallway.getTileSegments();  // list of segments
       List<Door> doors = hallway.getDoors();
       // populate waypoints
-      addWayPoints(waypoints);
+      this.addWayPoints(waypoints);
+
       // add door to list of waypoints
-      List<Posn> allPoints = waypoints;
-      allPoints.add(0, doors.get(0).getTileCoord());
-      allPoints.add(doors.get(1).getTileCoord());
+      waypoints.add(0, doors.get(0).getTileCoord());
+      waypoints.add(doors.get(1).getTileCoord());
       // add tiles between waypoints
-      addSegements(segments, allPoints);
+      addSegements(segments, waypoints);
 
     }
   }
@@ -115,19 +148,20 @@ public class Level {
       ArrayList<Tile> tileSegement = segments.get(i);
       Posn start = allPoints.get(i);
       Posn end = allPoints.get(i + 1);
+
       // check if the tiles should be laid horizontally or vertically
       if (start.getX() == end.getX()) {
+        // check if tiles should be laid up or down
+        int direction = calcDirection(start.getY(), end.getY());
         for (int t = 0; t < tileSegement.size(); t++) {
           Tile tile = tileSegement.get(t);
-          // check if tiles should be laid up or down
-          int direction = calcDirection(start.getY(), end.getY());
           this.levelGrid[start.getX()][start.getY() + ((t + 1) * direction)] = tile.toString();
         }
       } else if (start.getY() == end.getY()) {
+        // check if tiles should be laid right or left
+        int direction = calcDirection(start.getX(), end.getX());
         for (int t = 0; t < tileSegement.size(); t++) {
           Tile tile = tileSegement.get(i);
-          // check if tiles should be laid right or left
-          int direction = calcDirection(start.getX(), end.getX());
           this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
         }
       }
@@ -143,38 +177,7 @@ public class Level {
     return start > end ? -1 : 1;
   }
 
-  /**
-   * populates the levelGrid with rooms using the List<Rooms> field
-   */
-  private void addRooms() {
-    for (int i = 0; i < this.rooms.size(); i++) {
-      Room room = this.rooms.get(i);
-      List<ArrayList<String>> roomGrid = room.renderRoom();
-      Posn upperLeft = room.getUpperLeft();
-      for (int x = 0; x < room.getxDim(); x++) {
-        for (int y = 0; y < room.getyDim(); y++) {
-          this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid.get(x).get(y);
-        }
-      }
-    }
-  }
 
-  /**
-   * Creates the ASCII string representation of a Level and all its data
-   */
-  public String createLevelString() {
-    this.initLevelGrid();
-    String levelAcc = "";
-    for (int i = 0; i < levelX; i++) {
-      for (int j = 0; j < levelY; j++) {
-        levelAcc += this.levelGrid[i][j];
-      }
-      if (i != this.levelGrid.length - 1) {
-        levelAcc += "\n";
-      }
-    }
-    return levelAcc;
-  }
 
   public List<Room> getRooms() {
     return rooms;
