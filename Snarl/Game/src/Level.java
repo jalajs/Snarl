@@ -28,6 +28,7 @@ public class Level {
   private int levelX;
   private int levelY;
   private String[][] levelGrid;
+  private Tile[][] tileGrid;
 
   /**
   * this basic no input constructor creates an empty 10x10 level (mostly used for testing)
@@ -39,6 +40,7 @@ public class Level {
     this.levelY = 10;
     this.levelGrid = new String[levelX][levelY];
     this.initGridSpace();
+    this.tileGrid = new Tile[levelX][levelY];
   }
 
   /**
@@ -53,8 +55,50 @@ public class Level {
     this.levelY = levelY;
     this.levelGrid = new String[this.levelX][this.levelY];
     this.initGridSpace();
+    this.tileGrid = new Tile[this.levelX][this.levelY];
   }
 
+  private void initTileGrid() {
+    this.addRoomTiles();
+    this.addHallwaysTiles();
+    
+  }
+
+  /**
+   * TO DO: change this from string to tiles
+   */
+  private void addHallwaysTiles() {
+    for (Hallway hallway : this.hallways) {
+      List<Posn> waypoints = hallway.getWaypoints();
+      List<ArrayList<Tile>> segments = hallway.getTileSegments();  // list of segments
+      List<Door> doors = hallway.getDoors();
+      // populate waypoints
+      this.addWayPoints(waypoints);
+
+      // add door to list of waypoints
+      waypoints.add(0, doors.get(0).getTileCoord());
+      waypoints.add(doors.get(1).getTileCoord());
+      // add tiles between waypoints
+      addSegements(segments, waypoints);
+
+    }
+  }
+
+  /**
+   * TO DO: change this from String to Tiles
+   */
+  private void addRoomTiles() {
+    for (int i = 0; i < this.rooms.size(); i++) {
+      Room room = this.rooms.get(i);
+      List<ArrayList<String>> roomGrid = room.renderRoom();
+      Posn upperLeft = room.getUpperLeft();
+      for (int x = 0; x < room.getxDim(); x++) {
+        for (int y = 0; y < room.getyDim(); y++) {
+          this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid.get(x).get(y);
+        }
+      }
+    }
+  }
 
   /**
    * populates the entire grid of the level with an initial value of "  "
