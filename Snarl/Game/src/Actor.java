@@ -6,7 +6,7 @@ import java.util.List;
  * can see.
  */
 public abstract class Actor {
-  Posn position;
+  private Posn position;
 
   public Posn getPosition() {
     return position;

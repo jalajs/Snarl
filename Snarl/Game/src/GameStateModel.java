@@ -6,30 +6,40 @@ import java.util.Map;
 public class GameStateModel implements GameState {
   private Level level;
   private boolean isExitable;
-  private Map<Actor, Posn> actorPositions;
-  private Map<Collectable, Posn> objectPositions;
+  private List<Actor> actors;
+  private List<Collectable> collectables;
   private List<Player> exitedPlayers;
 
   public GameStateModel(Level level) {
     this.level = level;
-    this.isExitable = false; // actually do something
-    this.actorPositions = new HashMap<>();
-    this.objectPositions = new HashMap<>();
+    this.isExitable = false;
+    this.actors = new ArrayList<>();
+    this.collectables = new ArrayList<>();
     this.exitedPlayers = new ArrayList<>();
   }
 
   /**
-   * Creates the initial game state.
-   * @param numPlayers Number of player to spawn in the initial game state.
-   * @param numAdversaries number of adversaries to spawn in the initial game state
+   * Creates the initial game state by placing the given actors in the game. Players
+   * are placed in the first room, and adversaries are placed in the last room. The key is
+   * placed on the given position
+   *
+   * @param players are the list of players in the game
+   * @param adversaries are the adversaries in the game
+   * @param keyPosn is the position to place the key
    */
-  public void initGameState(int numPlayers, int numAdversaries, Posn keyPosn) {
-    // place the player in the top-left most room in level
-    // place the adversaries in the bottom right-most room
-    this.actorPositions = this.level.spawnActors(numPlayers, numAdversaries);
+  public void initGameState(List<Actor> players, List<Actor> adversaries, Posn keyPosn) {
+    this.level.initGrid();
+    // place the player in the top-left most room and the adversaries in the bottom right-most room
+    this.level.spawnActors(players, adversaries);
     // place the key somewhere in the level
-    // todo: this will need to be expanded to involve all objects for future milestone
-    this.objectPositions = this.level.dropKey(keyPosn);
+    this.level.dropKey(keyPosn);
+    // set the this.actors to the list of players and adversaries
+    for(Actor player: players) {
+      this.actors.add(player);
+    }
+    for(Actor adversary: adversaries) {
+      this.actors.add(adversary);
+    }
   }
 
   /**
@@ -43,19 +53,23 @@ public class GameStateModel implements GameState {
                                     boolean givenIsExitable) {
     // place all the players and adversaries in the actor map
     for (Posn posn : playerLocations){
-      this.actorPositions.put(new Player(), posn);
+      Player newPlayer = new Player();
+      newPlayer.setPosition(posn);
+      this.actors.add(newPlayer);
     }
     for (Posn posn : adversaryLocations) {
-      this.actorPositions.put(new Adversary(), posn);
+      Adversary newAdversary = new Adversary();
+      newAdversary.setPosition(posn);
+      this.actors.add(newAdversary);
     }
     // set isExitable to the given
     this.isExitable = givenIsExitable;
     // use the actorPositions to populate the level
-    this.level.placeActorsInGivenLocations(this.actorPositions);
+    this.level.placeActorsInLevel(this.actors);
   }
 
   /**
-   * Modifies the game state after a player/adversary collectsexit key
+   * Modifies the game state after a player/adversary collects exit key
    */
   public void handleKeyCollection() {
       this.isExitable = true;
@@ -134,20 +148,20 @@ public class GameStateModel implements GameState {
     isExitable = exitable;
   }
 
-  public Map<Actor, Posn> getActorPositions() {
-    return actorPositions;
+  public List<Actor> getActors() {
+    return actors;
   }
 
-  public void setActorPositions(Map<Actor, Posn> actorPositions) {
-    this.actorPositions = actorPositions;
+  public void setActors(List<Actor> actor) {
+    this.actors = actors;
   }
 
-  public Map<Collectable, Posn> getObjectPositions() {
-    return objectPositions;
+  public List<Collectable> getCollectables() {
+    return collectables;
   }
 
-  public void setObjectPositions(Map<Collectable, Posn> objectPositions) {
-    this.objectPositions = objectPositions;
+  public void setCollectables(List<Collectable> collectables) {
+    this.collectables = collectables;
   }
 
   public List<Player> getExitedPlayers() {

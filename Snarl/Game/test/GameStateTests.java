@@ -1,6 +1,9 @@
 import org.junit.Test;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -10,20 +13,29 @@ public class GameStateTests {
 
     @Test
     public void testInitGameState() {
-        GameStateModel simpleGameState = new GameStateModel(testUtils.createComplicatedLevel());
-        Level initLevel = simpleGameState.getLevel();
+        Level initLevel = testUtils.createComplicatedLevel();
+        GameStateModel simpleGameState = new GameStateModel(initLevel);
 
-        assertEquals(simpleGameState.getActorPositions(), new HashMap<Actor, Posn>());
-        assertEquals(simpleGameState.getObjectPositions(), new HashMap<Collectable, Posn>());
-        assertFalse(initLevel.createLevelString().contains("K"));
+        List<Actor> players = new ArrayList<>();
+        List<Actor> adversaries = new ArrayList<>();
 
-        simpleGameState.initGameState(2, 2, new Posn(0, 9));
+        Player player1 = new Player();
+        Player player2 = new Player();
+        Adversary adversary1 = new Adversary();
+        Adversary adversary2 = new Adversary();
 
+        assertEquals(simpleGameState.getActors(), new ArrayList<>());
+        assertEquals(simpleGameState.getCollectables(), new ArrayList<>());
 
-        Level mutatedLevel = simpleGameState.getLevel();
-        assertEquals(simpleGameState.getActorPositions().size(), 4);
-        assertEquals(initLevel.createLevelString(), "OO.    ...\n" +
-                "..X    ..K\n" +
+        players.add(player1);
+        players.add(player2);
+        adversaries.add(adversary1);
+        adversaries.add(adversary2);
+
+        simpleGameState.initGameState(players, adversaries, new Posn(0, 9));
+
+        assertEquals(simpleGameState.getLevel().createLevelString(), "OO.    ..K\n" +
+                "..X    ...\n" +
                 "..|....|.|\n" +
                 "         .\n" +
                 "         .\n" +
@@ -38,5 +50,160 @@ public class GameStateTests {
                 "   +...|##\n" +
                 "       ..|");
     }
+
+    // copy paste my tests for intermediate
+
+    /**
+     * This method tests that when handleKeyCollection is called, the key is removed
+     * from the gameState's level and isExitable is set to true/
+     */
+    @Test
+    public void testHandleKeyCollection() {
+        Level initLevel = testUtils.createComplicatedLevel();
+        GameStateModel simpleGameState = new GameStateModel(initLevel);
+
+        assertFalse(simpleGameState.isExitable());
+        assertFalse(initLevel.createLevelString().contains("K"));
+
+        simpleGameState.initGameState(new ArrayList<>(), new ArrayList<>(), new Posn(0,0));
+
+        assertFalse(simpleGameState.isExitable());
+        assertTrue(initLevel.createLevelString().contains("K"));
+
+        simpleGameState.handleKeyCollection();
+
+        assertTrue(simpleGameState.isExitable());
+        assertFalse(initLevel.createLevelString().contains("K"));
+    }
+
+
+    @Test
+    public void testIntermediateGameState() {
+        GameStateModel simpleGameState = new GameStateModel(testUtils.createComplicatedLevel());
+        Level initLevel = simpleGameState.getLevel();
+
+        assertEquals(simpleGameState.getActors(), new ArrayList<>());
+        assertEquals(simpleGameState.getCollectables(), new ArrayList<>());
+
+        Player player1 = new Player();
+        Player player2 = new Player();
+
+        Adversary adversary1 = new Adversary();
+        Adversary adversary2 = new Adversary();
+
+        List<Actor> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+
+        List<Actor> adversaries = new ArrayList<>();
+        adversaries.add(adversary1);
+        adversaries.add(adversary2);
+        simpleGameState.initGameState(players, adversaries, new Posn(0, 9));
+
+        Level mutatedLevel = simpleGameState.getLevel();
+        assertEquals(simpleGameState.getActors().size(), 4);
+
+        Posn newPosition = new Posn(1, 1);
+        Posn newPosition2 = new Posn(2, 2);
+        List<Posn> newPlayerPositions = new ArrayList<>();
+        newPlayerPositions.add(newPosition);
+        newPlayerPositions.add(newPosition2);
+
+        Posn newPosition3 = new Posn(7, 6);
+        Posn newPosition4 = new Posn(8, 8);
+        List<Posn> newAdversaryPositions = new ArrayList<>();
+        newAdversaryPositions.add(newPosition3);
+        newAdversaryPositions.add(newPosition4);
+
+        simpleGameState.intermediateGameState(newPlayerPositions, newAdversaryPositions, false);
+
+    }
+
+    @Test
+    public void testIntermediateGameStateExitable() {
+        GameStateModel simpleGameState = new GameStateModel(testUtils.createComplicatedLevel());
+        Level initLevel = simpleGameState.getLevel();
+
+        Player player1 = new Player();
+        Player player2 = new Player();
+
+        player1.setPosition(new Posn(1, 1));
+        player2.setPosition(new Posn(2, 2));
+
+        Adversary adversary1 = new Adversary();
+        Adversary adversary2 = new Adversary();
+
+        List<Actor> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+
+        List<Actor> adversaries = new ArrayList<>();
+        adversaries.add(adversary1);
+        adversaries.add(adversary2);
+
+        simpleGameState.initGameState(players, adversaries, new Posn(0, 0));
+
+        assertFalse(simpleGameState.isExitable());
+
+        Posn newPosition3 = new Posn(7, 6);
+        Posn newPosition4 = new Posn(8, 8);
+        List<Posn> newAdversaryPositions = new ArrayList<>();
+        newAdversaryPositions.add(newPosition3);
+        newAdversaryPositions.add(newPosition4);
+
+        Posn newPosition = new Posn(1, 1);
+        Posn newPosition2 = new Posn(2, 2);
+        List<Posn> newPlayerPositions = new ArrayList<>();
+        newPlayerPositions.add(newPosition);
+        newPlayerPositions.add(newPosition2);
+
+
+        simpleGameState.intermediateGameState(newPlayerPositions, newAdversaryPositions, true);
+
+        assertTrue(simpleGameState.isExitable());
+    }
+
+
+    @Test
+    public void testHandlePlayerExpulsion() {
+        Level initLevel = testUtils.createComplicatedLevel();
+        initLevel.initGrid();
+        GameStateModel simpleGameState = new GameStateModel(initLevel);
+
+        Player player1 = new Player();
+        player1.setPosition(new Posn(0, 0));
+        Actor player2 = new Player();
+
+        List<Actor> actors = new ArrayList<>();
+        actors.add(player1);
+        actors.add(player2);
+
+        simpleGameState.setActors(actors);
+
+        assertEquals(new ArrayList<>(), simpleGameState.getExitedPlayers());
+        simpleGameState.handlePlayerExpulsion(player1);
+
+        List<Player> expelledPlayers = new ArrayList<>();
+        expelledPlayers.add(player1);
+        assertEquals(expelledPlayers, simpleGameState.getExitedPlayers());
+    }
+
+    @Test
+    public void testHandleMovePlayer() {
+        Level initLevel = testUtils.createComplicatedLevel();
+        GameStateModel simpleGameState = new GameStateModel(initLevel);
+
+        Player player1 = new Player();
+        player1.setPosition(new Posn(0, 0));
+
+        assertEquals(0, player1.getPosition().getX());
+        assertEquals(0, player1.getPosition().getY());
+
+        simpleGameState.handleMovePlayer(player1, new Posn(1, 0));
+
+        assertEquals(1, player1.getPosition().getX());
+        assertEquals(0, player1.getPosition().getY());
+    }
+
 
 }

@@ -35,6 +35,7 @@ public class LevelRepresentationTest {
    */
   public void testEmptyLevel() {
     Level level = new Level();
+    level.initGrid();
     assertEquals(
             "          \n" +
                     "          \n" +
@@ -59,6 +60,7 @@ public class LevelRepresentationTest {
     ArrayList<Room> rooms = new ArrayList<Room>();
     rooms.add(simpleRoom);
     complicatedLevel.setRooms(rooms);
+    complicatedLevel.initGrid();
     assertEquals(
             "..        \n" +
                     "..        \n" +
@@ -74,6 +76,7 @@ public class LevelRepresentationTest {
     Room complicatedRoom = testUtils.createComplicatedRoom();
     rooms.add(complicatedRoom);
     complicatedLevel.setRooms(rooms);
+    complicatedLevel.initGrid();
     assertEquals("..        \n" +
             "..        \n" +
             "          \n" +
@@ -101,6 +104,7 @@ public class LevelRepresentationTest {
     Level level = new Level();
     level.setRooms(roomsWithDoors);
 
+    level.initGrid();
     assertEquals("..        \n" +
             ".|        \n" +
             "          \n" +
@@ -117,6 +121,7 @@ public class LevelRepresentationTest {
     hallways.add(hallway);
     level.setHallways(hallways);
 
+    level.initGrid();
     assertEquals("..        \n" +
             ".|.+      \n" +
             "   .      \n" +
@@ -135,6 +140,7 @@ public class LevelRepresentationTest {
    */
   public void testComplicatedLevel() {
     Level complicatedLevel = new Level(15, 10);
+    complicatedLevel.initGrid();
     assertEquals(
             "          \n" +
                     "          \n" +
@@ -153,6 +159,7 @@ public class LevelRepresentationTest {
                     "          ", complicatedLevel.createLevelString());
 
     complicatedLevel = testUtils.createComplicatedLevel();
+    complicatedLevel.initGrid();
     String complicatedLevelString = complicatedLevel.createLevelString();
     System.out.print(complicatedLevelString);
     assertEquals(

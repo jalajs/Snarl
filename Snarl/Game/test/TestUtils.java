@@ -83,14 +83,13 @@ public class TestUtils {
    */
   public Room createComplicatedRoom() {
     Room complicatedRoom = new Room();
-    ExitKey key = new ExitKey();
+    ExitKey key = new ExitKey(new Posn(-1, -1));
     Door door = new Door();
 
     List<Door> doorPos = new ArrayList<>();
 
     door.setTileCoord(new Posn(7, 6));
     doorPos.add(door);
-
 
     Actor player = new Player();
     Tile keyTile = new Tile(false);
