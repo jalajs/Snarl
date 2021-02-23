@@ -76,22 +76,23 @@ public class Level {
         Posn exitKeyPosition = new Posn(xValue, yValue);
         ExitKey exitKey = new ExitKey(exitKeyPosition);
         Posn targetPosition = exitKeyPosition;
-        tileGrid[xValue][yValue].setCollectable(key);
-        levelGrid[levelX][levelY] = key.toString();
-        objectMap.put(key, targetPosition);
+        tileGrid[xValue][yValue].setCollectable(exitKey);
+        levelGrid[levelX][levelY] = exitKey.toString();
+        objectMap.put(exitKey, targetPosition);
         return objectMap;
     }
 
 
     /**
      * This method generates the position for a random unoccupied tile
+     *
      * @return Posn of random unoccupied tile
      */
     private Posn generateRandomUnoccupiedTile() {
         Posn posn = new Posn(-1, -1);
         Random random = new Random();
         int counter = 0;
-        while(counter < levelX*levelY) {
+        while (counter < levelX * levelY) {
             int randomX = random.nextInt(levelX);
             int randomY = random.nextInt(levelY);
             String tileString = levelGrid[randomX][randomY];
@@ -165,10 +166,11 @@ public class Level {
 
     /**
      * Place the actors on their mapped locations
+     *
      * @param actorPosnMap map of actors and their positions
      */
     public void placeActorsInGivenLocations(Map<Actor, Posn> actorPosnMap) {
-        for (Map.Entry actorPosnPair: actorPosnMap.entrySet()) {
+        for (Map.Entry actorPosnPair : actorPosnMap.entrySet()) {
             Actor actor = (Actor) actorPosnPair.getKey();
             Posn posn = (Posn) actorPosnPair.getValue();
             tileGrid[posn.getX()][posn.getY()].setOccupier(actor);
@@ -178,7 +180,7 @@ public class Level {
     }
 
     /**
-     * removes the key from this level
+     * Removes the key from this level
      */
     public void removeKey() {
         Posn exitKeyPos = this.exitKeyPosition;
@@ -188,17 +190,20 @@ public class Level {
 
     /**
      * Expels the given player from the level
+     *
      * @param expelledPlayer the player to be expelled
      */
     public void expelPlayer(Player expelledPlayer) {
-           Posn expelPosition = expelledPlayer.getPosition();
-
+        Posn expelPosition = expelledPlayer.getPosition();
+        this.tileGrid[expelPosition.getX()][expelPosition.getY()].setCollectable(null);
+        this.levelGrid[expelPosition.getX()][expelPosition.getY()] = ".";
     }
 
     /**
      * This method updates the level object to reflect a players move. This method assumes the move
      * has already been deemed valid by the Rule Component.
-     * @param p is the player that has moved
+     *
+     * @param p           is the player that has moved
      * @param newPosition is the new position of the move
      */
     public void handlePlayerMove(Player p, Posn newPosition) {
