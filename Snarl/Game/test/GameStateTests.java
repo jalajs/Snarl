@@ -51,7 +51,6 @@ public class GameStateTests {
                 "       ..|");
     }
 
-    // copy paste my tests for intermediate
 
     /**
      * This method tests that when handleKeyCollection is called, the key is removed
@@ -80,7 +79,6 @@ public class GameStateTests {
     @Test
     public void testIntermediateGameState() {
         GameStateModel simpleGameState = new GameStateModel(testUtils.createComplicatedLevel());
-        Level initLevel = simpleGameState.getLevel();
 
         assertEquals(simpleGameState.getActors(), new ArrayList<>());
         assertEquals(simpleGameState.getCollectables(), new ArrayList<>());
@@ -100,7 +98,6 @@ public class GameStateTests {
         adversaries.add(adversary2);
         simpleGameState.initGameState(players, adversaries, new Posn(0, 9));
 
-        Level mutatedLevel = simpleGameState.getLevel();
         assertEquals(simpleGameState.getActors().size(), 4);
 
         Posn newPosition = new Posn(1, 1);
@@ -116,13 +113,11 @@ public class GameStateTests {
         newAdversaryPositions.add(newPosition4);
 
         simpleGameState.intermediateGameState(newPlayerPositions, newAdversaryPositions, false);
-
     }
 
     @Test
     public void testIntermediateGameStateExitable() {
         GameStateModel simpleGameState = new GameStateModel(testUtils.createComplicatedLevel());
-        Level initLevel = simpleGameState.getLevel();
 
         Player player1 = new Player();
         Player player2 = new Player();
@@ -204,6 +199,5 @@ public class GameStateTests {
         assertEquals(1, player1.getPosition().getX());
         assertEquals(0, player1.getPosition().getY());
     }
-
 
 }

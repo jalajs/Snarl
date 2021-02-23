@@ -102,7 +102,8 @@ public class GameStateModel implements GameState {
    * @return String that represents the GameState
    */
   public String renderGameState() {
-    return "";
+    this.level.initGrid();
+    return this.level.createLevelString();
   }
 
 

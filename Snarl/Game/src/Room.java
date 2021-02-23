@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,4 +117,83 @@ public class Room {
     return roomAcc;
   }
 
+  /**
+   * Determines whether or not the given posn is located in this room.
+   * @param posn the given position
+   * @return boolean - whether or not the given posn is in the room
+   *
+   * example room and posn that should return negative
+   *  ---------------------
+   *          +
+   *              xxxxx
+   *              xxxxx
+   *
+   *  ---------------------
+   */
+  public boolean isPosnInRoom(Posn posn) {
+    int givenX = posn.getX();
+    int givenY = posn.getY();
+
+    // create ranges since i an j are coordinates from the entire level/world
+    int xRange = this.upperLeft.getX() + this.xDim;
+    int yRange = this.upperLeft.getY() + this.yDim;
+
+    return givenX < xRange && givenX >= this.upperLeft.getX()
+            && givenY < yRange && givenY >= this.upperLeft.getY()
+            && givenX > -1 && givenY > -1;
+    }
+
+
+  /**
+   * Return the positions of unoccupied tiles acessible via one cardinal move from the given player
+   * position.
+   *            cardinal moves are up, down, right, or left
+   *                            []
+   *                          []P[]
+   *                           []
+   *
+   * @param playerPosn the position of the player relative to the level
+   * @return the list of positions of accessible tiles relative to the level
+   *
+   */
+    public List<Posn> getNextPossibleCardinalMoves(Posn playerPosn) {
+      List<Posn> possiblePosns = new ArrayList<>();
+
+      int xRange = this.upperLeft.getX() + this.xDim;
+      int yRange = this.upperLeft.getY() + this.yDim;
+
+      int playerX  = playerPosn.getX();
+      int playerY = playerPosn.getY();
+
+      // find the north tile
+      if (playerY + 1 < yRange) {
+        Tile north = this.tileGrid.get(playerX).get(playerY + 1);
+        if (!north.getisWall()) {
+          possiblePosns.add(new Posn(playerX,playerY + 1));
+        }
+      }
+      // find the west tile
+      if (playerX - 1 > 0) {
+        Tile west = this.tileGrid.get(playerX - 1).get(playerY);
+        if (!west.getisWall()) {
+          possiblePosns.add(new Posn(playerX - 1,playerY));
+        }
+      }
+      // find the east tile
+      if (playerX + 1 < xRange) {
+        Tile east = this.tileGrid.get(playerX + 1).get(playerY);
+        if (!east.getisWall()) {
+          possiblePosns.add(new Posn(playerX + 1,playerY));
+        }
+      }
+      // find the south tile
+      if (playerY - 1 > 0) {
+        Tile south = this.tileGrid.get(playerX).get(playerY - 1);
+        if (!south.getisWall()) {
+          possiblePosns.add(new Posn(playerX,playerY - 1));
+        }
+      }
+
+      return possiblePosns;
+    }
 }
