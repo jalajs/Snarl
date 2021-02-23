@@ -75,4 +75,9 @@ public class Tile {
     this.collectable = collectable;
 
   }
+
+  public boolean getisWall() { return isWall; }
+
+  public void setisWall(boolean isWall) { this.isWall = isWall;}
+
 }

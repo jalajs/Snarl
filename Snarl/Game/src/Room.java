@@ -15,7 +15,7 @@ public class Room {
 
 
   public Room() {
-    this.tileGrid = new ArrayList<ArrayList<Tile>>();
+    this.tileGrid = new ArrayList<>();
     this.upperLeft = new Posn(0, 0);
     this.xDim = 0;
     this.yDim = 0;
@@ -114,4 +114,5 @@ public class Room {
     }
     return roomAcc;
   }
+
 }

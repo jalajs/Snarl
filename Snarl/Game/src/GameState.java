@@ -13,11 +13,11 @@ public interface GameState {
   /**
    *   Method determines if a player can move to the given location
    *   A move is valid if the tile is unoccupied/un-walled and near enough
-   * @param player
+   * @param actor
    * @param destination
    * @return
    */
-  boolean validMove(Player player, Posn destination);
+  boolean validMove(Actor actor, Posn destination);
 
   /**
    *   Checks if all players are still in the game and that none have exited

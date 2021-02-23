@@ -4,9 +4,9 @@
  */
 public class Player extends Actor {
 
-
   public Player() {
   }
+
 
   /**
    * Renders the visual representation of a Player

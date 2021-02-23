@@ -6,7 +6,15 @@ import java.util.List;
  * can see.
  */
 public abstract class Actor {
+  Posn position;
 
+  public Posn getPosition() {
+    return position;
+  }
+
+  public void setPosition(Posn position) {
+    this.position = position;
+  }
   /**
    * Returns the visual representation of the Actor.
    * @return a string for how an actor is represented.
