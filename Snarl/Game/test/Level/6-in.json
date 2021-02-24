@@ -1,14 +1,14 @@
 [ {
   "type" : "room",
-  "origin" : [3, 4],
+  "origin" : [2, 2],
   "bounds" : {
     "rows" : 2,
-    "columns" : 3
+    "columns" : 2
   },
   "layout" : [
-    [1, 1, 1],
-    [1, 1, 2]
+    [1, 0],
+    [0, 0]
   ]
 },
-  [3, 7]
+  [2, 2]
 ]

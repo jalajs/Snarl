@@ -1,0 +1,14 @@
+[ {
+  "type" : "room",
+  "origin" : [2, 2],
+  "bounds" : {
+    "rows" : 4,
+    "columns" : 2
+  },
+  "layout" : [
+    [1, 0],
+    [0, 0]
+  ]
+},
+  [2, 2]
+]

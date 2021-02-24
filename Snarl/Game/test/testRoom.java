@@ -22,15 +22,13 @@ public class testRoom {
     while (scanner.hasNextLine()) {
       String next = scanner.nextLine();
       tokenerSource += next + ' ';
-
     }
-
     scanner.close();
 
     JSONArray outputArray = new JSONArray();
-    while (scanner.hasNext()) {
-      JSONTokener tokener = new JSONTokener(tokenerSource.trim());
-      JSONArray roomPointJSON = new JSONArray();
+    JSONTokener tokener = new JSONTokener(tokenerSource.trim());
+
+    JSONArray roomPointJSON = new JSONArray();
 
       // parse out commands
       while (tokener.more()) {
@@ -53,23 +51,21 @@ public class testRoom {
           outputArray.put(jsonPosn);
           outputArray.put(" is not in room at ");
           outputArray.put(jsonRoomOrigin);
+        } else {
+          // find traversable points
+          List<Posn> traversablePoints = room.getNextPossibleCardinalMoves(posn);
+          JSONArray jsonTraversablePoints = posnsToJson(traversablePoints);
+
+          outputArray.put("Success: Traversable points from ");
+          outputArray.put(jsonPosn);
+          outputArray.put(" in room at");
+          outputArray.put(jsonRoomOrigin);
+          outputArray.put(" are ");
+          outputArray.put(jsonTraversablePoints);
         }
-
-        // find traversable points
-        List<Posn> traversablePoints = room.getNextPossibleCardinalMoves(posn);
-        JSONArray jsonTraversablePoints = posnsToJson(traversablePoints);
-
-        outputArray.put("Success: Traversable points from ");
-        outputArray.put(jsonPosn);
-        outputArray.put(" in room at");
-        outputArray.put(jsonRoomOrigin);
-        outputArray.put(" are ");
-        outputArray.put(jsonTraversablePoints);
-
       }
 
       System.out.print(outputArray);
-    }
   }
 
   /**

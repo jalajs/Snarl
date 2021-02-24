@@ -2,7 +2,7 @@
   "type" : "room",
   "origin" : [1, 1],
   "bounds" : {
-    "rows" : 3,
+    "rows" : 4,
     "columns" : 5
   },
   "layout" : [

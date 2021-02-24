@@ -166,33 +166,43 @@ public class Room {
       int playerY = playerPosn.getY();
 
       // find the north tile
-      if (playerY + 1 < yRange) {
-        Tile north = this.tileGrid.get(playerX).get(playerY + 1);
+      if ((playerX - 1) - this.upperLeft.getX() >= 0) {
+        int roomX = (playerX - 1) - this.upperLeft.getX();
+        int roomY = playerY - this.upperLeft.getY();
+        Tile north = this.tileGrid.get(roomX).get(roomY);
+        int x = playerX - 1;
         if (!north.getisWall()) {
-          possiblePosns.add(new Posn(playerX,playerY + 1));
-        }
-      }
-      // find the west tile
-      if (playerX - 1 > 0) {
-        Tile west = this.tileGrid.get(playerX - 1).get(playerY);
-        if (!west.getisWall()) {
           possiblePosns.add(new Posn(playerX - 1,playerY));
         }
       }
-      // find the east tile
-      if (playerX + 1 < xRange) {
-        Tile east = this.tileGrid.get(playerX + 1).get(playerY);
-        if (!east.getisWall()) {
-          possiblePosns.add(new Posn(playerX + 1,playerY));
-        }
-      }
-      // find the south tile
-      if (playerY - 1 > 0) {
-        Tile south = this.tileGrid.get(playerX).get(playerY - 1);
-        if (!south.getisWall()) {
+      // find the west tile
+      if ((playerY - 1) - this.upperLeft.getY() >= 0) {
+        int roomX = playerX - this.upperLeft.getX();
+        int roomY = (playerY - 1) - this.upperLeft.getY();
+        Tile west = this.tileGrid.get(roomX).get(roomY);
+        if (!west.getisWall()) {
           possiblePosns.add(new Posn(playerX,playerY - 1));
         }
       }
+      // find the east tile
+      if ((playerY + 1) < yRange) {
+        int roomX = playerX - this.upperLeft.getX();
+        int roomY = (playerY + 1) - this.upperLeft.getY();
+        Tile east = this.tileGrid.get(roomX).get(roomY);
+        if (!east.getisWall()) {
+          possiblePosns.add(new Posn(playerX,playerY + 1));
+        }
+      }
+      // find the south tile
+      if ((playerX + 1)  < xRange) {
+        int roomX = (playerX + 1) - this.upperLeft.getX();
+        int roomY = playerY - this.upperLeft.getY();
+        Tile south = this.tileGrid.get(roomX).get(roomY);
+        if (!south.getisWall()) {
+          possiblePosns.add(new Posn(playerX + 1,playerY));
+        }
+      }
+
 
       return possiblePosns;
     }
