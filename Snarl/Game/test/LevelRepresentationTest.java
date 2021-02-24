@@ -5,6 +5,10 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import GameObjects.Hallway;
+import GameObjects.Level;
+import GameObjects.Room;
+
 /**
  * Contains all tests for level representation
  */

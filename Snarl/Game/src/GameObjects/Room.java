@@ -1,7 +1,12 @@
-import org.json.JSONObject;
+package GameObjects;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import GameObjects.Collectable;
+import GameObjects.Door;
+import GameObjects.Posn;
+import GameObjects.Tile;
 
 /**
  * Represents a room in the level dungeon. Each room has a tile grid, upper-left Cartesian position,

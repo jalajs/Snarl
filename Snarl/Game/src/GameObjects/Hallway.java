@@ -1,5 +1,10 @@
+package GameObjects;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import GameObjects.Door;
+import GameObjects.Posn;
 
 /**
  * Represents a hallway in a level in our game. A hallway has two rooms to connect and a list of waypoints,

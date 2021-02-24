@@ -1,13 +1,15 @@
-import javafx.geometry.Pos;
+import GameObjects.Actor;
+import GameObjects.Adversary;
+import GameObjects.Level;
+import GameObjects.Player;
+import GameObjects.Posn;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class holds tests for methods pertaining to creation and mutation of the level grid
@@ -167,9 +169,4 @@ public class LevelGridTest {
 
         assertEquals(level.getLevelGrid()[0][0], ".");
     }
-
-
-
-
-
 }

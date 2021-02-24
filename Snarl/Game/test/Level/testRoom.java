@@ -1,11 +1,19 @@
+package Level;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.util.List;
 import java.util.ArrayList;
 
+import java.util.List;
 import java.util.Scanner;
+
+import GameObjects.Door;
+import GameObjects.Posn;
+import GameObjects.Room;
+import GameObjects.Tile;
+
 
 public class testRoom {
 
@@ -85,7 +93,7 @@ public class testRoom {
 
 
   /**
-   * Creates a JSONArray containing the coordinates for the given Posn
+   * Creates a JSONArray containing the coordinates for the given GameObjects.Posn
    * @param point the given position
    * @return JSONArray containing the coordinates
    */
@@ -163,7 +171,7 @@ public class testRoom {
   }
 
   /**
-   * Converts the given JSONArray for a point into a Posn.
+   * Converts the given JSONArray for a point into a GameObjects.Posn.
    * @param posnJSON looks like: [1, 3]
    * @return the posn built from the given object.
    */

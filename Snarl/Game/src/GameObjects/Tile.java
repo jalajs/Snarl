@@ -1,3 +1,9 @@
+package GameObjects;
+
+import GameObjects.Actor;
+import GameObjects.Collectable;
+import GameObjects.Door;
+
 /**
  * Represents a game tile and contains information on if it is a wall and what is on the tile
  */
@@ -18,7 +24,7 @@ public class Tile {
   }
 
   /**
-   * Tile constructor that allows specification if it is a wall or not
+   * GameObjects.Tile constructor that allows specification if it is a wall or not
    * @param isWall indicating if it is a wall or not
    */
   public Tile(boolean isWall) {

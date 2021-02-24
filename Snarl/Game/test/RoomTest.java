@@ -1,4 +1,8 @@
 import org.junit.Test;
+
+import GameObjects.Posn;
+import GameObjects.Room;
+
 import static org.junit.Assert.*;
 
 public class RoomTest {

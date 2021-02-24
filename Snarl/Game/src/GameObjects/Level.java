@@ -1,4 +1,12 @@
+package GameObjects;
+
 import java.util.*;
+
+import GameObjects.Actor;
+import GameObjects.Door;
+import GameObjects.ExitKey;
+import GameObjects.Hallway;
+import GameObjects.Posn;
 
 /**
  * represents a game level, including all rooms, hallways, dimensions, and the grid
@@ -158,7 +166,7 @@ public class Level {
     }
 
     /**
-     * Place the actors on their position in the Level
+     * Place the actors on their position in the GameObjects.Level
      *
      * @param actors map of actors that know their positions in the level
      */
@@ -211,7 +219,7 @@ public class Level {
 
 
     /**
-     * Creates the ASCII string representation of a Level and all its data. Assumes the grid
+     * Creates the ASCII string representation of a GameObjects.Level and all its data. Assumes the grid
      * has already be initialized.
      */
     public String createLevelString() {
@@ -236,7 +244,7 @@ public class Level {
     }
 
     /**
-     * populates the levelGrid with rooms using the List<Room> field
+     * populates the levelGrid with rooms using the List<GameObjects.Room> field
      */
     private void addRooms() {
         for (int i = 0; i < this.rooms.size(); i++) {
@@ -254,7 +262,7 @@ public class Level {
     }
 
     /**
-     * populates the levelGrid with hallways using the List<Hallway> in this level
+     * populates the levelGrid with hallways using the List<GameObjects.Hallway> in this level
      */
     private void addHallways() {
         for (Hallway hallway : this.hallways) {
@@ -334,7 +342,7 @@ public class Level {
      * Helper method to generates the position for a random unoccupied tile. Unused currently
      * but will likely be needed for future milestones.
      *
-     * @return Posn of random unoccupied tile
+     * @return GameObjects.Posn of random unoccupied tile
      */
     private Posn generateRandomUnoccupiedTile() {
         Posn posn = new Posn(-1, -1);

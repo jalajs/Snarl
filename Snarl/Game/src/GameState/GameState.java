@@ -1,11 +1,18 @@
+package GameState;
+
+import GameObjects.Actor;
+import GameObjects.Level;
+import GameObjects.Player;
+import GameObjects.Posn;
+
 /**
  * Represents the game's current state and its rules.
  */
 public interface GameState {
 
   /**
-   *   Level object is created by random level generator in GameManager
-   *   Also resets all the other fields according to the generated Level
+   *   GameObjects.Level object is created by random level generator in GameManager
+   *   Also resets all the other fields according to the generated GameObjects.Level
    * @param newLevel
    */
   void setLevel(Level newLevel);

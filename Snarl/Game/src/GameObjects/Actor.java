@@ -1,3 +1,5 @@
+package GameObjects;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public abstract class Actor {
     this.position = position;
   }
   /**
-   * Returns the visual representation of the Actor.
+   * Returns the visual representation of the GameObjects.Actor.
    * @return a string for how an actor is represented.
    */
   public abstract String representation();

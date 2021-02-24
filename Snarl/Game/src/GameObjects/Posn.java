@@ -1,3 +1,5 @@
+package GameObjects;
+
 /**
  * Represents a cartesian position.
  */

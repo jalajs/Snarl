@@ -1,6 +1,16 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import GameObjects.Actor;
+import GameObjects.Door;
+import GameObjects.ExitKey;
+import GameObjects.Hallway;
+import GameObjects.Level;
+import GameObjects.Player;
+import GameObjects.Posn;
+import GameObjects.Room;
+import GameObjects.Tile;
+
 /**
  * Contains utils methods for creating data so that the tests are more readable
  */

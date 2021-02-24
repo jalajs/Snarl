@@ -1,7 +1,15 @@
+package GameState;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import GameObjects.Actor;
+import GameObjects.Adversary;
+import GameObjects.Collectable;
+import GameObjects.Level;
+import GameObjects.Player;
+import GameObjects.Posn;
+import GameState.GameState;
 
 public class GameStateModel implements GameState {
   private Level level;
@@ -99,7 +107,7 @@ public class GameStateModel implements GameState {
 
   /**
    * Renders the current game state
-   * @return String that represents the GameState
+   * @return String that represents the GameState.GameState
    */
   public String renderGameState() {
     this.level.initGrid();
