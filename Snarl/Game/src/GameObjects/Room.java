@@ -2,6 +2,7 @@ package GameObjects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import GameObjects.Collectable;
 import GameObjects.Door;
@@ -90,13 +91,14 @@ public class Room {
 
   /**
    * toString for an individual room.
+   *
    * @return One string rendering the visual contents of this room
    */
   @Override
   public String toString() {
     String roomAcc = "";
-    for (int i = 0; i < tileGrid.size(); i ++) {
-      for (int j = 0; j < tileGrid.get(i).size(); j ++) {
+    for (int i = 0; i < tileGrid.size(); i++) {
+      for (int j = 0; j < tileGrid.get(i).size(); j++) {
         roomAcc += tileGrid.get(i).get(j).toString();
       }
       if (i != tileGrid.size() - 1) {
@@ -108,32 +110,30 @@ public class Room {
 
   /**
    * Renders a room and its contents.
+   *
    * @return A 2D list for all of the String representations of the tiles in the room
    */
   public List<ArrayList<String>> renderRoom() {
     List<ArrayList<String>> roomAcc = new ArrayList<ArrayList<String>>();
-    for (int i = 0; i < tileGrid.size(); i ++) {
+    for (int i = 0; i < tileGrid.size(); i++) {
       ArrayList<String> rowAcc = new ArrayList<>();
-      for (int j = 0; j < tileGrid.get(i).size(); j ++) {
+      for (int j = 0; j < tileGrid.get(i).size(); j++) {
         rowAcc.add(tileGrid.get(i).get(j).toString());
       }
-     roomAcc.add(rowAcc);
+      roomAcc.add(rowAcc);
     }
     return roomAcc;
   }
 
   /**
    * Determines whether or not the given posn is located in this room.
+   *
    * @param posn the given position
    * @return boolean - whether or not the given posn is in the room
-   *
-   * example room and posn that should return negative
-   *  ---------------------
-   *          +
-   *              xxxxx
-   *              xxxxx
-   *
-   *  ---------------------
+   * <p>
+   * example room and posn that should return negative --------------------- + xxxxx xxxxx
+   * <p>
+   * ---------------------
    */
   public boolean isPosnInRoom(Posn posn) {
     int givenX = posn.getX();
@@ -146,69 +146,131 @@ public class Room {
     return givenX < xRange && givenX >= this.upperLeft.getX()
             && givenY < yRange && givenY >= this.upperLeft.getY()
             && givenX > -1 && givenY > -1;
-    }
+  }
 
 
   /**
    * Return the positions of unoccupied tiles acessible via one cardinal move from the given player
-   * position.
-   *            cardinal moves are up, down, right, or left
-   *                            []
-   *                          []P[]
-   *                           []
+   * position. cardinal moves are up, down, right, or left [] []P[] []
    *
    * @param playerPosn the position of the player relative to the level
    * @return the list of positions of accessible tiles relative to the level
-   *
    */
-    public List<Posn> getNextPossibleCardinalMoves(Posn playerPosn) {
-      List<Posn> possiblePosns = new ArrayList<>();
+  public List<Posn> getNextPossibleCardinalMoves(Posn playerPosn) {
+    List<Posn> possiblePosns = new ArrayList<>();
 
-      int xRange = this.upperLeft.getX() + this.xDim;
-      int yRange = this.upperLeft.getY() + this.yDim;
+    int xRange = this.upperLeft.getX() + this.xDim;
+    int yRange = this.upperLeft.getY() + this.yDim;
 
-      int playerX  = playerPosn.getX();
-      int playerY = playerPosn.getY();
+    int playerX = playerPosn.getX();
+    int playerY = playerPosn.getY();
 
-      // find the north tile
-      if ((playerX - 1) - this.upperLeft.getX() >= 0) {
-        int roomX = (playerX - 1) - this.upperLeft.getX();
-        int roomY = playerY - this.upperLeft.getY();
-        Tile north = this.tileGrid.get(roomX).get(roomY);
-        int x = playerX - 1;
-        if (!north.getisWall()) {
-          possiblePosns.add(new Posn(playerX - 1,playerY));
-        }
+    // find the north tile
+    if ((playerX - 1) - this.upperLeft.getX() >= 0) {
+      int roomX = (playerX - 1) - this.upperLeft.getX();
+      int roomY = playerY - this.upperLeft.getY();
+      Tile north = this.tileGrid.get(roomX).get(roomY);
+      int x = playerX - 1;
+      if (!north.getisWall()) {
+        possiblePosns.add(new Posn(playerX - 1, playerY));
       }
-      // find the west tile
-      if ((playerY - 1) - this.upperLeft.getY() >= 0) {
-        int roomX = playerX - this.upperLeft.getX();
-        int roomY = (playerY - 1) - this.upperLeft.getY();
-        Tile west = this.tileGrid.get(roomX).get(roomY);
-        if (!west.getisWall()) {
-          possiblePosns.add(new Posn(playerX,playerY - 1));
-        }
-      }
-      // find the east tile
-      if ((playerY + 1) < yRange) {
-        int roomX = playerX - this.upperLeft.getX();
-        int roomY = (playerY + 1) - this.upperLeft.getY();
-        Tile east = this.tileGrid.get(roomX).get(roomY);
-        if (!east.getisWall()) {
-          possiblePosns.add(new Posn(playerX,playerY + 1));
-        }
-      }
-      // find the south tile
-      if ((playerX + 1)  < xRange) {
-        int roomX = (playerX + 1) - this.upperLeft.getX();
-        int roomY = playerY - this.upperLeft.getY();
-        Tile south = this.tileGrid.get(roomX).get(roomY);
-        if (!south.getisWall()) {
-          possiblePosns.add(new Posn(playerX + 1,playerY));
-        }
-      }
-
-
-      return possiblePosns;
     }
+    // find the west tile
+    if ((playerY - 1) - this.upperLeft.getY() >= 0) {
+      int roomX = playerX - this.upperLeft.getX();
+      int roomY = (playerY - 1) - this.upperLeft.getY();
+      Tile west = this.tileGrid.get(roomX).get(roomY);
+      if (!west.getisWall()) {
+        possiblePosns.add(new Posn(playerX, playerY - 1));
+      }
+    }
+    // find the east tile
+    if ((playerY + 1) < yRange) {
+      int roomX = playerX - this.upperLeft.getX();
+      int roomY = (playerY + 1) - this.upperLeft.getY();
+      Tile east = this.tileGrid.get(roomX).get(roomY);
+      if (!east.getisWall()) {
+        possiblePosns.add(new Posn(playerX, playerY + 1));
+      }
+    }
+    // find the south tile
+    if ((playerX + 1) < xRange) {
+      int roomX = (playerX + 1) - this.upperLeft.getX();
+      int roomY = playerY - this.upperLeft.getY();
+      Tile south = this.tileGrid.get(roomX).get(roomY);
+      if (!south.getisWall()) {
+        possiblePosns.add(new Posn(playerX + 1, playerY));
+      }
+    }
+
+
+    return possiblePosns;
+  }
+
+  /**
+   * Returns all of the room origins that are immediately reachable from this room
+   *
+   * @return list of room origins
+   */
+  public List<Posn> checkReachableRooms(List<Posn> reachableAcc, List<Room> visited) {
+    System.out.println("room check reachable rooms");
+      visited.add(this);
+      for (Door d : doors) {
+        int originX = this.upperLeft.getX();
+        int originY = this.upperLeft.getY();
+        Posn doorPosnRelToLevel = new Posn(d.getTileCoord().getX() + originX,
+                d.getTileCoord().getY() + originY);
+        if (!d.isLevelExit()) {
+          Hallway hallway = d.getHallway();
+          List<Door> doors = hallway.getDoors();
+          if (doors.get(0).getTileCoord().equals(doorPosnRelToLevel)) {
+            if (!visited.contains(doors.get(1).getRoom())) {
+              System.out.println("about to recurse on room");
+              reachableAcc.add(this.upperLeft);
+              doors.get(1).getRoom().checkReachableRooms(reachableAcc, visited);
+            }
+          } else if (doors.get(1).getTileCoord().equals(doorPosnRelToLevel)) {
+            if (!visited.contains(doors.get(0).getRoom())) {
+              System.out.println("about to recurse on room");
+              reachableAcc.add(this.upperLeft);
+              doors.get(0).getRoom().checkReachableRooms(reachableAcc, visited);
+            }
+          }
+        }
+      }
+    return reachableAcc;
+  }
+
+  public void addDoor(Door door) {
+    this.doors.add(door);
+  }
+
+  public void connectDoorsToHallways(List<Hallway> hallways) {
+    for (Door door : this.doors) {
+      // todo: make a helper for this
+      int originX = this.upperLeft.getX();
+      int originY = this.upperLeft.getY();
+      Posn doorPosnRelToLevel = new Posn(door.getTileCoord().getX() + originX, door.getTileCoord().getY() + originY);
+      for (Hallway hallway : hallways) {
+        List<Door> hallwayDoors = hallway.getDoors();
+        if (hallwayDoors.get(0).getTileCoord().equals(doorPosnRelToLevel)
+                || hallwayDoors.get(1).getTileCoord().equals(doorPosnRelToLevel)) {
+          door.setHallway(hallway);
+        }
+      }
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Room room = (Room) o;
+    return upperLeft.equals(room.upperLeft);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(upperLeft);
+  }
 }

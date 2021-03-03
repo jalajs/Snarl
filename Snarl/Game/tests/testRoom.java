@@ -1,5 +1,3 @@
-package Level;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -81,7 +79,7 @@ public class testRoom {
    * @param traversablePoints list of posns containing the traversable points
    * @return JSONArray containing another JSONArray for every point
    */
-  private static JSONArray posnsToJson(List<Posn> traversablePoints) {
+  public static JSONArray posnsToJson(List<Posn> traversablePoints) {
     JSONArray finalList = new JSONArray();
     for (Posn posn : traversablePoints) {
       JSONArray pointList = posnToJson(posn);
@@ -97,7 +95,7 @@ public class testRoom {
    * @param point the given position
    * @return JSONArray containing the coordinates
    */
-  private static JSONArray posnToJson(Posn point) {
+  public static JSONArray posnToJson(Posn point) {
     int x = point.getX();
     int y = point.getY();
     JSONArray pointList = new JSONArray();
@@ -120,13 +118,13 @@ public class testRoom {
    *       }
    * @return the room built from the given object
    */
-  private static Room jsonToRoom(JSONObject roomJSON) {
+  public static Room jsonToRoom(JSONObject roomJSON) {
     Room room = new Room();
     Posn origin = jsonToPosn((JSONArray) roomJSON.get("origin"));
     JSONObject roomBounds = (JSONObject) roomJSON.get("bounds");
     int rows = (int) roomBounds.get("rows");
     int columns = (int) roomBounds.get("columns");
-    List<ArrayList<Tile>> tileGrid = jsonArrayToTileGrid((JSONArray) roomJSON.get("layout"));
+    List<ArrayList<Tile>> tileGrid = jsonArrayToTileGrid((JSONArray) roomJSON.get("layout"), room);
     room.setUpperLeft(origin);
     room.setxDim(rows);
     room.setyDim(columns);
@@ -144,7 +142,7 @@ public class testRoom {
    * @param layout the JSON array object
    * @return the tile grid built from layout
    */
-  private static List<ArrayList<Tile>> jsonArrayToTileGrid(JSONArray layout) {
+  public static List<ArrayList<Tile>> jsonArrayToTileGrid(JSONArray layout, Room room) {
     List<ArrayList<Tile>> tileGrid = new ArrayList();
     for (int i = 0; i < layout.length(); i ++) {
       JSONArray layoutRow = (JSONArray) layout.get(i);
@@ -161,8 +159,10 @@ public class testRoom {
           Tile tile = new Tile(false);
           Door door = new Door();
           door.setTileCoord( new Posn(i,j));
+          door.setRoom(room);
           tile.setDoor(door);
           gridRow.add(tile);
+          room.addDoor(door);
         }
       }
       tileGrid.add(gridRow);
@@ -175,7 +175,7 @@ public class testRoom {
    * @param posnJSON looks like: [1, 3]
    * @return the posn built from the given object.
    */
-  private static Posn jsonToPosn(JSONArray posnJSON) {
+  public static Posn jsonToPosn(JSONArray posnJSON) {
     int x = (int) posnJSON.get(0);
     int y = (int) posnJSON.get(1);
     return new Posn(x, y);

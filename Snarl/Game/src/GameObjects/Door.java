@@ -9,6 +9,7 @@ import GameObjects.Posn;
 public class Door {
   private Posn tileCoord;
   private Hallway hallway;
+  private Room room;
   private boolean isLevelExit;
 
 
@@ -32,6 +33,14 @@ public class Door {
 
   public void setHallway(Hallway hallway) {
     this.hallway = hallway;
+  }
+
+  public Room getRoom() {
+    return room;
+  }
+
+  public void setRoom(Room room) {
+    this.room = room;
   }
 
   public boolean isLevelExit() {
