@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import GameObjects.Collectable;
-import GameObjects.ExitKey;
 import GameObjects.Hallway;
 import GameObjects.Room;
 import GameObjects.Posn;
@@ -17,45 +15,6 @@ import GameObjects.Level;
 
 public class testLevel {
   private static testRoom testRoom;
-
-  /**
-   * [{ "type": "level",
-   *   "rooms": [ { "type": "room",
-   *                "origin": [ 3, 1 ],
-   *                "bounds": { "rows": 4, "columns": 4 },
-   *                "layout": [ [ 0, 0, 2, 0 ],
-   *                            [ 0, 1, 1, 0 ],
-   *                            [ 0, 1, 1, 0 ],
-   *                            [ 0, 2, 0, 0 ] ] },
-   *              { "type": "room",
-   *                "origin": [ 10, 5 ],
-   *                "bounds": { "rows": 5, "columns": 5 },
-   *                "layout": [ [ 0, 0, 0, 0, 0 ],
-   *                            [ 0, 1, 1, 1, 0 ],
-   *                            [ 2, 1, 1, 1, 0 ],
-   *                            [ 0, 1, 1, 1, 0 ],
-   *                            [ 0, 0, 0, 0, 0 ] ] },
-   *              { "type": "room",
-   *                "origin": [ 4, 14 ],
-   *                "bounds": { "rows": 5, "columns": 5 },
-   *                "layout": [ [ 0, 0, 2, 0, 0 ],
-   *                            [ 0, 1, 1, 1, 0 ],
-   *                            [ 0, 1, 1, 1, 0 ],
-   *                            [ 0, 1, 1, 1, 0 ],
-   *                            [ 0, 0, 0, 0, 0 ] ] } ],
-   *   "objects": [ { "type": "key", "position": [ 4, 2 ] },
-   *                { "type": "exit", "position": [ 7, 17 ] } ],
-   *   "hallways": [ { "type": "hallway",
-   *                   "from": [ 3, 3 ],
-   *                   "to": [ 4, 16 ],
-   *                   "waypoints": [ [ 1, 3 ], [ 1, 16 ] ] },
-   *                 { "type": "hallway",
-   *                   "from": [ 6, 2 ],
-   *                   "to": [ 12, 5 ],
-   *                   "waypoints": [ [ 12, 2 ] ] } ]
-   * }, [12, 4]]
-   */
-
 
   /**
    * This method serves to take in json representations of level and a player position and print out
@@ -77,7 +36,6 @@ public class testLevel {
     JSONObject outputObject = new JSONObject();
     JSONTokener tokener = new JSONTokener(tokenerSource.trim());
 
-
     // parse out commands
     while (tokener.more()) {
       Object value = tokener.nextValue();
@@ -97,8 +55,8 @@ public class testLevel {
       List<Posn> objectPositions = parseObjects(jsonObjects);
       Posn point = testRoom.jsonToPosn(jsonPoint);
 
+
       Level level = buildLevel(rooms, hallways, objectPositions);
-      System.out.println(level.createLevelString());
       boolean traversable = level.checkTraversable(point);
       String objectType = level.checkObjectType(point);
       String levelSegType = level.checkSegmentType(point);
@@ -133,8 +91,7 @@ public class testLevel {
   private static Level buildLevel(List<Room> rooms,
                                   List<Hallway> hallways,
                                   List<Posn> exitAndKeyPosns) {
-    Level level = new Level(rooms, hallways, exitAndKeyPosns);
-    return level;
+    return new Level(rooms, hallways, exitAndKeyPosns);
   }
 
   /**
@@ -158,7 +115,7 @@ public class testLevel {
    * @return a list of hallways
    */
   private static List<Hallway> parseHallways(JSONArray jsonHallways) {
-    List<Hallway> hallways = new ArrayList();
+    List<Hallway> hallways = new ArrayList<>();
     for (int i = 0; i < jsonHallways.length(); i++) {
       JSONObject hallwayObject = (JSONObject) jsonHallways.get(i);
       Hallway hallway = jsonToHallway(hallwayObject);
@@ -180,7 +137,7 @@ public class testLevel {
     Posn to = testRoom.jsonToPosn((JSONArray) hallwayObject.get("to"));
     JSONArray waypointJsonArray = (JSONArray) hallwayObject.get("waypoints");
 
-    List<Posn> waypoints = new ArrayList();
+    List<Posn> waypoints = new ArrayList<>();
     for (int i = 0; i < waypointJsonArray.length(); i++) {
       Posn waypoint = testRoom.jsonToPosn((JSONArray) waypointJsonArray.get(i));
       waypoints.add(waypoint);
@@ -188,7 +145,7 @@ public class testLevel {
 
     List<ArrayList<Tile>> segments = createSegments(to, from, waypoints);
 
-    List<Door> doors = new ArrayList();
+    List<Door> doors = new ArrayList<>();
     Door fromDoor = new Door();
     Door toDoor = new Door();
     fromDoor.setTileCoord(from);
@@ -203,6 +160,14 @@ public class testLevel {
     return hallway;
   }
 
+  /**
+   * Creates the segments fields to help build Hallway objects from the provided JSON hallway
+   *
+   * @param to the start point of the hallway
+   * @param from the end point of the hallway
+   * @param waypoints a list of waypoints in the hallway
+   * @return A 2D array of Tiles/segments to help intialize a hallway
+   */
   private static List<ArrayList<Tile>> createSegments(Posn to, Posn from, List<Posn> waypoints) {
     List<ArrayList<Tile>> segments = new ArrayList<>();
     List<Posn> allPoints = new ArrayList<>(waypoints);
@@ -210,27 +175,34 @@ public class testLevel {
     allPoints.add(to);
 
     for (int i = 0; i < allPoints.size() - 1; i++) {
-      ArrayList<Tile> tileSegement = new ArrayList<>();
+      ArrayList<Tile> tileSegment = new ArrayList<>();
       Posn start = allPoints.get(i);
       Posn end = allPoints.get(i + 1);
 
       if (start.getX() == end.getX()) {
-        int range = Math.abs(start.getY() - end.getY());
-        for (int t = 0; t < range - 1; t++) {
-          Tile tile = new Tile(false);
-          tileSegement.add(tile);
-        }
+        tileSegment = createSingleSegment(Math.abs(start.getY() - end.getY()));
       } else if (start.getY() == end.getY()) {
-        int range = Math.abs(start.getX() - end.getX());
-        for (int t = 0; t < range - 1; t++) {
-          Tile tile = new Tile(false);
-          tileSegement.add(tile);
-        }
+        tileSegment = createSingleSegment(Math.abs(start.getX() - end.getX()));
       }
-      segments.add(tileSegement);
+      segments.add(tileSegment);
     }
 
     return segments;
+  }
+
+  /**
+   * This method, given a range, creates a list with range -1 tiles in it
+   *
+   * @param range is the length of the list + 1
+   * @return the tile segment
+   */
+  private static ArrayList<Tile> createSingleSegment(int range) {
+    ArrayList<Tile> segment = new ArrayList<>();
+    for (int t = 0; t < range - 1; t++) {
+      Tile tile = new Tile(false);
+      segment.add(tile);
+    }
+    return segment;
   }
 
   /**

@@ -212,45 +212,52 @@ public class Room {
    *
    * @return list of room origins
    */
-  public List<Posn> checkReachableRooms(List<Posn> reachableAcc, List<Room> visited) {
-    System.out.println("room check reachable rooms");
-      visited.add(this);
-      for (Door d : doors) {
-        int originX = this.upperLeft.getX();
-        int originY = this.upperLeft.getY();
-        Posn doorPosnRelToLevel = new Posn(d.getTileCoord().getX() + originX,
-                d.getTileCoord().getY() + originY);
-        if (!d.isLevelExit()) {
-          Hallway hallway = d.getHallway();
-          List<Door> doors = hallway.getDoors();
-          if (doors.get(0).getTileCoord().equals(doorPosnRelToLevel)) {
-            if (!visited.contains(doors.get(1).getRoom())) {
-              System.out.println("about to recurse on room");
-              reachableAcc.add(this.upperLeft);
-              doors.get(1).getRoom().checkReachableRooms(reachableAcc, visited);
-            }
-          } else if (doors.get(1).getTileCoord().equals(doorPosnRelToLevel)) {
-            if (!visited.contains(doors.get(0).getRoom())) {
-              System.out.println("about to recurse on room");
-              reachableAcc.add(this.upperLeft);
-              doors.get(0).getRoom().checkReachableRooms(reachableAcc, visited);
-            }
-          }
+  public List<Posn> checkReachableRooms() {
+    List<Posn> positions = new ArrayList<>();
+    for (Door d : doors) {
+      Posn doorPosnRelToLevel = posnRelativeToLevel(d.getTileCoord());
+      if (!d.isLevelExit()) {
+        Hallway hallway = d.getHallway();
+        List<Door> doors = hallway.getDoors();
+        if (doors.get(0).getTileCoord().equals(doorPosnRelToLevel)) {
+          positions.add(doors.get(1).getRoom().getUpperLeft());
+        } else if (doors.get(1).getTileCoord().equals(doorPosnRelToLevel)) {
+          positions.add(doors.get(0).getRoom().getUpperLeft());
         }
       }
-    return reachableAcc;
+    }
+    return positions;
   }
 
+  /**
+   * Add the given door to this room's list of doors field
+   */
   public void addDoor(Door door) {
     this.doors.add(door);
   }
 
+  /**
+   * updates the given posn such that its coordinates are relative to the entire level.
+   * @param posn the given posn
+   * @returna A posn which has had this rooms origin's X and Y added to its X and Y values
+   */
+  public Posn posnRelativeToLevel(Posn posn) {
+    int originX = this.upperLeft.getX();
+    int originY = this.upperLeft.getY();
+    int x = posn.getX();
+    int y = posn.getY();
+    return new Posn(x + originX, y + originY);
+  }
+
+
+
+  /**
+   * Connects this rooms's doors to the given hallways doors field.
+   * @param hallways The given list of hallways
+   */
   public void connectDoorsToHallways(List<Hallway> hallways) {
     for (Door door : this.doors) {
-      // todo: make a helper for this
-      int originX = this.upperLeft.getX();
-      int originY = this.upperLeft.getY();
-      Posn doorPosnRelToLevel = new Posn(door.getTileCoord().getX() + originX, door.getTileCoord().getY() + originY);
+      Posn doorPosnRelToLevel = posnRelativeToLevel(door.getTileCoord());
       for (Hallway hallway : hallways) {
         List<Door> hallwayDoors = hallway.getDoors();
         if (hallwayDoors.get(0).getTileCoord().equals(doorPosnRelToLevel)

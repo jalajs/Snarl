@@ -63,15 +63,15 @@ public class Level {
   /**
    * This constructor builds a level given a list of rooms, hallways, and exit and key positions. It
    * is assumed that the rooms, hallways, and posns are wellformed. This constructor is used
-   * primarily by the JSON tests, which is why the level perimeters are set.
+   * primarily by the JSON tests, which is why the level perimeters are pre-set.
    *
    * @param rooms           list of rooms to be placed in the level
    * @param hallways        list of hallways to be placed in the level
    * @param exitAndKeyPosns array of posns ordered like this: (key, exit)
    */
   public Level(List<Room> rooms, List<Hallway> hallways, List<Posn> exitAndKeyPosns) {
-    this.levelX = 100;
-    this.levelY = 100;
+    this.levelX = 101;
+    this.levelY = 101;
     this.levelGrid = new String[this.levelX][this.levelY];
     this.initGridSpace();
     this.tileGrid = new Tile[this.levelX][this.levelY];
@@ -416,7 +416,6 @@ public class Level {
     int x = point.getX();
     int y = point.getY();
     Tile tile = this.tileGrid[x][y];
-    System.out.println("tile String: " + levelGrid[x][y]);
     if (tile == null) {
       return false;
     }
@@ -461,26 +460,23 @@ public class Level {
   }
 
   /**
-   * @param point
-   * @return
+   * Checks what rooms are reachable from the given point
+   * @param point the given point
+   * @param segmentType the type of segment the point lies on
+   * @return The origins for the rooms you can immediately reach from the given point
    */
   public List<Posn> checkReachable(Posn point, String segmentType) {
     List<Posn> reachablePosns = new ArrayList<>();
     if (segmentType.equals("room")) {
       for (Room room : this.rooms) {
         if (room.isPosnInRoom(point)) {
-          List<Posn> reachableAcc = new ArrayList<>();
-          List<Room> visited = new ArrayList<>();
-          visited.add(room);
-          reachablePosns = room.checkReachableRooms(reachableAcc, visited);
+          reachablePosns = room.checkReachableRooms();
         }
       }
     } else {
       for (Hallway hallway : this.hallways) {
         if (hallway.isPosnInHallway(point)) {
-          List<Posn> reachableAcc = new ArrayList<>();
-          List<Room> visited = new ArrayList<>();
-          reachablePosns = hallway.checkReachableRooms(reachableAcc, visited);
+          reachablePosns = hallway.checkReachableRooms();
         }
       }
     }

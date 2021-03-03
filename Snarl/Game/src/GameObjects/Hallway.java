@@ -3,9 +3,6 @@ package GameObjects;
 import java.util.ArrayList;
 import java.util.List;
 
-import GameObjects.Door;
-import GameObjects.Posn;
-
 /**
  * Represents a hallway in a level in our game. A hallway has two rooms to connect and a list of
  * waypoints, which allows for corners in the hallway. Hallways are comprised of "segments" of
@@ -22,15 +19,18 @@ public class Hallway {
 
   }
 
+  /**
+   * This method serves to connect the hallways doors to its connecting room. This is done by
+   * finding the room the door connects to by using the posns of each rooms' doors
+   *
+   * @param rooms are all the rooms in the level
+   */
   public void connectDoorsToRooms(List<Room> rooms) {
     for (Door door : this.doors) {
       for (Room room : rooms) {
         List<Door> roomDoors = room.getDoorPositions();
-        int roomOriginX = room.getUpperLeft().getX();
-        int roomOriginY = room.getUpperLeft().getY();
         for (Door roomDoor : roomDoors) {
-          Posn doorPosnRelToLevel = new Posn(roomDoor.getTileCoord().getX() + roomOriginX,
-                  roomDoor.getTileCoord().getY() + roomOriginY);
+          Posn doorPosnRelToLevel = room.posnRelativeToLevel(roomDoor.getTileCoord());
           if (door.getTileCoord().equals(doorPosnRelToLevel)) {
             door.setRoom(room);
           }
@@ -44,12 +44,13 @@ public class Hallway {
    *
    * @return a list of the upperLeft posns of the reachable rooms
    */
-  public List<Posn> checkReachableRooms(List<Posn> reachableAcc, List<Room> visited) {
-    System.out.println("hallway check reachable rooms");
+  public List<Posn> checkReachableRooms() {
+    List<Posn> reachableRoomUpperLefts = new ArrayList<>();
     for (Door door : this.doors) {
-      door.getRoom().checkReachableRooms(reachableAcc, visited);
+      Room doorRoom = door.getRoom();
+      reachableRoomUpperLefts.add(doorRoom.getUpperLeft());
     }
-    return reachableAcc;
+    return reachableRoomUpperLefts;
   }
 
   /**

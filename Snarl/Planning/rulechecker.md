@@ -3,7 +3,7 @@ Dear friends at Growl Inc, <br>
 The purpose of this memo is to outline the RuleChecker component. 
 The RuleChecker component is tasked with performing all validations for Snarl. We anticipate the component's interface will need the following behaviors.<br>
 
-- Boolean isLevelEnd(GameObjects.Level level)
+- Boolean isLevelEnd(GameObjects.Room level)
     - A level is over if the exit door is unlocked and a player goes through it or if all players in the level are expelled. 
 - Boolean isGameEnd()
     - The game is over if all the players are expelled in a given level (resulting in a loss for the players).

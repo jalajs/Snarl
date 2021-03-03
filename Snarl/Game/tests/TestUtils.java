@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -452,6 +453,55 @@ public class TestUtils {
     complicatedLevel.setHallways(hallways);
 
     return complicatedLevel;
+  }
+
+  /**
+   *  creates a level that looks like
+   *  ROOM -------------------- ROOM
+   *
+   * @return returns that level
+   */
+  public Level createLevelForTestingDoorConnection() {
+    List<Room> rooms = new ArrayList<>();
+    List<Hallway> hallways = new ArrayList<>();
+
+    Hallway hallway = new Hallway();
+    Room room1 = new Room();
+    room1.setUpperLeft(new Posn(0,0));
+    Room room2 = new Room();
+    room2.setUpperLeft(new Posn(0,0));
+
+    Door hallwayDoor1 = new Door();
+    Door hallwayDoor2 = new Door();
+    Door room1Door = new Door();
+    Door room2Door = new Door();
+
+    hallwayDoor1.setTileCoord(new Posn(0, 2));
+    hallwayDoor2.setTileCoord(new Posn(0, 7));
+    room1Door.setTileCoord(new Posn(0, 2));
+    room2Door.setTileCoord(new Posn(0, 7));
+
+    List<Door> hallwayDoors = new ArrayList<>();
+    hallwayDoors.add(hallwayDoor1);
+    hallwayDoors.add(hallwayDoor2);
+
+    List<Door> room1Doors = new ArrayList<>();
+    room1Doors.add(room1Door);
+    List<Door> room2Doors = new ArrayList<>();
+    room2Doors.add(room2Door);
+
+    hallway.setDoors(hallwayDoors);
+    room1.setDoorPositions(room1Doors);
+    room2.setDoorPositions(room2Doors);
+    rooms.add(room1);
+    rooms.add(room2);
+    hallways.add(hallway);
+
+    Level level = new Level();
+    level.setHallways(hallways);
+    level.setRooms(rooms);
+
+    return level;
   }
 
 }
