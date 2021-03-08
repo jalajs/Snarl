@@ -23,6 +23,8 @@ public abstract class Actor {
    */
   public abstract String representation();
 
+  public abstract boolean isPlayer();
+
 }
 
 

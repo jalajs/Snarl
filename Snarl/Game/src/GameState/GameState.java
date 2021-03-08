@@ -54,4 +54,11 @@ public interface GameState {
   void endGame();
 
 
+  boolean isLevelEnd();
+
+  /**
+   * Determines if the game state is a valid state.
+   * @return
+   */
+  boolean isStateValid();
 }

@@ -11,12 +11,8 @@ import GameObjects.Hallway;
 import GameObjects.Posn;
 
 /**
- * represents a game level, including all rooms, hallways, dimensions, and the grid an example level
- * could look like this: ...    ... ..X    ...               this level has 4 rooms and 3 hallways
- * ..|....|.| .                     KEY .                        . = unoccuppied tile .
- *           X = wall ...|.....+               + = waypoint XX.X                     | = door ....
- *                   empty space = no tiles ...| . . . +...|.. ..| This representation is produced
- * and tested in .../test/LevelRepresentationTest.java
+ * represents a game level, including all rooms, hallways, dimensions
+ * A representation is produced and tested in .../test/LevelRepresentationTest.java
  */
 public class Level {
   private List<Room> rooms;
@@ -26,6 +22,7 @@ public class Level {
   private String[][] levelGrid;
   private Tile[][] tileGrid;
   private Posn exitKeyPosition;
+  private Posn exitDoorPosition;
 
   /**
    * this basic no input constructor creates an empty 10x10 level (mostly used for testing)
@@ -40,6 +37,7 @@ public class Level {
     this.tileGrid = new Tile[levelX][levelY];
     this.initEmptyTileGrid();
     this.exitKeyPosition = new Posn(-1, -1);
+    this.exitDoorPosition = new Posn(-1, -1);
   }
 
   /**
@@ -58,6 +56,7 @@ public class Level {
     this.tileGrid = new Tile[this.levelX][this.levelY];
     this.initEmptyTileGrid();
     this.exitKeyPosition = new Posn(-1, -1);
+    this.exitDoorPosition = new Posn(-1, -1);
   }
 
   /**
@@ -89,6 +88,9 @@ public class Level {
     this.createLevelExit(exitPosn);
   }
 
+  /**
+   * connects the doors in the hallways and rooms to eachother
+   */
   private void connectUpDoors() {
     for (Room room : this.rooms) {
       room.connectDoorsToHallways(this.hallways);
@@ -105,7 +107,9 @@ public class Level {
   private void initEmptyTileGrid() {
     for (int x = 0; x < this.levelX; x++) {
       for (int y = 0; y < this.levelY; y++) {
-        tileGrid[x][y] = new Tile(true);
+        Tile tile = new Tile(true);
+        tile.setPosition(new Posn(x, y));
+        tileGrid[x][y] = tile;
       }
     }
   }
@@ -136,6 +140,7 @@ public class Level {
 
     tileGrid[xValue][yValue].setDoor(levelExit);
     levelGrid[xValue][yValue] = levelExit.toString();
+    this.exitDoorPosition = levelExitPosn;
   }
 
   /**
@@ -250,8 +255,9 @@ public class Level {
    *
    * @param p           is the player that has moved
    * @param newPosition is the new position of the move
+   * @return if the player has landed on exit or not
    */
-  public void handlePlayerMove(Actor p, Posn newPosition) {
+  public boolean handlePlayerMove(Actor p, Posn newPosition) {
     Posn prevPosition = p.getPosition();
     // remove player from old position
     tileGrid[prevPosition.getX()][prevPosition.getX()].setOccupier(null);
@@ -259,6 +265,10 @@ public class Level {
     // add player to new position
     tileGrid[newPosition.getX()][newPosition.getX()].setOccupier(p);
     levelGrid[newPosition.getX()][newPosition.getY()] = "O";
+
+    // check if player's new position is on Exit
+    return this.exitDoorPosition.equals(newPosition);
+
   }
 
 
@@ -333,7 +343,9 @@ public class Level {
   private void addWayPoints(List<Posn> waypoints) {
     for (Posn posn : waypoints) {
       this.levelGrid[posn.getX()][posn.getY()] = "+";
-      this.tileGrid[posn.getX()][posn.getY()] = new Tile(false);
+      Tile wayPointTile = new Tile(false);
+      wayPointTile.setPosition(new Posn(posn.getX(), posn.getY()));
+      this.tileGrid[posn.getX()][posn.getY()] = wayPointTile;
     }
   }
 
@@ -355,15 +367,16 @@ public class Level {
         int direction = calcDirection(start.getY(), end.getY());
         for (int t = 0; t < tileSegement.size(); t++) {
           Tile tile = tileSegement.get(t);
+          tile.setPosition(new Posn(start.getX(), start.getY() + ((t + 1) * direction)));
           this.levelGrid[start.getX()][start.getY() + ((t + 1) * direction)] = tile.toString();
           this.tileGrid[start.getX()][start.getY() + ((t + 1) * direction)] = tile;
-
         }
       } else if (start.getY() == end.getY()) {
         // check if tiles should be laid right or left
         int direction = calcDirection(start.getX(), end.getX());
         for (int t = 0; t < tileSegement.size(); t++) {
           Tile tile = tileSegement.get(t);
+          tile.setPosition(new Posn(start.getX() + ((t + 1) * direction), start.getY()));
           this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
           this.tileGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile;
         }
@@ -482,6 +495,54 @@ public class Level {
     }
     return reachablePosns;
   }
+  /**
+   * A level is over if the exit door is unlocked and a player goes through it or
+   *  if all players in the level are expelled.
+   * @return whether or not the given Level is over or not
+   */
+  public boolean isLevelEnd() {
+    return false;
+  }
+
+  /**
+   * Invalid if too far, wall, empty space (no tile) or interaction is invalid
+   * A move is to far if the desired tile is more than two cardinal moves away
+   * @param actor the given actor moving
+   * @param destination the destination it is trying to move to
+   * @return whether or not there move is valid
+   */
+  public boolean canActorMoveHere(Actor actor, Posn destination) {
+    boolean isDestinationTraversable = checkTraversable(destination);
+    if (!isDestinationTraversable) {
+      return false;
+    }
+    // check if the player is any of the rooms. If so, check the possible cardinal moves
+    // from the players position in the room and see if the destination is one of them
+    for (Room room: this.rooms) {
+      if (room.isPosnInRoom(actor.getPosition())) {
+        List<Posn> oneCardinalMove = room.getNextPossibleCardinalMoves(actor.getPosition());
+        List<Posn> allCardinalMoves = new ArrayList(oneCardinalMove);
+        for (Posn cardinalMove : oneCardinalMove) {
+           allCardinalMoves.addAll(room.getNextPossibleCardinalMoves(cardinalMove));
+        }
+        return allCardinalMoves.contains(destination);
+      }
+    }
+    // check if the player is any of the rooms. If so, check the possible cardinal moves
+    // from the players position in the room and see if the destination is one of them
+    for (Hallway hallway: this.hallways) {
+      if (hallway.isPosnInHallway(actor.getPosition())) {
+        List<Posn> oneCardinalMove = hallway.getNextPossibleCardinalMoves(actor.getPosition());
+        List<Posn> allCardinalMoves = new ArrayList(oneCardinalMove);
+        for (Posn cardinalMove : oneCardinalMove) {
+          allCardinalMoves.addAll(hallway.getNextPossibleCardinalMoves(cardinalMove));
+        }
+        return allCardinalMoves.contains(destination);
+      }
+    }
+    // if none of the above conditions are true, then actor cannot move here
+    return false;
+  }
 
 
   public List<Room> getRooms() {
@@ -539,4 +600,5 @@ public class Level {
   public void setExitKeyPosition(Posn exitKeyPosition) {
     this.exitKeyPosition = exitKeyPosition;
   }
+
 }

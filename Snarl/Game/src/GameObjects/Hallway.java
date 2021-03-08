@@ -1,5 +1,6 @@
 package GameObjects;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,4 +147,41 @@ public class Hallway {
     return true;
   }
 
+  /**
+   * Returns the position in front of the given and behind it in the hallway
+   *
+   * @param position the position from which to calculate the other moves
+   * @return
+   */
+  public List<Posn> getNextPossibleCardinalMoves(Posn position) {
+    List<Posn> cardinalMoves = new ArrayList<>();
+
+    List<Posn> allPoints = new ArrayList<>();
+    allPoints.add(doors.get(0).getTileCoord());
+    allPoints.addAll(this.getWaypoints());
+    allPoints.add(doors.get(1).getTileCoord());
+
+    List<Posn> possibleMoves = new ArrayList<>();
+    possibleMoves.add(new Posn(position.getX(), position.getY() + 1));
+    possibleMoves.add(new Posn(position.getX(), position.getY() - 1));
+    possibleMoves.add(new Posn(position.getX() + 1, position.getY()));
+    possibleMoves.add(new Posn(position.getX() - 1, position.getY() + 1));
+
+    for (Posn wayPointOrDoor : allPoints) {
+      if (possibleMoves.contains(wayPointOrDoor)) {
+        cardinalMoves.add(wayPointOrDoor);
+      }
+    }
+    for (List<Tile> segment : tileSegments) {
+      for (Tile tile : segment) {
+        Posn tilePosition = tile.getPosition();
+        if (possibleMoves.contains(tilePosition)) {
+          cardinalMoves.add(tilePosition);
+        }
+      }
+    }
+
+    return cardinalMoves;
+  }
 }
+

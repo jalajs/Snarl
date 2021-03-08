@@ -19,4 +19,9 @@ public class Adversary extends Actor {
   public String representation() {
     return "#";
   }
+
+  @Override
+  public boolean isPlayer() {
+    return false;
+  }
 }

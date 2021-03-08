@@ -19,4 +19,9 @@ public class Player extends Actor {
   public String representation() {
     return "O";
   }
+
+  @Override
+  public boolean isPlayer() {
+    return true;
+  }
 }

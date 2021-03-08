@@ -1,9 +1,5 @@
 package GameObjects;
 
-import GameObjects.Actor;
-import GameObjects.Collectable;
-import GameObjects.Door;
-
 /**
  * Represents a game tile and contains information on if it is a wall and what is on the tile
  */
@@ -12,6 +8,7 @@ public class Tile {
   private Collectable collectable;
   private Door door;
   private boolean isWall;
+  private Posn position;
 
   /**
    * Default tile constructor
@@ -25,10 +22,11 @@ public class Tile {
 
   /**
    * GameObjects.Tile constructor that allows specification if it is a wall or not
+   *
    * @param isWall indicating if it is a wall or not
    */
   public Tile(boolean isWall) {
-   this.isWall = isWall;
+    this.isWall = isWall;
     this.occupier = null;
     this.collectable = null;
     this.door = null;
@@ -42,19 +40,39 @@ public class Tile {
   public String toString() {
     if (isWall) {
       return "X";
-    }
-    else if (occupier != null) {
+    } else if (occupier != null) {
       return occupier.representation();
-    }
-    else if (collectable != null) {
+    } else if (collectable != null) {
       return collectable.toString();
-    }
-    else if (door != null) {
+    } else if (door != null) {
       return door.toString();
-    }
-    else {
+    } else {
       return ".";
     }
+  }
+
+  /**
+   * If the given actor is a player, then the tile is not interactable only if it contains another
+   * player or if it contains the exit door and the level is not exitable. If the given actor is an
+   * adversary the the tile is always interactable Note: this is called after is Move valid, so we
+   * know the tile is traversable and accessible
+   *
+   * @param actor      the actor trying to do the interaction
+   * @param isExitable indicates if the exit door can be interacted with
+   * @return whether or not the interaction is valid
+   */
+  public boolean isInteractable(Actor actor, boolean isExitable) {
+    if (actor.isPlayer()) {
+      if (this.getDoor() != null) {
+        return !door.isLevelExit() || (door.isLevelExit() && isExitable);
+      }
+      if (this.getOccupier() != null) {
+        return !occupier.isPlayer();
+      }
+    }
+
+    return true;
+
   }
 
   public Actor getOccupier() {
@@ -82,8 +100,21 @@ public class Tile {
 
   }
 
-  public boolean getisWall() { return isWall; }
+  public boolean getisWall() {
+    return isWall;
+  }
 
-  public void setisWall(boolean isWall) { this.isWall = isWall;}
+  public void setisWall(boolean isWall) {
+    this.isWall = isWall;
+  }
+
+  public Posn getPosition() {
+    return position;
+  }
+
+  public void setPosition(Posn position) {
+    this.position = position;
+  }
+
 
 }

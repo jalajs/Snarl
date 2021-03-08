@@ -14,13 +14,17 @@ import GameState.GameState;
 public class GameStateModel implements GameState {
   private Level level;
   private boolean isExitable;
+  private boolean playerIsOnExit;
   private List<Actor> actors;
   private List<Collectable> collectables;
   private List<Player> exitedPlayers;
+  private int currentLevelNumber;
+  private int totalLevels;
 
   public GameStateModel(Level level) {
     this.level = level;
     this.isExitable = false;
+    this.playerIsOnExit = false;
     this.actors = new ArrayList<>();
     this.collectables = new ArrayList<>();
     this.exitedPlayers = new ArrayList<>();
@@ -100,7 +104,9 @@ public class GameStateModel implements GameState {
    * @param posn is the new position of the
    */
   public void handleMovePlayer(Player p, Posn posn) {
-    this.level.handlePlayerMove(p, posn);
+    boolean reachExit = this.level.handlePlayerMove(p, posn);
+    this.playerIsOnExit = reachExit;
+
     // set the player's position to the new posn
     p.setPosition(posn);
   }
@@ -127,7 +133,7 @@ public class GameStateModel implements GameState {
 
   @Override
   public boolean isGameComplete() {
-    return false;
+    return this.currentLevelNumber == this.totalLevels && this.isLevelEnd();
   }
 
   @Override
@@ -144,6 +150,52 @@ public class GameStateModel implements GameState {
   public void endGame() {
 
   }
+
+
+  /**
+   * A level is over if the exit door is unlocked and a player goes through it or
+   *  if all players in the level are expelled.
+   * @return whether or not the given Level is over or not
+   */
+  public boolean isLevelEnd() {
+    if (exitedPlayers.size() == this.numberOfPlayers()) {
+      return true;
+    }
+    return this.isExitable() && this.playerIsOnExit;
+  }
+
+
+  /**
+   *  A GameState is invalid if any actors are on walls or otherwise in bad positions or the exit key
+   *  is in a bad position
+   * @return true if the GameState is valid
+   */
+  @Override
+  public boolean isStateValid() {
+    for (Actor actor : this.actors) {
+      // check if each actor is on a non wall tile
+      Posn actorPosition = actor.getPosition();
+      if (!level.checkTraversable(actorPosition)) {
+        return false;
+      }
+    }
+    return level.checkTraversable(level.getExitKeyPosition());
+  }
+
+  /**
+   * Calculates the number of players in the list of actors
+   * @return the number of players
+   */
+  private int numberOfPlayers() {
+   int numberOfPlayers = 0;
+   for (Actor actor: actors) {
+     if (actor.isPlayer()) {
+       numberOfPlayers++;
+     }
+   }
+   return numberOfPlayers;
+  }
+
 
   public Level getLevel() {
     return level;
@@ -179,5 +231,29 @@ public class GameStateModel implements GameState {
 
   public void setExitedPlayers(List<Player> exitedPlayers) {
     this.exitedPlayers = exitedPlayers;
+  }
+
+  public boolean isPlayerIsOnExit() {
+    return playerIsOnExit;
+  }
+
+  public void setPlayerIsOnExit(boolean playerIsOnExit) {
+    this.playerIsOnExit = playerIsOnExit;
+  }
+
+  public int getCurrentLevelNumber() {
+    return currentLevelNumber;
+  }
+
+  public void setCurrentLevelNumber(int currentLevelNumber) {
+    this.currentLevelNumber = currentLevelNumber;
+  }
+
+  public int getTotalLevels() {
+    return totalLevels;
+  }
+
+  public void setTotalLevels(int totalLevels) {
+    this.totalLevels = totalLevels;
   }
 }
