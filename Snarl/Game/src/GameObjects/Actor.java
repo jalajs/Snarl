@@ -9,7 +9,13 @@ import java.util.List;
  */
 public abstract class Actor {
   private Posn position;
-  private String name;
+  public String name;
+
+  public Actor() {};
+
+  public Actor(String name) {
+    this.name = name;
+  }
 
   public Posn getPosition() {
     return position;

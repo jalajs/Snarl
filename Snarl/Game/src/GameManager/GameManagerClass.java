@@ -74,8 +74,8 @@ public class GameManagerClass implements GameManager {
    *             loaded from somewhere else, or an AI connected via a network
    */
   @Override
-  public void addAdversary(String type) {
-    Adversary adversary = new Adversary(type);
+  public void addAdversary(String type, String name) {
+    Adversary adversary = new Adversary(type, name);
     adversaries.add(adversary);
   }
 

@@ -55,7 +55,7 @@ public class testState {
       JSONArray stateJSON = new JSONArray(valueString);
 
       JSONObject jsonState = (JSONObject) stateJSON.get(0);
-      JSONString jsonName = (JSONString) stateJSON.get(1);
+      String jsonName = (String) stateJSON.get(1);
       JSONArray jsonPoint = (JSONArray) stateJSON.get(2);
 
       JSONObject jsonLevel = (JSONObject) jsonState.get("level");
@@ -81,7 +81,7 @@ public class testState {
       Level level = testLevel.buildLevel(rooms, hallways, objectPositions);
       boolean traversable = level.checkTraversable(point);
 
-      if (doesPlayerExist(jsonName.toString(), players)) {
+      if (!doesPlayerExist(jsonName, players)) {
         outputArray.put("Failure");
         outputArray.put("Player ");
         outputArray.put(jsonName);
@@ -149,10 +149,11 @@ public class testState {
    * @return
    */
   private static JSONArray generateOutput(GameState gs, List<Actor> players, boolean exitable,
-                                          JSONObject levelObject, JSONString name, Posn point) {
+                                          JSONObject levelObject, String name, Posn point) {
     JSONArray outputArray = new JSONArray();
-    Player player = findPlayer(name.toString(), players);
+    Player player = findPlayer(name, players);
     String interactionType = gs.handleMovePlayer(player, point);
+    System.out.println(interactionType);
     if (gs.isPlayerIsOnExit() && exitable) {
       outputArray.put("Success");
       outputArray.put("Player ");
@@ -165,6 +166,7 @@ public class testState {
       outputArray.put(gameStateToJSONObject(gs, levelObject));
 
     } else if (interactionType.equals("Adversary")) {
+      gs.handlePlayerExpulsion(player);
       outputArray.put("Success");
       outputArray.put("Player ");
       outputArray.put(name);
@@ -211,15 +213,16 @@ public class testState {
         Player player = (Player) actor;
         actorPositionObject.put("type","player");
         actorPositionObject.put("name", player.getName());
-        actorPositionObject.put("position", player.getPosition());
-
-      } else {
+        actorPositionObject.put("position", testRoom.posnToJson(player.getPosition()));
+        actorPositionList.put(actorPositionObject);
+      } else if (!actor.isPlayer() && actorType.equals("adversary")) {
         Adversary adversary = (Adversary) actor;
         actorPositionObject.put("type", adversary.getType());
         actorPositionObject.put("name", adversary.getName());
-        actorPositionObject.put("position", adversary.getPosition());
+        System.out.println(adversary.getName() + " x " + adversary.getPosition().getX() + " y " + adversary.getPosition().getY());
+        actorPositionObject.put("position", testRoom.posnToJson(adversary.getPosition()));
+        actorPositionList.put(actorPositionObject);
       }
-      actorPositionList.put(actorPositionObject);
     }
 
     return actorPositionList;
@@ -240,6 +243,11 @@ public class testState {
       JSONObject actorPositionObject = (JSONObject) actorPositionList.get(i);
       Actor actor = parseActor(actorPositionObject);
       actors.add(actor);
+    }
+    System.out.println(actors.size());
+    for (Actor actor: actors) {
+      System.out.print(actor.getName());
+      System.out.println(" x: "+ actor.getPosition().getX() + " y " + actor.getPosition().getY());
     }
     return actors;
   }
@@ -275,7 +283,7 @@ public class testState {
   private static GameState buildGameState(Level level, List<Actor> players, List<Actor> adversaries) {
     Posn keyPosition = level.getExitKeyPosition();
     GameState gs = new GameStateModel(level);
-    gs.initGameState(players, adversaries, keyPosition);
+    gs.initGameStateWhereActorsHavePositions(players, adversaries, keyPosition);
     return gs;
   }
 }

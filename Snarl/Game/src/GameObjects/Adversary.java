@@ -19,8 +19,8 @@ public class Adversary extends Actor {
    * @param type
    */
   public Adversary(String type, String name) {
+    super(name);
     this.type = type;
-    this.name = name;
   }
 
   /**

@@ -26,6 +26,19 @@ public interface GameState {
    */
   void initGameState(List<Actor> players, List<Actor> adversaries, Posn keyPosn);
 
+  void handlePlayerExpulsion(Player expelledPlayer);
+
+  /**
+   * Creates the initial game state by placing the given actors in the game. Players and adversaries
+   * are placed where their positions are. The key is
+   * placed on the given position
+   *
+   * @param players are the list of players in the game
+   * @param adversaries are the adversaries in the game
+   * @param keyPosn is the position to place the key
+   */
+  void initGameStateWhereActorsHavePositions(List<Actor> players, List<Actor> adversaries, Posn keyPosn);
+
   /**
    *   GameObjects.Level object is created by random level generator in GameManager
    *   Also resets all the other fields according to the generated GameObjects.Level

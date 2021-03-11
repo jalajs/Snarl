@@ -39,7 +39,7 @@ public class GameManagerTests {
   public void testAddAdversaries() {
     GameManagerClass gameManager = new GameManagerClass();
     assertEquals(gameManager.getAdversaries().size(), 0);
-    gameManager.addAdversary("AI");
+    gameManager.addAdversary("AI", "Jo");
     assertEquals(gameManager.getAdversaries().size(), 1);
     assertEquals("AI", gameManager.getAdversaries().get(0).getType());
   }
@@ -81,8 +81,8 @@ public class GameManagerTests {
     GameManagerClass manager = new GameManagerClass();
     manager.addPlayer("Jalaj");
     manager.addPlayer("Megan");
-    manager.addAdversary("Zombie");
-    manager.addAdversary("Zombie");
+    manager.addAdversary("Zombie", "Rolph");
+    manager.addAdversary("Zombie", "Mr Bean");
     manager.setTurn(0);
     manager.setGs(gs);
 
@@ -91,8 +91,8 @@ public class GameManagerTests {
 
     Player player1 = new Player("Jalaj");
     Player player2 = new Player("Megan");
-    Adversary adversary1 = new Adversary("Zombie");
-    Adversary adversary2 = new Adversary("Zombie");
+    Adversary adversary1 = new Adversary("Zombie", "Carl");
+    Adversary adversary2 = new Adversary("Zombie", "Robert");
 
     players.add(player1);
     players.add(player2);

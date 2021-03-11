@@ -23,7 +23,7 @@ public interface GameManager {
    * @param type
    *
    */
-  void addAdversary(String type);
+  void addAdversary(String type, String name);
 
 
   /**

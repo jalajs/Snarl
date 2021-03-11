@@ -11,8 +11,7 @@ public class Player extends Actor {
   /**
    * This is blank slate constructor for testing
    */
-  public Player() {
-  }
+  public Player() { }
 
   /**
    * This initializes a player with the given name. All players in a game
@@ -20,7 +19,7 @@ public class Player extends Actor {
    * @param name
    */
   public Player(String name) {
-    this.name = name;
+    super(name);
   }
 
   /**

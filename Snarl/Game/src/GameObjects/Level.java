@@ -262,11 +262,12 @@ public class Level {
     // remove player from old position
     tileGrid[prevPosition.getX()][prevPosition.getX()].setOccupier(null);
     levelGrid[prevPosition.getX()][prevPosition.getY()] = ".";
-    // add player to new position
-    tileGrid[newPosition.getX()][newPosition.getY()].setOccupier(p);
-    levelGrid[newPosition.getX()][newPosition.getY()] = "O";
-
-    p.setPosition(newPosition);
+    // add player to new position if there no current occupier
+    if (tileGrid[newPosition.getX()][newPosition.getY()].getOccupier() == null) {
+      tileGrid[newPosition.getX()][newPosition.getY()].setOccupier(p);
+      levelGrid[newPosition.getX()][newPosition.getY()] = "O";
+      p.setPosition(newPosition);
+    }
     // check if player's new position is on Exit
     return tileGrid[newPosition.getX()][newPosition.getY()];
   }

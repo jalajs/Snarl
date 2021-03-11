@@ -58,6 +58,31 @@ public class GameStateModel implements GameState {
   }
 
   /**
+   * Creates the initial game state by placing the given actors in the game. Players and adversaries
+   * are placed where their positions are. The key is
+   * placed on the given position
+   *
+   * @param players are the list of players in the game
+   * @param adversaries are the adversaries in the game
+   * @param keyPosn is the position to place the key
+   */
+  public void initGameStateWhereActorsHavePositions(List<Actor> players, List<Actor> adversaries, Posn keyPosn) {
+    this.level.initGrid();
+    // places all the actors based on their own positions
+    this.level.placeActorsInLevel(players);
+    this.level.placeActorsInLevel(adversaries);
+    // place the key somewhere in the level
+    this.level.dropKey(keyPosn);
+    // set the this.actors to the list of players and adversaries
+    for (Actor player : players) {
+      this.actors.add(player);
+    }
+    for (Actor adversary : adversaries) {
+      this.actors.add(adversary);
+    }
+  }
+
+  /**
    * Creates an intermediate game state. This method places the given players and adversaries in
    * this.level.
    *
@@ -100,6 +125,7 @@ public class GameStateModel implements GameState {
    */
   public void handlePlayerExpulsion(Player expelledPlayer) {
     this.exitedPlayers.add(expelledPlayer);
+    this.actors.remove(expelledPlayer);
     this.level.expelPlayer(expelledPlayer);
   }
 
