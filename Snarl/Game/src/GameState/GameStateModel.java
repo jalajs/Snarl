@@ -59,20 +59,22 @@ public class GameStateModel implements GameState {
 
   /**
    * Creates the initial game state by placing the given actors in the game. Players and adversaries
-   * are placed where their positions are. The key is
-   * placed on the given position
+   * are placed where their positions are. The key is placed on the given position.
+   * <p>
+   * This is used testState
    *
-   * @param players are the list of players in the game
+   * @param players     are the list of players in the game
    * @param adversaries are the adversaries in the game
-   * @param keyPosn is the position to place the key
+   * @param keyPosn     is the position to place the key
    */
   public void initGameStateWhereActorsHavePositions(List<Actor> players, List<Actor> adversaries, Posn keyPosn) {
-    this.level.initGrid();
     // places all the actors based on their own positions
     this.level.placeActorsInLevel(players);
     this.level.placeActorsInLevel(adversaries);
     // place the key somewhere in the level
-    this.level.dropKey(keyPosn);
+    if (keyPosn != null) {
+      this.level.dropKey(keyPosn);
+    }
     // set the this.actors to the list of players and adversaries
     for (Actor player : players) {
       this.actors.add(player);
@@ -127,6 +129,19 @@ public class GameStateModel implements GameState {
     this.exitedPlayers.add(expelledPlayer);
     this.actors.remove(expelledPlayer);
     this.level.expelPlayer(expelledPlayer);
+  }
+
+
+  /**
+   * This method handles when player exits the game. Note: end game not implemented,
+   * this method just removes the player from the game state and adds it to the exited
+   * players.
+   *
+   * @param exitedPlayer
+   */
+  public void handlePlayerExit(Player exitedPlayer) {
+    this.exitedPlayers.add(exitedPlayer);
+    this.actors.remove(exitedPlayer);
   }
 
   /**
@@ -260,10 +275,14 @@ public class GameStateModel implements GameState {
               this.level.getTileGrid()[destination.getX()][destination.getY()])) {
         // move the player to the new tile
         String interactionType = this.handleMovePlayer(player, destination);
-        System.out.print(interactionType);
 
         // perform the prescribed interaction
         switch (interactionType) {
+          case "Exit":
+            if (this.isExitable()) {
+              this.handlePlayerExit(player);
+            }
+            break;
           case "Key":
             this.handleKeyCollection();
             break;
@@ -293,9 +312,8 @@ public class GameStateModel implements GameState {
   }
 
   /**
-   * This method calculate the tiles visible from the given posn.
-   * This method is currently just a STUB and will be implemented when relevant
-   * to a future milestone.
+   * This method calculate the tiles visible from the given posn. This method is currently just a
+   * STUB and will be implemented when relevant to a future milestone.
    *
    * @param userPosn the current position of the user
    * @return

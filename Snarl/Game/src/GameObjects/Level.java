@@ -89,6 +89,48 @@ public class Level {
   }
 
   /**
+   * This constructor builds a level given a list of rooms, hallways, and exit and key positions. It
+   * is assumed that the rooms, hallways, and posns are wellformed. This constructor is used
+   * primarily by the JSON tests, which is why the level perimeters are pre-set.
+   *
+   * @param rooms           list of rooms to be placed in the level
+   * @param hallways        list of hallways to be placed in the level
+   * @param exitAndKeyPosns array of posns ordered like this: (key, exit)
+   * @param exitLocked      represents whether or not the exit is locked and a key is in the
+   *                        exitAndKeyPosns
+   */
+  public Level(List<Room> rooms, List<Hallway> hallways, List<Posn> exitAndKeyPosns, boolean exitLocked) {
+    this.levelX = 101;
+    this.levelY = 101;
+    this.levelGrid = new String[this.levelX][this.levelY];
+    this.initGridSpace();
+    this.tileGrid = new Tile[this.levelX][this.levelY];
+    this.initEmptyTileGrid();
+    if (!exitLocked) {
+      Posn exitPosn = exitAndKeyPosns.get(0);
+
+      this.rooms = rooms;
+      this.hallways = hallways;
+      this.connectUpDoors();
+      this.initGrid();
+
+      this.createLevelExit(exitPosn);
+    } else {
+      Posn keyPosn = exitAndKeyPosns.get(0);
+      Posn exitPosn = exitAndKeyPosns.get(1);
+
+      this.rooms = rooms;
+      this.hallways = hallways;
+      this.connectUpDoors();
+      this.initGrid();
+
+      this.dropKey(keyPosn);
+      this.createLevelExit(exitPosn);
+    }
+
+  }
+
+  /**
    * connects the doors in the hallways and rooms to eachother
    */
   private void connectUpDoors() {
@@ -378,6 +420,7 @@ public class Level {
         for (int t = 0; t < tileSegement.size(); t++) {
           Tile tile = tileSegement.get(t);
           tile.setPosition(new Posn(start.getX() + ((t + 1) * direction), start.getY()));
+          // start = 0, t = 0, direction = -1
           this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
           this.tileGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile;
         }

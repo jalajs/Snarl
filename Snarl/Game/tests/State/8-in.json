@@ -29,9 +29,9 @@
     "position" : [1, 1]
   }],
   "adversaries" : [{
-    "type" : "adversary",
+    "type" : "zombie",
     "name" : "rolph",
     "position" : [1, 2]
   }],
   "exit-locked" : true
-}, "Bill", [1, 2]]
+}, "Bill", [5, 6]]

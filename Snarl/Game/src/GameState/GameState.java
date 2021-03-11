@@ -26,7 +26,23 @@ public interface GameState {
    */
   void initGameState(List<Actor> players, List<Actor> adversaries, Posn keyPosn);
 
+
+  /**
+   * Modifies the game state after a player is expelled
+   *
+   * @param expelledPlayer
+   */
   void handlePlayerExpulsion(Player expelledPlayer);
+
+
+  /**
+   * This method handles when player exits the game. Note: end game not implemented,
+   * this method just removes the player from the game state and adds it to the exited
+   * players.
+   *
+   * @param exitedPlayer
+   */
+  void handlePlayerExit(Player exitedPlayer);
 
   /**
    * Creates the initial game state by placing the given actors in the game. Players and adversaries

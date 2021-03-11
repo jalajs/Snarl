@@ -81,6 +81,13 @@ public class Tile {
    *         Possible interaction types are: Key, Adversary, None
    */
   public String getInteraction() {
+    if (door != null) {
+      if(this.door.isLevelExit()) {
+        return "Exit";
+      } else {
+        return "None";
+      }
+    }
     if (collectable != null) {
       return "Key";
     }

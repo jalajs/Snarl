@@ -71,14 +71,13 @@ public class testState {
 
       List<Room> rooms = testLevel.parseRooms(jsonRooms);
       List<Hallway> hallways = testLevel.parseHallways(jsonHallways);
-      List<Posn> objectPositions = testLevel.parseObjects(jsonObjects);
+      List<Posn> objectPositions = parseObjects(jsonObjects, jsonExit);
       List<Actor> players = parseActorPositionList(jsonPlayerPosList);
       List<Actor> adversaries = parseActorPositionList(jsonAdversaryPosList);
 
-
       Posn point = testRoom.jsonToPosn(jsonPoint);
 
-      Level level = testLevel.buildLevel(rooms, hallways, objectPositions);
+      Level level = buildLevel(rooms, hallways, objectPositions, jsonExit);
       boolean traversable = level.checkTraversable(point);
 
       if (!doesPlayerExist(jsonName, players)) {
@@ -148,13 +147,13 @@ public class testState {
    * @param point
    * @return
    */
-  private static JSONArray generateOutput(GameState gs, List<Actor> players, boolean exitable,
+  private static JSONArray generateOutput(GameState gs, List<Actor> players, boolean exitLocked,
                                           JSONObject levelObject, String name, Posn point) {
     JSONArray outputArray = new JSONArray();
     Player player = findPlayer(name, players);
     String interactionType = gs.handleMovePlayer(player, point);
-    System.out.println(interactionType);
-    if (gs.isPlayerIsOnExit() && exitable) {
+    if (gs.isPlayerIsOnExit() && !exitLocked) {
+      gs.handlePlayerExit(player);
       outputArray.put("Success");
       outputArray.put("Player ");
       outputArray.put(name);
@@ -219,7 +218,6 @@ public class testState {
         Adversary adversary = (Adversary) actor;
         actorPositionObject.put("type", adversary.getType());
         actorPositionObject.put("name", adversary.getName());
-        System.out.println(adversary.getName() + " x " + adversary.getPosition().getX() + " y " + adversary.getPosition().getY());
         actorPositionObject.put("position", testRoom.posnToJson(adversary.getPosition()));
         actorPositionList.put(actorPositionObject);
       }
@@ -243,11 +241,6 @@ public class testState {
       JSONObject actorPositionObject = (JSONObject) actorPositionList.get(i);
       Actor actor = parseActor(actorPositionObject);
       actors.add(actor);
-    }
-    System.out.println(actors.size());
-    for (Actor actor: actors) {
-      System.out.print(actor.getName());
-      System.out.println(" x: "+ actor.getPosition().getX() + " y " + actor.getPosition().getY());
     }
     return actors;
   }
@@ -286,4 +279,50 @@ public class testState {
     gs.initGameStateWhereActorsHavePositions(players, adversaries, keyPosition);
     return gs;
   }
+
+  /**
+   * Parses the JSONArray of objects into a list of positions for the key and exit
+   * @param jsonObjects the JSONArray for the positions of the key and exit
+   * @param exitLocked whether or not the exit door is locked
+   * @return A list of posn for the locations of the key and exit. Key position is first and exit
+   * position is second.
+   */
+  static List<Posn> parseObjects(JSONArray jsonObjects, boolean exitLocked) {
+    List<Posn> positions = new ArrayList<>();
+    if (!exitLocked) {
+      JSONObject objectExit = (JSONObject) jsonObjects.get(0);
+      Posn exitPosition = testRoom.jsonToPosn((JSONArray) objectExit.get("position"));
+      positions.add(exitPosition);
+      return positions;
+    } else {
+      JSONObject objectKey = (JSONObject) jsonObjects.get(0);
+      JSONObject objectExit = (JSONObject) jsonObjects.get(1);
+
+      Posn keyPosition = testRoom.jsonToPosn((JSONArray) objectKey.get("position"));
+      Posn exitPosition = testRoom.jsonToPosn((JSONArray) objectExit.get("position"));
+
+      positions.add(keyPosition);
+      positions.add(exitPosition);
+
+      return positions;
+    }
+  }
+
+
+  /**
+   * Builds a level from a given list of rooms, hallways, and posns.
+   *
+   * @param rooms List<Rooms> indicates the level's rooms
+   * @param hallways List<Hallway> indicates the level's hallways
+   * @param exitAndKeyPosns List<Posn> includes the exit and the key position (ordered as listed)
+   * @param exitLocked whether or not the exit door is locked
+   * @return the level
+   */
+  static Level buildLevel(List<Room> rooms,
+                          List<Hallway> hallways,
+                          List<Posn> exitAndKeyPosns,
+                          boolean exitLocked) {
+    return new Level(rooms, hallways, exitAndKeyPosns, exitLocked);
+  }
+
 }
