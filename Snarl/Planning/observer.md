@@ -17,4 +17,4 @@ The View class, as it extends the Observer abstract class, will be privy to the 
 <br>
 Please consult the below UML diagram for any questions about this components structure.
 <br>
-<img src="Milestone5UML.png" alt="UML Diagram" />
+<img src="Milestone5UML.PNG" alt="UML Diagram" />
