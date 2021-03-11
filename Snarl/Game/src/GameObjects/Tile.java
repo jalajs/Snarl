@@ -75,6 +75,23 @@ public class Tile {
 
   }
 
+  /**
+   * If a player lands on this tile, this interaction will take place
+   * @return the string representation of the interaction type
+   *         Possible interaction types are: Key, Adversary, None
+   */
+  public String getInteraction() {
+    if (collectable != null) {
+      return "Key";
+    }
+    if (occupier != null) {
+      if (!occupier.isPlayer()) {
+        return "Adversary";
+      }
+    }
+      return "None";
+  }
+
   public Actor getOccupier() {
     return occupier;
   }
@@ -115,6 +132,5 @@ public class Tile {
   public void setPosition(Posn position) {
     this.position = position;
   }
-
 
 }

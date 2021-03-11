@@ -88,9 +88,9 @@ public class testLevel {
    * @param exitAndKeyPosns List<Posn> includes the exit and the key position (ordered as listed)
    * @return the level
    */
-  private static Level buildLevel(List<Room> rooms,
-                                  List<Hallway> hallways,
-                                  List<Posn> exitAndKeyPosns) {
+  static Level buildLevel(List<Room> rooms,
+                          List<Hallway> hallways,
+                          List<Posn> exitAndKeyPosns) {
     return new Level(rooms, hallways, exitAndKeyPosns);
   }
 
@@ -99,7 +99,7 @@ public class testLevel {
    * @param jsonRooms the given JSONArray representation of rooms
    * @return a list of rooms
    */
-  private static List<Room> parseRooms(JSONArray jsonRooms) {
+  static List<Room> parseRooms(JSONArray jsonRooms) {
     List<Room> rooms = new ArrayList<>();
     for (int i = 0; i < jsonRooms.length(); i++) {
       JSONObject roomObject = (JSONObject) jsonRooms.get(i);
@@ -114,7 +114,7 @@ public class testLevel {
    * @param jsonHallways the given JSONArray representation of hallways
    * @return a list of hallways
    */
-  private static List<Hallway> parseHallways(JSONArray jsonHallways) {
+  static List<Hallway> parseHallways(JSONArray jsonHallways) {
     List<Hallway> hallways = new ArrayList<>();
     for (int i = 0; i < jsonHallways.length(); i++) {
       JSONObject hallwayObject = (JSONObject) jsonHallways.get(i);
@@ -211,7 +211,7 @@ public class testLevel {
    * @return A list of posn for the locations of the key and exit. Key position is first and exit
    * position is second.
    */
-  private static List<Posn> parseObjects(JSONArray jsonObjects) {
+  static List<Posn> parseObjects(JSONArray jsonObjects) {
     List<Posn> positions = new ArrayList<>();
     JSONObject objectKey = (JSONObject) jsonObjects.get(0);
     JSONObject objectExit = (JSONObject) jsonObjects.get(1);

@@ -333,6 +333,7 @@ public class TestUtils {
     List<ArrayList<Tile>> room4TileGrid = new ArrayList<>();
     Door room4d1 = new Door();
     Door room4d2 = new Door();
+    room4d2.setLevelExit(true);
     room4d1.setTileCoord(new Posn(13, 7));
     room4d2.setTileCoord(new Posn(9, 14));
 

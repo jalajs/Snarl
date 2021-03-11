@@ -1,7 +1,4 @@
-[{
-  "type" : "state",
-  "level" :
-  { "type": "level",
+[{ "type": "level",
   "rooms": [ { "type": "room",
     "origin": [ 3, 1 ],
     "bounds": { "rows": 4, "columns": 4 },
@@ -35,8 +32,4 @@
       "from": [ 6, 2 ],
       "to": [ 12, 5 ],
       "waypoints": [ [ 12, 2 ] ] } ]
-},
-  "players" : [],
-  "adversaries" : [],
-  "exit-locked" : true
-}, "Bill", [1, 0]]
+}, [6, 10]]

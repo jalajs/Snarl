@@ -1,14 +1,30 @@
 package GameState;
 
+import java.util.List;
+
 import GameObjects.Actor;
 import GameObjects.Level;
 import GameObjects.Player;
 import GameObjects.Posn;
+import GameObjects.Tile;
+import GameObjects.MoveAction;
+import RuleChecker.RuleChecker;
 
 /**
  * Represents the game's current state and its rules.
  */
 public interface GameState {
+
+  /**
+   * Creates the initial game state by placing the given actors in the game. Players
+   * are placed in the first room, and adversaries are placed in the last room. The key is
+   * placed on the given position
+   *
+   * @param players are the list of players in the game
+   * @param adversaries are the adversaries in the game
+   * @param keyPosn is the position to place the key
+   */
+  void initGameState(List<Actor> players, List<Actor> adversaries, Posn keyPosn);
 
   /**
    *   GameObjects.Level object is created by random level generator in GameManager
@@ -61,4 +77,54 @@ public interface GameState {
    * @return
    */
   boolean isStateValid();
+
+  /**
+   * This returns the actors in the game.
+   * @return
+   */
+  List<Actor> getActors();
+
+  /**
+   *
+   * @return
+   */
+  Level getLevel();
+
+  /**
+   * This handles the given MoveAction object and uses the given rule checker to
+   * validate any resulting interaction
+   *
+   * @param action
+   * @param checker
+   */
+  void handleMoveAction(MoveAction action, RuleChecker checker);
+
+  /**
+   * Returns whether or not the current level is exitable
+   *
+   * @return
+   */
+  boolean isExitable();
+
+  /**
+   * This method returns all the tiles the user can see at its position
+   *
+   * @param userPosn the current position of the user
+   * @return
+   */
+  List<List<Tile>> calculateVisibleTilesForUser(Posn userPosn);
+
+  /**
+   * This method a string interaction resulting from the player move
+   * @param p
+   * @param posn
+   * @return
+   */
+  String handleMovePlayer(Player p, Posn posn);
+
+  /**
+   * Returns whether or not the player is currently on the exit in this game state.
+   * @return
+   */
+  boolean isPlayerIsOnExit();
 }
