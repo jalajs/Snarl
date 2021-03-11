@@ -10,8 +10,8 @@ The goal of the Observer component is to provide a rendered view of the game to 
 The Observer will have the following methods:
 <br>
 - Void update()
-   - This method updates all the information needed to render the view to the 3rd party.
-   - This method may be expanded to take in parameters relevant to rendering. It will be called by the Subject in notifyObservers().
+  - This method updates all the information needed to render the view to the 3rd party.
+  - This method may be expanded to take in parameters relevant to rendering. It will be called by the Subject in notifyObservers().
 <br>
 The View class, as it extends the Observer abstract class, will be privy to the Observer’s implementation of update. The View has a single String field representation that represents the rendered view of the game in ASCII form. This is what the 3rd party will be privy to in order to view the current state of the game. This design is easily extendable, as we could replace the string view with a more complex UI and still maintain the other functionality of the Observer.
 <br>
