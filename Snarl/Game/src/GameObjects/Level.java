@@ -346,13 +346,13 @@ public class Level {
   private void addRooms() {
     for (int i = 0; i < this.rooms.size(); i++) {
       Room room = this.rooms.get(i);
-      List<ArrayList<String>> roomGrid = room.renderRoom();
-      List<ArrayList<Tile>> roomTileGrid = room.getTileGrid();
+      String[][] roomGrid = room.renderRoom();
+      Tile[][] roomTileGrid = room.getTileGrid();
       Posn upperLeft = room.getUpperLeft();
       for (int x = 0; x < room.getxDim(); x++) {
         for (int y = 0; y < room.getyDim(); y++) {
-          this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid.get(x).get(y);
-          this.tileGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomTileGrid.get(x).get(y);
+          this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid[x][y];
+          this.tileGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomTileGrid[x][y];
         }
       }
     }

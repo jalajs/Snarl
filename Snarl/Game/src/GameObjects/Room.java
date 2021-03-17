@@ -14,7 +14,7 @@ import GameObjects.Tile;
  * dimensions, a list of collectables, and one or more doors.
  */
 public class Room {
-  private List<ArrayList<Tile>> tileGrid;
+  private Tile[][] tileGrid;
   private Posn upperLeft;
   private int xDim;
   private int yDim;
@@ -23,7 +23,7 @@ public class Room {
 
 
   public Room() {
-    this.tileGrid = new ArrayList<>();
+    this.tileGrid = new Tile[xDim][yDim];
     this.upperLeft = new Posn(0, 0);
     this.xDim = 0;
     this.yDim = 0;
@@ -31,7 +31,7 @@ public class Room {
     this.doors = new ArrayList<>();
   }
 
-  public Room(List<ArrayList<Tile>> tileGrid, Posn upperLeft, int xDim, int yDim, List<Collectable> collectables, List<Door> doors) {
+  public Room(Tile[][] tileGrid, Posn upperLeft, int xDim, int yDim, List<Collectable> collectables, List<Door> doors) {
     this.tileGrid = tileGrid;
     this.upperLeft = upperLeft;
     this.xDim = xDim;
@@ -40,13 +40,6 @@ public class Room {
     this.doors = doors;
   }
 
-  public List<ArrayList<Tile>> getTileGrid() {
-    return tileGrid;
-  }
-
-  public void setTileGrid(List<ArrayList<Tile>> tileGrid) {
-    this.tileGrid = tileGrid;
-  }
 
   public Posn getUpperLeft() {
     return upperLeft;
@@ -97,11 +90,11 @@ public class Room {
   @Override
   public String toString() {
     String roomAcc = "";
-    for (int i = 0; i < tileGrid.size(); i++) {
-      for (int j = 0; j < tileGrid.get(i).size(); j++) {
-        roomAcc += tileGrid.get(i).get(j).toString();
+    for (int i = 0; i < tileGrid.length; i++) {
+      for (int j = 0; j < tileGrid[i].length; j++) {
+        roomAcc += tileGrid[i][j].toString();
       }
-      if (i != tileGrid.size() - 1) {
+      if (i != tileGrid.length - 1) {
         roomAcc += "\n";
       }
     }
@@ -113,14 +106,12 @@ public class Room {
    *
    * @return A 2D list for all of the String representations of the tiles in the room
    */
-  public List<ArrayList<String>> renderRoom() {
-    List<ArrayList<String>> roomAcc = new ArrayList<ArrayList<String>>();
-    for (int i = 0; i < tileGrid.size(); i++) {
-      ArrayList<String> rowAcc = new ArrayList<>();
-      for (int j = 0; j < tileGrid.get(i).size(); j++) {
-        rowAcc.add(tileGrid.get(i).get(j).toString());
+  public String[][] renderRoom() {
+    String[][] roomAcc = new String[xDim][yDim];
+    for (int i = 0; i < xDim; i++) {
+      for (int j = 0; j < yDim; j++) {
+        roomAcc[i][j] = tileGrid[i][j].toString();
       }
-      roomAcc.add(rowAcc);
     }
     return roomAcc;
   }
@@ -169,7 +160,7 @@ public class Room {
     if ((playerX - 1) - this.upperLeft.getX() >= 0) {
       int roomX = (playerX - 1) - this.upperLeft.getX();
       int roomY = playerY - this.upperLeft.getY();
-      Tile north = this.tileGrid.get(roomX).get(roomY);
+      Tile north = this.tileGrid[roomX][roomY];
       int x = playerX - 1;
       if (!north.getisWall()) {
         possiblePosns.add(new Posn(playerX - 1, playerY));
@@ -179,7 +170,7 @@ public class Room {
     if ((playerY - 1) - this.upperLeft.getY() >= 0) {
       int roomX = playerX - this.upperLeft.getX();
       int roomY = (playerY - 1) - this.upperLeft.getY();
-      Tile west = this.tileGrid.get(roomX).get(roomY);
+      Tile west = this.tileGrid[roomX][roomY];
       if (!west.getisWall()) {
         possiblePosns.add(new Posn(playerX, playerY - 1));
       }
@@ -188,7 +179,7 @@ public class Room {
     if ((playerY + 1) < yRange) {
       int roomX = playerX - this.upperLeft.getX();
       int roomY = (playerY + 1) - this.upperLeft.getY();
-      Tile east = this.tileGrid.get(roomX).get(roomY);
+      Tile east = this.tileGrid[roomX][roomY];
       if (!east.getisWall()) {
         possiblePosns.add(new Posn(playerX, playerY + 1));
       }
@@ -197,7 +188,7 @@ public class Room {
     if ((playerX + 1) < xRange) {
       int roomX = (playerX + 1) - this.upperLeft.getX();
       int roomY = playerY - this.upperLeft.getY();
-      Tile south = this.tileGrid.get(roomX).get(roomY);
+      Tile south = this.tileGrid[roomX][roomY];
       if (!south.getisWall()) {
         possiblePosns.add(new Posn(playerX + 1, playerY));
       }
@@ -279,5 +270,21 @@ public class Room {
   @Override
   public int hashCode() {
     return Objects.hash(upperLeft);
+  }
+
+  public Tile[][] getTileGrid() {
+    return tileGrid;
+  }
+
+  public void setTileGrid(Tile[][] tileGrid) {
+    this.tileGrid = tileGrid;
+  }
+
+  public List<Door> getDoors() {
+    return doors;
+  }
+
+  public void setDoors(List<Door> doors) {
+    this.doors = doors;
   }
 }

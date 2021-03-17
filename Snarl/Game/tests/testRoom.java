@@ -124,7 +124,7 @@ public class testRoom {
     JSONObject roomBounds = (JSONObject) roomJSON.get("bounds");
     int rows = (int) roomBounds.get("rows");
     int columns = (int) roomBounds.get("columns");
-    List<ArrayList<Tile>> tileGrid = jsonArrayToTileGrid((JSONArray) roomJSON.get("layout"), room);
+    Tile[][] tileGrid = jsonArrayToTileGrid((JSONArray) roomJSON.get("layout"), room);
     room.setUpperLeft(origin);
     room.setxDim(rows);
     room.setyDim(columns);
@@ -142,30 +142,31 @@ public class testRoom {
    * @param layout the JSON array object
    * @return the tile grid built from layout
    */
-  public static List<ArrayList<Tile>> jsonArrayToTileGrid(JSONArray layout, Room room) {
-    List<ArrayList<Tile>> tileGrid = new ArrayList();
-    for (int i = 0; i < layout.length(); i ++) {
-      JSONArray layoutRow = (JSONArray) layout.get(i);
-      ArrayList<Tile> gridRow = new ArrayList();
-      for (int j = 0; j < layoutRow.length(); j++) {
-        int tileCode = (int) layoutRow.get(j);
+  public static Tile[][] jsonArrayToTileGrid(JSONArray layout, Room room) {
+    JSONArray layoutRow = (JSONArray) layout.get(0);
+    int xDim = layout.length();
+    int yDim = layoutRow.length();
+    Tile[][] tileGrid = new Tile[xDim][yDim];
+    for (int i = 0; i < xDim; i++) {
+      JSONArray layoutRowAcc = (JSONArray) layout.get(0);
+      for (int j = 0; j < yDim; j++) {
+        int tileCode = (int) layoutRowAcc.get(j);
         if (tileCode == 0) {
           Tile tile = new Tile(true);
-          gridRow.add(tile);
+          tileGrid[i][j] = tile;
         } else if (tileCode == 1) {
           Tile tile = new Tile(false);
-          gridRow.add(tile);
+          tileGrid[i][j] = tile;
         } else if (tileCode == 2) {
           Tile tile = new Tile(false);
           Door door = new Door();
-          door.setTileCoord( new Posn(i,j));
+          door.setTileCoord(new Posn(i, j));
           door.setRoom(room);
           tile.setDoor(door);
-          gridRow.add(tile);
+          tileGrid[i][j] = tile;
           room.addDoor(door);
         }
       }
-      tileGrid.add(gridRow);
     }
     return tileGrid;
   }
