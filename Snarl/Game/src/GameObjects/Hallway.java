@@ -1,6 +1,5 @@
 package GameObjects;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -161,11 +160,7 @@ public class Hallway {
     allPoints.addAll(this.getWaypoints());
     allPoints.add(doors.get(1).getTileCoord());
 
-    List<Posn> possibleMoves = new ArrayList<>();
-    possibleMoves.add(new Posn(position.getX(), position.getY() + 1));
-    possibleMoves.add(new Posn(position.getX(), position.getY() - 1));
-    possibleMoves.add(new Posn(position.getX() + 1, position.getY()));
-    possibleMoves.add(new Posn(position.getX() - 1, position.getY() + 1));
+   List<Posn> possibleMoves = this.generatePossibleMoves(position);
 
     for (Posn wayPointOrDoor : allPoints) {
       if (possibleMoves.contains(wayPointOrDoor)) {
@@ -182,6 +177,21 @@ public class Hallway {
     }
 
     return cardinalMoves;
+  }
+
+  /**
+   * Create a list of possible positions a person can move from the given position in a hallway
+   * @param position the origin position
+   * @return An enumeration of possible moves
+   */
+  private List<Posn> generatePossibleMoves(Posn position) {
+    List<Posn> possibleMoves = new ArrayList<>();
+    possibleMoves.add(new Posn(position.getX(), position.getY() + 1));
+    possibleMoves.add(new Posn(position.getX(), position.getY() - 1));
+    possibleMoves.add(new Posn(position.getX() + 1, position.getY()));
+    possibleMoves.add(new Posn(position.getX() - 1, position.getY() + 1));
+
+    return possibleMoves;
   }
 }
 

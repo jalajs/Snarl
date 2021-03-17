@@ -78,15 +78,6 @@ public interface GameState {
    */
   boolean isGameComplete();
 
-
-  /**
-   *  Moves a specific player to desired location
-   *   Calls validMove() before running the logics of the move, then calls updateGame()
-   * @param player
-   * @param destination
-   */
-  void movePlayer(Player player, Posn destination);
-
   /**
    *   Updates and rerenders the level with the newest data
    * @return

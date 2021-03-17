@@ -1,7 +1,5 @@
 package GameObjects;
 
-import GameObjects.Actor;
-
 /**
  * Represents a type of actor in the game. Players try to find the exit in the level and can be expelled
  * from levels.
@@ -30,6 +28,10 @@ public class Player extends Actor {
     return "O";
   }
 
+  /**
+   * Returns true as this player is a player
+   * @return true
+   */
   @Override
   public boolean isPlayer() {
     return true;

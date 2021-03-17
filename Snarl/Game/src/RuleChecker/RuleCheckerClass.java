@@ -6,6 +6,9 @@ import GameObjects.Posn;
 import GameObjects.Tile;
 import GameState.GameState;
 
+/**
+ * This class represents the RuleChecker component as described in the Planning/rulechecker.md
+ */
 public class RuleCheckerClass implements RuleChecker {
 
 

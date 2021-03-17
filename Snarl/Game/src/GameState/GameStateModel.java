@@ -172,6 +172,9 @@ public class GameStateModel implements GameState {
     return this.level.createLevelString();
   }
 
+  public Level getLevel() {
+    return level;
+  }
 
   @Override
   public void setLevel(Level newLevel) {
@@ -186,11 +189,6 @@ public class GameStateModel implements GameState {
   @Override
   public boolean isGameComplete() {
     return this.currentLevelNumber == this.totalLevels && this.isLevelEnd();
-  }
-
-  @Override
-  public void movePlayer(Player player, Posn destination) {
-
   }
 
   @Override
@@ -251,11 +249,6 @@ public class GameStateModel implements GameState {
     return numberOfPlayers;
   }
 
-
-  public Level getLevel() {
-    return level;
-  }
-
   /**
    * This method handles the MoveAction object. This involves validating the move and interaction
    * and then performing the move and interaction
@@ -267,9 +260,9 @@ public class GameStateModel implements GameState {
   @Override
   public void handleMoveAction(MoveAction action, RuleChecker checker) {
     Posn destination = action.getDestination();
-    Posn currentPostion = action.getCurrentPosition();
+    Posn currentPosition = action.getCurrentPosition();
 
-    Player player = this.findPlayerByPosition(currentPostion);
+    Player player = this.findPlayerByPosition(currentPosition);
     if (checker.isMoveValid(this.level, player, destination)) {
       if (checker.isInteractionValid(this.isExitable, player,
               this.level.getTileGrid()[destination.getX()][destination.getY()])) {
@@ -303,10 +296,11 @@ public class GameStateModel implements GameState {
    * @return the player on the position
    */
   private Player findPlayerByPosition(Posn position) {
-    for (Actor actor : this.actors) {
-      if (actor.getPosition().equals(position)) {
-        return (Player) actor;
-      }
+    Tile[][] levelGrid = this.level.getTileGrid();
+    Tile tile = levelGrid[position.getX()][position.getY()];
+    Actor tileActor = tile.getOccupier();
+    if (tileActor != null) {
+      return (Player) tileActor;
     }
     return null;
   }
