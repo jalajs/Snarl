@@ -31,6 +31,10 @@ public class Adversary extends Actor {
     return "#";
   }
 
+  /**
+   * Return false, as an adversary is not a player
+   * @return
+   */
   @Override
   public boolean isPlayer() {
     return false;

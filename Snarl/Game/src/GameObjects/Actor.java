@@ -1,8 +1,5 @@
 package GameObjects;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Represents humanoids users can control in our game. Actors should have information about what they
  * can see.
@@ -34,6 +31,10 @@ public abstract class Actor {
    */
   public abstract String representation();
 
+  /**
+   * Return true if the implementing class is a player (and false if not)
+   * @return
+   */
   public abstract boolean isPlayer();
 
 }

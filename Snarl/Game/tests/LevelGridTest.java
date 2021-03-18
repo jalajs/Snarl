@@ -56,14 +56,14 @@ public class LevelGridTest {
 
         level.spawnActors(players, adversaries);
 
-        assertEquals(player1.getPosition().getX(), 0);
-        assertEquals(player1.getPosition().getY(), 0);
-        assertEquals(player2.getPosition().getX(), 0);
-        assertEquals(player2.getPosition().getY(), 1);
-        assertEquals(adversary1.getPosition().getX(), 13);
-        assertEquals(adversary1.getPosition().getY(), 8);
-        assertEquals(adversary2.getPosition().getX(), 13);
-        assertEquals(adversary2.getPosition().getY(), 9);
+        assertEquals(player1.getPosition().getRow(), 0);
+        assertEquals(player1.getPosition().getCol(), 0);
+        assertEquals(player2.getPosition().getRow(), 0);
+        assertEquals(player2.getPosition().getCol(), 1);
+        assertEquals(adversary1.getPosition().getRow(), 13);
+        assertEquals(adversary1.getPosition().getCol(), 8);
+        assertEquals(adversary2.getPosition().getRow(), 13);
+        assertEquals(adversary2.getPosition().getCol(), 9);
 
         String[][] levelGrid = level.getLevelGrid();
         assertEquals(levelGrid[0][0], "O");
@@ -116,8 +116,8 @@ public class LevelGridTest {
         level.dropKey(new Posn(0, 0));
 
         assertEquals(level.getLevelGrid()[0][0], "K");
-        assertEquals(level.getExitKeyPosition().getY(), 0);
-        assertEquals(level.getExitKeyPosition().getX(), 0);
+        assertEquals(level.getExitKeyPosition().getCol(), 0);
+        assertEquals(level.getExitKeyPosition().getRow(), 0);
 
         level.removeKey();
 

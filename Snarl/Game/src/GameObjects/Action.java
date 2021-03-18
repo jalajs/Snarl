@@ -3,7 +3,7 @@ package GameObjects;
 import GameState.GameState;
 
 /**
- * This Interface
+ * This Interface represents an Action taken by an actor
  */
 public interface Action {
 

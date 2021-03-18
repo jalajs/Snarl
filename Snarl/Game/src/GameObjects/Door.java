@@ -1,7 +1,5 @@
 package GameObjects;
 
-import GameObjects.Posn;
-
 /**
  * Represents a door within our level structure. Doors allow rooms to be connected via hallways, and
  * could also lead to the exit of the level for Players.

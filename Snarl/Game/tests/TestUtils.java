@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,15 +21,15 @@ public class TestUtils {
    */
   public Room createSimpleRoom() {
     Room simpleRoom = new Room();
-    List<ArrayList<Tile>> simpleTileGrid = new ArrayList<>();
-    ArrayList<Tile> simpleTileRow = new ArrayList<>();
-    simpleTileRow.add(new Tile(false));
-    simpleTileRow.add(new Tile(false));
-    simpleTileGrid.add(simpleTileRow);
-    simpleTileGrid.add(simpleTileRow);
+    Tile[][] simpleTileGrid = new Tile[2][2];
+    Tile[] simpleTileRow = new Tile[2];
+    simpleTileRow[0] = new Tile(false);
+    simpleTileRow[1] = new Tile(false);
+    simpleTileGrid[0] = simpleTileRow;
+    simpleTileGrid[1] = simpleTileRow;
     simpleRoom.setTileGrid(simpleTileGrid);
-    simpleRoom.setxDim(2);
-    simpleRoom.setyDim(2);
+    simpleRoom.setRows(2);
+    simpleRoom.setCols(2);
     simpleRoom.setUpperLeft(new Posn(0, 0));
 
     return simpleRoom;
@@ -41,14 +40,14 @@ public class TestUtils {
    */
   public Room createWalledRoom() {
     Room walledRoom = new Room();
-    List<ArrayList<Tile>> walledTileGrid = new ArrayList<>();
-    ArrayList<Tile> wallTileRow = new ArrayList<>();
-    wallTileRow.add(new Tile(true));
-    wallTileRow.add(new Tile(true));
-    wallTileRow.add(new Tile(true));
-    walledTileGrid.add(wallTileRow);
-    walledTileGrid.add(wallTileRow);
-    walledTileGrid.add(wallTileRow);
+    Tile[][] walledTileGrid = new Tile[3][3];
+    Tile[] wallTileRow = new Tile[3];
+    wallTileRow[0] = new Tile(true);
+    wallTileRow[1] = new Tile(true);
+    wallTileRow[2] = new Tile(true);
+    walledTileGrid[0] = wallTileRow;
+    walledTileGrid[1] = wallTileRow;
+    walledTileGrid[2] = wallTileRow;
     walledRoom.setTileGrid(walledTileGrid);
     return walledRoom;
   }
@@ -59,20 +58,20 @@ public class TestUtils {
   public Room createSimpleRoomWithDoor() {
     Room roomWithDoor = new Room();
     roomWithDoor.setUpperLeft(new Posn(0, 0));
-    List<ArrayList<Tile>> simpleRoomWithDoor = new ArrayList<>();
-    ArrayList<Tile> bottomRow = new ArrayList<>();
+    Tile[][] simpleRoomWithDoor = new Tile[2][2];
+    Tile[] bottomRow = new Tile[2];
     Tile doorTile = new Tile(false);
     Door door = new Door();
     doorTile.setDoor(door);
-    bottomRow.add(new Tile(false));
-    bottomRow.add(doorTile);
+    bottomRow[0] = new Tile(false);
+    bottomRow[1] = doorTile;
 
-    ArrayList<Tile> simpleTileRow = new ArrayList<>();
-    simpleTileRow.add(new Tile(false));
-    simpleTileRow.add(new Tile(false));
+    Tile[] simpleTileRow = new Tile[2];
+    simpleTileRow[0] = new Tile(false);
+    simpleTileRow[1] = new Tile(false);
 
-    simpleRoomWithDoor.add(simpleTileRow);
-    simpleRoomWithDoor.add(bottomRow);
+    simpleRoomWithDoor[0] = simpleTileRow;
+    simpleRoomWithDoor[1] = bottomRow;
 
     roomWithDoor.setTileGrid(simpleRoomWithDoor);
 
@@ -83,8 +82,8 @@ public class TestUtils {
 
     roomWithDoor.setDoorPositions(doorPos);
 
-    roomWithDoor.setxDim(2);
-    roomWithDoor.setyDim(2);
+    roomWithDoor.setRows(2);
+    roomWithDoor.setCols(2);
 
     return roomWithDoor;
   }
@@ -110,31 +109,31 @@ public class TestUtils {
     doorTile.setDoor(door);
 
     playerTile.setOccupier(player);
-    List<ArrayList<Tile>> complicatedTileGrid = new ArrayList<>();
-    ArrayList<Tile> complicatedTileRow1 = new ArrayList<>();
-    ArrayList<Tile> complicatedTileRow2 = new ArrayList<>();
-    ArrayList<Tile> complicatedTileRow3 = new ArrayList<>();
-    ArrayList<Tile> complicatedTileRow4 = new ArrayList<>();
-    complicatedTileRow1.add(keyTile);
-    complicatedTileRow1.add(new Tile(false));
-    complicatedTileRow1.add(new Tile(false));
-    complicatedTileRow2.add(new Tile(true));
-    complicatedTileRow2.add(new Tile(true));
-    complicatedTileRow2.add(playerTile);
-    complicatedTileRow3.add(doorTile);
-    complicatedTileRow3.add(playerTile);
-    complicatedTileRow3.add(new Tile(false));
-    complicatedTileRow4.add(playerTile);
-    complicatedTileRow4.add(new Tile(false));
-    complicatedTileRow4.add(new Tile(true));
-    complicatedTileGrid.add(complicatedTileRow1);
-    complicatedTileGrid.add(complicatedTileRow2);
-    complicatedTileGrid.add(complicatedTileRow3);
-    complicatedTileGrid.add(complicatedTileRow4);
+    Tile[][] complicatedTileGrid = new Tile[4][3];
+    Tile[] complicatedTileRow1 = new Tile[3];
+    Tile[] complicatedTileRow2 = new Tile[3];
+    Tile[] complicatedTileRow3 = new Tile[3];
+    Tile[] complicatedTileRow4 = new Tile[3];
+    complicatedTileRow1[0] = keyTile;
+    complicatedTileRow1[1] = new Tile(false);
+    complicatedTileRow1[2] = new Tile(false);
+    complicatedTileRow2[0] = new Tile(true);
+    complicatedTileRow2[1] = new Tile(true);
+    complicatedTileRow2[2] = playerTile;
+    complicatedTileRow3[0] = doorTile;
+    complicatedTileRow3[1] = playerTile;
+    complicatedTileRow3[2] = new Tile(false);
+    complicatedTileRow4[0] = playerTile;
+    complicatedTileRow4[1] = new Tile(false);
+    complicatedTileRow4[2] = new Tile(true);
+    complicatedTileGrid[0] = complicatedTileRow1;
+    complicatedTileGrid[1] = complicatedTileRow2;
+    complicatedTileGrid[2] = complicatedTileRow3;
+    complicatedTileGrid[3] = complicatedTileRow4;
     complicatedRoom.setTileGrid(complicatedTileGrid);
     complicatedRoom.setUpperLeft(new Posn(5, 6));
-    complicatedRoom.setxDim(4);
-    complicatedRoom.setyDim(3);
+    complicatedRoom.setRows(4);
+    complicatedRoom.setCols(3);
     complicatedRoom.setDoorPositions(doorPos);
 
     return complicatedRoom;
@@ -196,10 +195,11 @@ public class TestUtils {
     List<Hallway> hallways = new ArrayList<>();
 
     Room room1 = new Room();
-    List<ArrayList<Tile>> room1TileGrid = new ArrayList<>();
-    ArrayList<Tile> room1Row1 = new ArrayList<>();
-    ArrayList<Tile> room1Row2 = new ArrayList<>();
-    ArrayList<Tile> room1Row3 = new ArrayList<>();
+    Tile[][] room1TileGrid = new Tile[3][3];
+    Tile[] room1Row1 = new Tile[3];
+    Tile[] room1Row2 = new Tile[3];
+    Tile[] room1Row3 = new Tile[3];
+
     Door room1Door = new Door();
     Tile room1DoorTile = new Tile();
     room1Door.setTileCoord(new Posn(2,2));
@@ -208,33 +208,33 @@ public class TestUtils {
     List<Door> room1DoorPos = new ArrayList<>();
     room1DoorPos.add(room1Door);
 
-    room1Row1.add(new Tile(false));
-    room1Row1.add(new Tile(false));
-    room1Row1.add(new Tile(false));
+    room1Row1[0] = new Tile(false);
+    room1Row1[1] = new Tile(false);
+    room1Row1[2] = new Tile(false);
 
-    room1Row2.add(new Tile(false));
-    room1Row2.add(new Tile(false));
-    room1Row2.add(new Tile(true));
+    room1Row2[0] = new Tile(false);
+    room1Row2[1] = new Tile(false);
+    room1Row2[2] = new Tile(true);
 
-    room1Row3.add(new Tile(false));
-    room1Row3.add(new Tile(false));
-    room1Row3.add(room1DoorTile);
+    room1Row3[0] = new Tile(false);
+    room1Row3[1] = new Tile(false);
+    room1Row3[2] = room1DoorTile;
 
-    room1TileGrid.add(room1Row1);
-    room1TileGrid.add(room1Row2);
-    room1TileGrid.add(room1Row3);
+    room1TileGrid[0] = room1Row1;
+    room1TileGrid[1] = room1Row2;
+    room1TileGrid[2] = room1Row3;
 
     room1.setDoorPositions(room1DoorPos);
     room1.setTileGrid(room1TileGrid);
     room1.setUpperLeft(new Posn(0,0));
-    room1.setxDim(3);
-    room1.setyDim(3);
+    room1.setRows(3);
+    room1.setCols(3);
 
     Room room2 = new Room();
-    List<ArrayList<Tile>> room2TileGrid = new ArrayList<>();
-    ArrayList<Tile> room2Row1 = new ArrayList<>();
-    ArrayList<Tile> room2Row2 = new ArrayList<>();
-    ArrayList<Tile> room2Row3 = new ArrayList<>();
+    Tile[][] room2TileGrid = new Tile[3][3];
+    Tile[] room2Row1 = new Tile[3];
+    Tile[] room2Row2 = new Tile[3];
+    Tile[] room2Row3 = new Tile[3];
     Door room2Door1 = new Door();
     Door room2Door2 = new Door();
 
@@ -250,31 +250,31 @@ public class TestUtils {
     room2DoorPos.add(room2Door1);
     room2DoorPos.add(room2Door2);
 
-    room2Row1.add(new Tile(false));
-    room2Row1.add(new Tile(false));
-    room2Row1.add(new Tile(false));
+    room2Row1[0] = new Tile(false);
+    room2Row1[1] = new Tile(false);
+    room2Row1[2] = new Tile(false);
 
-    room2Row2.add(new Tile(false));
-    room2Row2.add(new Tile(false));
-    room2Row2.add(new Tile(false));
+    room2Row2[0] = new Tile(false);
+    room2Row2[1] = new Tile(false);
+    room2Row2[2] = new Tile(false);
 
-    room2Row3.add(room2DoorTile1);
-    room2Row3.add(new Tile(false));
-    room2Row3.add(room2DoorTile2);
+    room2Row3[0] = room2DoorTile1;
+    room2Row3[1] = new Tile(false);
+    room2Row3[2] = room2DoorTile2;
 
-    room2TileGrid.add(room2Row1);
-    room2TileGrid.add(room2Row2);
-    room2TileGrid.add(room2Row3);
+    room2TileGrid[0] = room2Row1;
+    room2TileGrid[1] = room2Row2;
+    room2TileGrid[2] = room2Row3;
 
     room2.setDoorPositions(room2DoorPos);
     room2.setTileGrid(room2TileGrid);
     room2.setUpperLeft(new Posn(0,7));
-    room2.setxDim(3);
-    room2.setyDim(3);
+    room2.setRows(3);
+    room2.setCols(3);
 
     Room room3 = new Room();
 
-    List<ArrayList<Tile>> room3TileGrid = new ArrayList<>();
+    Tile[][] room3TileGrid = new Tile[4][4];
     Tile room3DoorTile1 = new Tile();
     Tile room3DoorTile2 = new Tile();
 
@@ -290,47 +290,50 @@ public class TestUtils {
     room3doorPos.add(room3d1);
     room3doorPos.add(room3d2);
 
-    ArrayList<Tile> room3row1 = new ArrayList<>();
-    ArrayList<Tile> room3row2 = new ArrayList<>();
-    ArrayList<Tile> room3row3 = new ArrayList<>();
-    ArrayList<Tile> room3row4 = new ArrayList<>();
+    Tile[] room3row1 = new Tile[4];
+    Tile[] room3row2 = new Tile[4];
+    Tile[] room3row3 = new Tile[4];
+    Tile[] room3row4 = new Tile[4];
 
-    room3row1.add(new Tile(false));
-    room3row1.add(new Tile(false));
-    room3row1.add(new Tile(false));
-    room3row1.add(room3DoorTile1);
-
-
-    room3row2.add(new Tile(true));
-    room3row2.add(new Tile(true));
-    room3row2.add(new Tile(false));
-    room3row2.add(new Tile(true));
-
-    room3row3.add(new Tile(false));
-    room3row3.add(new Tile(false));
-    room3row3.add(new Tile(false));
-    room3row3.add(new Tile(false));
-
-    room3row4.add(new Tile(false));
-    room3row4.add(new Tile(false));
-    room3row4.add(new Tile(false));
-    room3row4.add(room3DoorTile2);
+    room3row1[0] = new Tile(false);
+    room3row1[1] = new Tile(false);
+    room3row1[2] = new Tile(false);
+    room3row1[3] = room3DoorTile1;
 
 
-    room3TileGrid.add(room3row1);
-    room3TileGrid.add(room3row2);
-    room3TileGrid.add(room3row3);
-    room3TileGrid.add(room3row4);
+    room3row2[0] = new Tile(true);
+    room3row2[1] = new Tile(true);
+    room3row2[2] = new Tile(false);
+    room3row2[3] = new Tile(true);
+
+    room3row3[0] = new Tile(false);
+    room3row3[1] = new Tile(false);
+    room3row3[2] = new Tile(false);
+    room3row3[3] = new Tile(false);
+
+    room3row4[0] = new Tile(false);
+    room3row4[1] = new Tile(false);
+    room3row4[2] = new Tile(false);
+    room3row4[3] = room3DoorTile2;
+
+
+    room3TileGrid[0] = room3row1;
+    room3TileGrid[1] = room3row2;
+    room3TileGrid[2] = room3row3;
+    room3TileGrid[3] = room3row4;
 
     room3.setDoorPositions(room3doorPos);
     room3.setUpperLeft(new Posn(6, 0));
     room3.setTileGrid(room3TileGrid);
-    room3.setxDim(4);
-    room3.setyDim(4);
+    room3.setRows(4);
+    room3.setCols(4);
 
     Room room4 = new Room();
 
-    List<ArrayList<Tile>> room4TileGrid = new ArrayList<>();
+    Tile[][] room4TileGrid = new Tile[2][3];
+    Tile[] room4row1 = new Tile[3];
+    Tile[] room4row2 = new Tile[3];
+
     Door room4d1 = new Door();
     Door room4d2 = new Door();
     room4d2.setLevelExit(true);
@@ -347,25 +350,22 @@ public class TestUtils {
     room4doorPos.add(room4d1);
     room4doorPos.add(room4d2);
 
-    ArrayList<Tile> room4row1 = new ArrayList<>();
-    ArrayList<Tile> room4row2 = new ArrayList<>();
+    room4row1[0] = room4DoorTile1;
+    room4row1[1] = (new Tile(false));
+    room4row1[2] = (new Tile(false));
 
-    room4row1.add(room4DoorTile1);
-    room4row1.add(new Tile(false));
-    room4row1.add(new Tile(false));
+    room4row2[0] = (new Tile(false));
+    room4row2[1] = (new Tile(false));
+    room4row2[2] =  room4DoorTile2;
 
-    room4row2.add(new Tile(false));
-    room4row2.add(new Tile(false));
-    room4row2.add(room4DoorTile2);
-
-    room4TileGrid.add(room4row1);
-    room4TileGrid.add(room4row2);
+    room4TileGrid[0] = room4row1;
+    room4TileGrid[1] = room4row2;
 
     room4.setDoorPositions(room4doorPos);
     room4.setUpperLeft(new Posn(13, 7));
     room4.setTileGrid(room4TileGrid);
-    room4.setxDim(2);
-    room4.setyDim(3);
+    room4.setRows(2);
+    room4.setCols(3);
 
     rooms.add(room1);
     rooms.add(room2);

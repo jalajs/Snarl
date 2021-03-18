@@ -1,6 +1,5 @@
 package GameObjects;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,21 +72,36 @@ public class Hallway {
     for (int i = 0; i < allPoints.size() - 1; i++) {
       Posn from = allPoints.get(i);
       Posn to = allPoints.get(i + 1);
-      if (to.getX() == from.getX()) {
-        // vertical segment
-        // if the points x = from x and the y is between the to and from
-        if (point.getX() == from.getX() && isPointInRange(point.getY(), from.getY(), to.getY())) {
-          return true;
-        }
-      }
-      if (to.getY() == from.getY()) {
-        // horizontal segment
-        if (point.getY() == from.getY() && isPointInRange(point.getX(), from.getX(), to.getX())) {
-          return true;
-        }
+      if (isPosnInSegment(to, from, point)) {
+        return true;
       }
     }
 
+    return false;
+  }
+
+  /**
+   * Returns true if the given Posn point lies in the segment between to and from
+   *
+   * @param to the end waypoint of the segment
+   * @param from the from waypoint of the segment
+   * @param point the given posn
+   * @return
+   */
+  private boolean isPosnInSegment(Posn to, Posn from, Posn point) {
+    if (to.getRow() == from.getRow()) {
+      // vertical segment
+      // if the points' row = from row and the col is between the to and from
+      if (point.getRow() == from.getRow() && isPointInRange(point.getCol(), from.getCol(), to.getCol())) {
+        return true;
+      }
+    }
+    if (to.getCol() == from.getCol()) {
+      // horizontal segment
+      if (point.getCol() == from.getCol() && isPointInRange(point.getRow(), from.getRow(), to.getRow())) {
+        return true;
+      }
+    }
     return false;
   }
 
@@ -161,11 +175,7 @@ public class Hallway {
     allPoints.addAll(this.getWaypoints());
     allPoints.add(doors.get(1).getTileCoord());
 
-    List<Posn> possibleMoves = new ArrayList<>();
-    possibleMoves.add(new Posn(position.getX(), position.getY() + 1));
-    possibleMoves.add(new Posn(position.getX(), position.getY() - 1));
-    possibleMoves.add(new Posn(position.getX() + 1, position.getY()));
-    possibleMoves.add(new Posn(position.getX() - 1, position.getY() + 1));
+   List<Posn> possibleMoves = this.generatePossibleMoves(position);
 
     for (Posn wayPointOrDoor : allPoints) {
       if (possibleMoves.contains(wayPointOrDoor)) {
@@ -182,6 +192,23 @@ public class Hallway {
     }
 
     return cardinalMoves;
+  }
+
+  /**
+   * Create a list of possible positions a person can move from the given position in a hallway
+   * @param position the origin position
+   * @return An enumeration of possible moves
+   */
+  private List<Posn> generatePossibleMoves(Posn position) {
+    List<Posn> possibleMoves = new ArrayList<>();
+    int row = position.getRow();
+    int col = position.getCol();
+    possibleMoves.add(new Posn(row, col + 1));
+    possibleMoves.add(new Posn(row, col - 1));
+    possibleMoves.add(new Posn(row + 1, col));
+    possibleMoves.add(new Posn(row - 1, col + 1));
+
+    return possibleMoves;
   }
 }
 

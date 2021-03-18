@@ -1,8 +1,5 @@
 package GameObjects;
 
-import GameObjects.Collectable;
-import GameObjects.Posn;
-
 /**
  * Represents the key players can connect to unlock the exit.
  */
