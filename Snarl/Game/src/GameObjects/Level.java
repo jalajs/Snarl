@@ -1,14 +1,6 @@
 package GameObjects;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
 import java.util.*;
-
-import GameObjects.Actor;
-import GameObjects.Door;
-import GameObjects.ExitKey;
-import GameObjects.Hallway;
-import GameObjects.Posn;
 
 /**
  * represents a game level, including all rooms, hallways, dimensions A representation is produced
@@ -17,8 +9,8 @@ import GameObjects.Posn;
 public class Level {
   private List<Room> rooms;
   private List<Hallway> hallways;
-  private int levelX;
-  private int levelY;
+  private int levelRows;
+  private int levelCols;
   private String[][] levelGrid;
   private Tile[][] tileGrid;
   private Posn exitKeyPosition;
@@ -30,30 +22,30 @@ public class Level {
   public Level() {
     this.rooms = new ArrayList<>();
     this.hallways = new ArrayList<>();
-    this.levelX = 10;
-    this.levelY = 10;
-    this.levelGrid = new String[levelX][levelY];
+    this.levelRows = 10;
+    this.levelCols = 10;
+    this.levelGrid = new String[levelRows][levelCols];
     this.initGridSpace();
-    this.tileGrid = new Tile[levelX][levelY];
+    this.tileGrid = new Tile[levelRows][levelCols];
     this.initEmptyTileGrid();
     this.exitKeyPosition = new Posn(-1, -1);
     this.exitDoorPosition = new Posn(-1, -1);
   }
 
   /**
-   * this constructor allows for manual setting of x & y dimensions
+   * this constructor allows for manual setting of row & col dimensions
    *
-   * @param levelX the x dimensions for the level
-   * @param levelY the y dimensions for the level
+   * @param levelRows the number of rows in the level
+   * @param levelCols the number of columns in the level
    */
-  public Level(int levelX, int levelY) {
+  public Level(int levelRows, int levelCols) {
     this.rooms = new ArrayList<>();
     this.hallways = new ArrayList<>();
-    this.levelX = levelX;
-    this.levelY = levelY;
-    this.levelGrid = new String[this.levelX][this.levelY];
+    this.levelRows = levelRows;
+    this.levelCols = levelCols;
+    this.levelGrid = new String[this.levelRows][this.levelCols];
     this.initGridSpace();
-    this.tileGrid = new Tile[this.levelX][this.levelY];
+    this.tileGrid = new Tile[this.levelRows][this.levelCols];
     this.initEmptyTileGrid();
     this.exitKeyPosition = new Posn(-1, -1);
     this.exitDoorPosition = new Posn(-1, -1);
@@ -69,11 +61,11 @@ public class Level {
    * @param exitAndKeyPosns array of posns ordered like this: (key, exit)
    */
   public Level(List<Room> rooms, List<Hallway> hallways, List<Posn> exitAndKeyPosns) {
-    this.levelX = 101;
-    this.levelY = 101;
-    this.levelGrid = new String[this.levelX][this.levelY];
+    this.levelRows = 101;
+    this.levelCols = 101;
+    this.levelGrid = new String[this.levelRows][this.levelCols];
     this.initGridSpace();
-    this.tileGrid = new Tile[this.levelX][this.levelY];
+    this.tileGrid = new Tile[this.levelRows][this.levelCols];
     this.initEmptyTileGrid();
 
     Posn keyPosn = exitAndKeyPosns.get(0);
@@ -100,11 +92,11 @@ public class Level {
    *                        exitAndKeyPosns
    */
   public Level(List<Room> rooms, List<Hallway> hallways, List<Posn> exitAndKeyPosns, boolean exitLocked) {
-    this.levelX = 101;
-    this.levelY = 101;
-    this.levelGrid = new String[this.levelX][this.levelY];
+    this.levelRows = 101;
+    this.levelCols = 101;
+    this.levelGrid = new String[this.levelRows][this.levelCols];
     this.initGridSpace();
-    this.tileGrid = new Tile[this.levelX][this.levelY];
+    this.tileGrid = new Tile[this.levelRows][this.levelCols];
     this.initEmptyTileGrid();
     if (!exitLocked) {
       Posn exitPosn = exitAndKeyPosns.get(0);
@@ -147,11 +139,11 @@ public class Level {
    * the rooms or hallways are added.
    */
   private void initEmptyTileGrid() {
-    for (int x = 0; x < this.levelX; x++) {
-      for (int y = 0; y < this.levelY; y++) {
+    for (int row = 0; row < this.levelRows; row++) {
+      for (int col = 0; col < this.levelCols; col++) {
         Tile tile = new Tile(true);
-        tile.setPosition(new Posn(x, y));
-        tileGrid[x][y] = tile;
+        tile.setPosition(new Posn(row, col));
+        tileGrid[row][col] = tile;
       }
     }
   }
@@ -160,8 +152,8 @@ public class Level {
    * Populates the entire grid of the level with an initial value of "  "
    */
   private void initGridSpace() {
-    for (int i = 0; i < this.levelX; i++) {
-      for (int j = 0; j < this.levelY; j++) {
+    for (int i = 0; i < this.levelRows; i++) {
+      for (int j = 0; j < this.levelCols; j++) {
         this.levelGrid[i][j] = " ";
       }
     }
@@ -177,11 +169,11 @@ public class Level {
     levelExit.setTileCoord(levelExitPosn);
     levelExit.setLevelExit(true);
 
-    int xValue = levelExitPosn.getX();
-    int yValue = levelExitPosn.getY();
+    int row = levelExitPosn.getRow();
+    int col = levelExitPosn.getCol();
 
-    tileGrid[xValue][yValue].setDoor(levelExit);
-    levelGrid[xValue][yValue] = levelExit.toString();
+    tileGrid[row][col].setDoor(levelExit);
+    levelGrid[row][col] = levelExit.toString();
     this.exitDoorPosition = levelExitPosn;
   }
 
@@ -193,13 +185,13 @@ public class Level {
    * @return map containing the key object mapped to its position
    */
   public void dropKey(Posn keyPosition) {
-    int xValue = keyPosition.getX();
-    int yValue = keyPosition.getY();
-    Posn exitKeyPosition = new Posn(xValue, yValue);
+    int row = keyPosition.getRow();
+    int col = keyPosition.getCol();
+    Posn exitKeyPosition = new Posn(row, col);
     this.exitKeyPosition = exitKeyPosition;
     ExitKey exitKey = new ExitKey(exitKeyPosition);
-    tileGrid[xValue][yValue].setCollectable(exitKey);
-    levelGrid[exitKeyPosition.getX()][exitKeyPosition.getY()] = exitKey.toString();
+    tileGrid[row][col].setCollectable(exitKey);
+    levelGrid[exitKeyPosition.getRow()][exitKeyPosition.getCol()] = exitKey.toString();
   }
 
 
@@ -231,8 +223,8 @@ public class Level {
     for (Actor actor : actors) {
       levelPosition = firstUnoccupiedTilePosition(room);
       actor.setPosition(levelPosition);
-      tileGrid[levelPosition.getX()][levelPosition.getY()].setOccupier(actor);
-      levelGrid[levelPosition.getX()][levelPosition.getY()] = actor.representation();
+      tileGrid[levelPosition.getRow()][levelPosition.getCol()].setOccupier(actor);
+      levelGrid[levelPosition.getRow()][levelPosition.getCol()] = actor.representation();
     }
   }
 
@@ -245,11 +237,11 @@ public class Level {
   private Posn firstUnoccupiedTilePosition(Room room) {
     Posn upperLeft = room.getUpperLeft();
     Posn levelPosition = new Posn(-1, -1);
-    for (int roomX = 0; roomX < room.getxDim(); roomX++) {
-      for (int roomY = 0; roomY < room.getyDim(); roomY++) {
-        String tileString = levelGrid[roomX + upperLeft.getX()][roomY + upperLeft.getY()];
+    for (int roomX = 0; roomX < room.getRows(); roomX++) {
+      for (int roomY = 0; roomY < room.getCols(); roomY++) {
+        String tileString = levelGrid[roomX + upperLeft.getRow()][roomY + upperLeft.getCol()];
         if (tileString.equals(".")) {
-          levelPosition = new Posn(roomX + upperLeft.getX(), roomY + upperLeft.getY());
+          levelPosition = new Posn(roomX + upperLeft.getRow(), roomY + upperLeft.getCol());
           return levelPosition;
         }
       }
@@ -265,8 +257,10 @@ public class Level {
   public void placeActorsInLevel(List<Actor> actors) {
     for (Actor actor : actors) {
       Posn posn = actor.getPosition();
-      tileGrid[posn.getX()][posn.getY()].setOccupier(actor);
-      levelGrid[posn.getX()][posn.getY()] = actor.representation();
+      int row = posn.getRow();
+      int col = posn.getCol();
+      tileGrid[row][col].setOccupier(actor);
+      levelGrid[row][col] = actor.representation();
       actor.setPosition(posn);
     }
   }
@@ -276,8 +270,11 @@ public class Level {
    */
   public void removeKey() {
     Posn exitKeyPos = this.exitKeyPosition;
-    this.tileGrid[exitKeyPos.getX()][exitKeyPos.getY()].setCollectable(null);
-    this.levelGrid[exitKeyPos.getX()][exitKeyPos.getY()] = ".";
+    int row = exitKeyPos.getRow();
+    int col = exitKeyPos.getCol();
+
+    this.tileGrid[row][col].setCollectable(null);
+    this.levelGrid[row][col] = ".";
   }
 
   /**
@@ -287,8 +284,11 @@ public class Level {
    */
   public void expelPlayer(Actor expelledPlayer) {
     Posn expelPosition = expelledPlayer.getPosition();
-    this.tileGrid[expelPosition.getX()][expelPosition.getY()].setOccupier(null);
-    this.levelGrid[expelPosition.getX()][expelPosition.getY()] = ".";
+    int row = expelPosition.getRow();
+    int col = expelPosition.getCol();
+
+    this.tileGrid[row][col].setOccupier(null);
+    this.levelGrid[row][col] = ".";
   }
 
   /**
@@ -301,17 +301,22 @@ public class Level {
    */
   public Tile handlePlayerMove(Actor p, Posn newPosition) {
     Posn prevPosition = p.getPosition();
+    int prevRow = prevPosition.getRow();
+    int prevCol = prevPosition.getCol();
     // remove player from old position
-    tileGrid[prevPosition.getX()][prevPosition.getX()].setOccupier(null);
-    levelGrid[prevPosition.getX()][prevPosition.getY()] = ".";
+    tileGrid[prevRow][prevCol].setOccupier(null);
+    levelGrid[prevRow][prevCol] = ".";
+
+    int newRow = newPosition.getRow();
+    int newCol = newPosition.getCol();
+    Tile newTile = tileGrid[newRow][newCol];
     // add player to new position if there no current occupier
-    if (tileGrid[newPosition.getX()][newPosition.getY()].getOccupier() == null) {
-      tileGrid[newPosition.getX()][newPosition.getY()].setOccupier(p);
-      levelGrid[newPosition.getX()][newPosition.getY()] = "O";
+    if (newTile.getOccupier() == null) {
+      newTile.setOccupier(p);
+      levelGrid[newRow][newCol] = "O";
       p.setPosition(newPosition);
     }
-    // check if player's new position is on Exit
-    return tileGrid[newPosition.getX()][newPosition.getY()];
+    return newTile;
   }
 
 
@@ -321,11 +326,11 @@ public class Level {
    */
   public String createLevelString() {
     String levelAcc = "";
-    for (int i = 0; i < levelX; i++) {
-      for (int j = 0; j < levelY; j++) {
-        levelAcc += this.levelGrid[i][j];
+    for (int row = 0; row < levelRows; row++) {
+      for (int col = 0; col < levelCols; col++) {
+        levelAcc += this.levelGrid[row][col];
       }
-      if (i != this.levelGrid.length - 1) {
+      if (row != this.levelGrid.length - 1) {
         levelAcc += "\n";
       }
     }
@@ -349,10 +354,10 @@ public class Level {
       String[][] roomGrid = room.renderRoom();
       Tile[][] roomTileGrid = room.getTileGrid();
       Posn upperLeft = room.getUpperLeft();
-      for (int x = 0; x < room.getxDim(); x++) {
-        for (int y = 0; y < room.getyDim(); y++) {
-          this.levelGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomGrid[x][y];
-          this.tileGrid[x + upperLeft.getX()][y + upperLeft.getY()] = roomTileGrid[x][y];
+      for (int x = 0; x < room.getRows(); x++) {
+        for (int y = 0; y < room.getCols(); y++) {
+          this.levelGrid[x + upperLeft.getRow()][y + upperLeft.getCol()] = roomGrid[x][y];
+          this.tileGrid[x + upperLeft.getRow()][y + upperLeft.getCol()] = roomTileGrid[x][y];
         }
       }
     }
@@ -385,10 +390,13 @@ public class Level {
    */
   private void addWayPoints(List<Posn> waypoints) {
     for (Posn posn : waypoints) {
-      this.levelGrid[posn.getX()][posn.getY()] = "+";
+      int row = posn.getRow();
+      int col = posn.getCol();
+
+      this.levelGrid[row][col] = "+";
       Tile wayPointTile = new Tile(false);
-      wayPointTile.setPosition(new Posn(posn.getX(), posn.getY()));
-      this.tileGrid[posn.getX()][posn.getY()] = wayPointTile;
+      wayPointTile.setPosition(new Posn(row, col));
+      this.tileGrid[row][col] = wayPointTile;
     }
   }
 
@@ -405,24 +413,24 @@ public class Level {
       Posn end = allPoints.get(i + 1);
 
       // check if the tiles should be laid horizontally or vertically
-      if (start.getX() == end.getX()) {
+      if (start.getRow() == end.getRow()) {
         // check if tiles should be laid up or down
-        int direction = calcDirection(start.getY(), end.getY());
+        int direction = calcDirection(start.getCol(), end.getCol());
         for (int t = 0; t < tileSegement.size(); t++) {
           Tile tile = tileSegement.get(t);
-          tile.setPosition(new Posn(start.getX(), start.getY() + ((t + 1) * direction)));
-          this.levelGrid[start.getX()][start.getY() + ((t + 1) * direction)] = tile.toString();
-          this.tileGrid[start.getX()][start.getY() + ((t + 1) * direction)] = tile;
+          tile.setPosition(new Posn(start.getRow(), start.getCol() + ((t + 1) * direction)));
+          this.levelGrid[start.getRow()][start.getCol() + ((t + 1) * direction)] = tile.toString();
+          this.tileGrid[start.getRow()][start.getCol() + ((t + 1) * direction)] = tile;
         }
-      } else if (start.getY() == end.getY()) {
+      } else if (start.getCol() == end.getCol()) {
         // check if tiles should be laid right or left
-        int direction = calcDirection(start.getX(), end.getX());
+        int direction = calcDirection(start.getRow(), end.getRow());
         for (int t = 0; t < tileSegement.size(); t++) {
           Tile tile = tileSegement.get(t);
-          tile.setPosition(new Posn(start.getX() + ((t + 1) * direction), start.getY()));
+          tile.setPosition(new Posn(start.getRow() + ((t + 1) * direction), start.getCol()));
           // start = 0, t = 0, direction = -1
-          this.levelGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile.toString();
-          this.tileGrid[start.getX() + ((t + 1) * direction)][start.getY()] = tile;
+          this.levelGrid[start.getRow() + ((t + 1) * direction)][start.getCol()] = tile.toString();
+          this.tileGrid[start.getRow() + ((t + 1) * direction)][start.getCol()] = tile;
         }
       }
     }
@@ -449,13 +457,13 @@ public class Level {
     Posn posn = new Posn(-1, -1);
     Random random = new Random();
     int counter = 0;
-    while (counter < levelX * levelY) {
-      int randomX = random.nextInt(levelX);
-      int randomY = random.nextInt(levelY);
+    while (counter < levelRows * levelCols) {
+      int randomX = random.nextInt(levelRows);
+      int randomY = random.nextInt(levelCols);
       String tileString = levelGrid[randomX][randomY];
       if (tileString.equals(".")) {
-        posn.setX(randomX);
-        posn.setY(randomY);
+        posn.setRow(randomX);
+        posn.setCol(randomY);
         break;
       }
       counter++;
@@ -470,15 +478,15 @@ public class Level {
    * @return if the point is traversable or not
    */
   public boolean checkTraversable(Posn point) {
-    int x = point.getX();
-    int y = point.getY();
-    if (this.levelY <= y || this.levelX <= x) {
+    int row = point.getRow();
+    int col = point.getCol();
+    if (this.levelCols <= col || this.levelRows <= row) {
       return false;
     }
-    if (this.tileGrid[x][y] == null) {
+    if (this.tileGrid[row][col] == null) {
       return false;
     }
-    Tile tile = this.tileGrid[x][y];
+    Tile tile = this.tileGrid[row][col];
     return !tile.getisWall();
   }
 
@@ -489,9 +497,10 @@ public class Level {
    * @return either "key", "door" or "null"
    */
   public String checkObjectType(Posn point) {
-    String tileRep = levelGrid[point.getX()][point.getY()];
+    Tile tile = tileGrid[point.getRow()][point.getCol()];
+    String tileRep = levelGrid[point.getRow()][point.getCol()];
     if (tileRep.equals("|")) {
-      return tileGrid[point.getX()][point.getY()].getDoor().isLevelExit() ? "exit" : "null";
+      return tile.getDoor().isLevelExit() ? "exit" : "null";
     } else if (tileRep.equals("K")) {
       return "key";
     } else {
@@ -612,20 +621,20 @@ public class Level {
     this.hallways = hallways;
   }
 
-  public int getLevelX() {
-    return levelX;
+  public int getLevelRows() {
+    return levelRows;
   }
 
-  public void setLevelX(int levelX) {
-    this.levelX = levelX;
+  public void setLevelRows(int levelRows) {
+    this.levelRows = levelRows;
   }
 
-  public int getLevelY() {
-    return levelY;
+  public int getLevelCols() {
+    return levelCols;
   }
 
-  public void setLevelY(int levelY) {
-    this.levelY = levelY;
+  public void setLevelCols(int levelCols) {
+    this.levelCols = levelCols;
   }
 
   public String[][] getLevelGrid() {

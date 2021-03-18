@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +28,8 @@ public class TestUtils {
     simpleTileGrid[0] = simpleTileRow;
     simpleTileGrid[1] = simpleTileRow;
     simpleRoom.setTileGrid(simpleTileGrid);
-    simpleRoom.setxDim(2);
-    simpleRoom.setyDim(2);
+    simpleRoom.setRows(2);
+    simpleRoom.setCols(2);
     simpleRoom.setUpperLeft(new Posn(0, 0));
 
     return simpleRoom;
@@ -83,8 +82,8 @@ public class TestUtils {
 
     roomWithDoor.setDoorPositions(doorPos);
 
-    roomWithDoor.setxDim(2);
-    roomWithDoor.setyDim(2);
+    roomWithDoor.setRows(2);
+    roomWithDoor.setCols(2);
 
     return roomWithDoor;
   }
@@ -133,8 +132,8 @@ public class TestUtils {
     complicatedTileGrid[3] = complicatedTileRow4;
     complicatedRoom.setTileGrid(complicatedTileGrid);
     complicatedRoom.setUpperLeft(new Posn(5, 6));
-    complicatedRoom.setxDim(4);
-    complicatedRoom.setyDim(3);
+    complicatedRoom.setRows(4);
+    complicatedRoom.setCols(3);
     complicatedRoom.setDoorPositions(doorPos);
 
     return complicatedRoom;
@@ -228,8 +227,8 @@ public class TestUtils {
     room1.setDoorPositions(room1DoorPos);
     room1.setTileGrid(room1TileGrid);
     room1.setUpperLeft(new Posn(0,0));
-    room1.setxDim(3);
-    room1.setyDim(3);
+    room1.setRows(3);
+    room1.setCols(3);
 
     Room room2 = new Room();
     Tile[][] room2TileGrid = new Tile[3][3];
@@ -270,8 +269,8 @@ public class TestUtils {
     room2.setDoorPositions(room2DoorPos);
     room2.setTileGrid(room2TileGrid);
     room2.setUpperLeft(new Posn(0,7));
-    room2.setxDim(3);
-    room2.setyDim(3);
+    room2.setRows(3);
+    room2.setCols(3);
 
     Room room3 = new Room();
 
@@ -326,8 +325,8 @@ public class TestUtils {
     room3.setDoorPositions(room3doorPos);
     room3.setUpperLeft(new Posn(6, 0));
     room3.setTileGrid(room3TileGrid);
-    room3.setxDim(4);
-    room3.setyDim(4);
+    room3.setRows(4);
+    room3.setCols(4);
 
     Room room4 = new Room();
 
@@ -365,8 +364,8 @@ public class TestUtils {
     room4.setDoorPositions(room4doorPos);
     room4.setUpperLeft(new Posn(13, 7));
     room4.setTileGrid(room4TileGrid);
-    room4.setxDim(2);
-    room4.setyDim(3);
+    room4.setRows(2);
+    room4.setCols(3);
 
     rooms.add(room1);
     rooms.add(room2);

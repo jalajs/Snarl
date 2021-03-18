@@ -40,7 +40,7 @@ public class testLevel {
     while (tokener.more()) {
       Object value = tokener.nextValue();
       String valueString = value.toString();
-      // this has two items, the room JSON and the [ x, y] point
+      // this has two items, the room JSON and the [ row, col] point
       JSONArray levelPointJSON = new JSONArray(valueString);
 
       JSONObject jsonLevel = (JSONObject) levelPointJSON.get(0);
@@ -179,10 +179,10 @@ public class testLevel {
       Posn start = allPoints.get(i);
       Posn end = allPoints.get(i + 1);
 
-      if (start.getX() == end.getX()) {
-        tileSegment = createSingleSegment(Math.abs(start.getY() - end.getY()));
-      } else if (start.getY() == end.getY()) {
-        tileSegment = createSingleSegment(Math.abs(start.getX() - end.getX()));
+      if (start.getRow() == end.getRow()) {
+        tileSegment = createSingleSegment(Math.abs(start.getCol() - end.getCol()));
+      } else if (start.getCol() == end.getCol()) {
+        tileSegment = createSingleSegment(Math.abs(start.getRow() - end.getRow()));
       }
       segments.add(tileSegment);
     }

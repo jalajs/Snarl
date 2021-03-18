@@ -199,13 +199,13 @@ public class GameStateTests {
     Player player1 = new Player();
     player1.setPosition(new Posn(0, 0));
 
-    assertEquals(0, player1.getPosition().getX());
-    assertEquals(0, player1.getPosition().getY());
+    assertEquals(0, player1.getPosition().getRow());
+    assertEquals(0, player1.getPosition().getCol());
 
     simpleGameState.handleMovePlayer(player1, new Posn(1, 0));
 
-    assertEquals(1, player1.getPosition().getX());
-    assertEquals(0, player1.getPosition().getY());
+    assertEquals(1, player1.getPosition().getRow());
+    assertEquals(0, player1.getPosition().getCol());
   }
 
 }

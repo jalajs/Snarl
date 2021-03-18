@@ -265,7 +265,7 @@ public class GameStateModel implements GameState {
     Player player = this.findPlayerByPosition(currentPosition);
     if (checker.isMoveValid(this.level, player, destination)) {
       if (checker.isInteractionValid(this.isExitable, player,
-              this.level.getTileGrid()[destination.getX()][destination.getY()])) {
+              this.level.getTileGrid()[destination.getRow()][destination.getCol()])) {
         // move the player to the new tile
         String interactionType = this.handleMovePlayer(player, destination);
 
@@ -297,7 +297,7 @@ public class GameStateModel implements GameState {
    */
   private Player findPlayerByPosition(Posn position) {
     Tile[][] levelGrid = this.level.getTileGrid();
-    Tile tile = levelGrid[position.getX()][position.getY()];
+    Tile tile = levelGrid[position.getRow()][position.getCol()];
     Actor tileActor = tile.getOccupier();
     if (tileActor != null) {
       return (Player) tileActor;
