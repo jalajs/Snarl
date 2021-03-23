@@ -1,5 +1,11 @@
 package GameObjects;
 
+import Action.Action;
+import Action.DoNothingAction;
+import Action.EjectAction;
+import Action.MoveAction;
+import Action.PickUpKeyAction;
+
 /**
  * Represents a game tile and contains information on if it is a wall and what is on the tile
  */
@@ -99,6 +105,25 @@ public class Tile {
       return "None";
   }
 
+  /**
+   * Creates an action for the new tile
+   *  possible actions: move, ejected, pickUpKey
+   * @param originalPosition the original position the user is moving from
+   * @return
+   */
+  public Action buildAction(Posn originalPosition, String playerName) {
+    if (originalPosition.equals(this.position)) {
+      return new DoNothingAction();
+    } else if (this.collectable != null) {
+      // at the moment we assume all collectables are exit keys
+      return new PickUpKeyAction();
+    } else if (this.occupier != null) {
+      return new EjectAction(playerName);
+    } else {
+      return new MoveAction(position, originalPosition);
+    }
+  }
+
   public Actor getOccupier() {
     return occupier;
   }
@@ -139,5 +164,4 @@ public class Tile {
   public void setPosition(Posn position) {
     this.position = position;
   }
-
 }

@@ -1,21 +1,25 @@
 package GameManager;
 
+import org.json.JSONArray;
+
 import java.util.List;
 import java.util.ArrayList;
 
-import GameObjects.Action;
+import Action.Action;
 import GameObjects.Actor;
 import GameObjects.Adversary;
 import GameObjects.Level;
 import GameObjects.Player;
 import GameObjects.Posn;
-import GameObjects.MoveAction;
+import Action.MoveAction;
+import GameObjects.Tile;
 import GameState.GameState;
 import GameState.GameStateModel;
+import Observer.Subject;
 import RuleChecker.RuleChecker;
 import RuleChecker.RuleCheckerClass;
 import User.User;
-import User.UserClass;
+import User.LocalUser;
 
 /**
  * Represents the GameManger tasked with sequencing the game
@@ -26,6 +30,8 @@ public class GameManagerClass implements GameManager {
   private int turn;
   private List<Adversary> adversaries;
   private final RuleChecker ruleChecker = new RuleCheckerClass();
+  private Subject subject;
+  private ArrayList<ArrayList<Posn>> moveInput;
 
   /**
    * This initialized the GameManager as a blank slate
@@ -47,7 +53,7 @@ public class GameManagerClass implements GameManager {
   @Override
   public void addPlayer(String name) {
     if (!doesNameAlreadyExist(name)) {
-      User user = new UserClass(name);
+      User user = new LocalUser(name);
       users.add(user);
     }
   }
@@ -109,22 +115,61 @@ public class GameManagerClass implements GameManager {
   }
 
   /**
-   * This method contacts every user via their update method and provides them with the
-   * newest relevant information, namely their new visible tiles and whether or not the level is
-   * exitable.
+   * Starts the game trace for the testing task.
    *
+   * @param level the level to start the game with
+   * @param posns the list of intital positions for actors.
+   *              The first n positions are for the users and any subsequent posn is for an Adversary we create
+   */
+  @Override
+  public void startGameTrace(Level level, List<Posn> posns) {
+    GameState gameState = new GameStateModel(level);
+    this.gs = gameState;
+
+    List<Actor> players = new ArrayList<>();
+    List<Actor> actorAdversaries = new ArrayList<>();
+
+    for (int i = 0; i < users.size(); i ++) {
+      Actor player = new Player(users.get(i).getName());
+      users.get(i).setCurrentPosition(posns.get(i));
+      player.setPosition(posns.get(i));
+      players.add(player);
+    }
+    for(int i = users.size(); i < posns.size(); i ++) {
+      Adversary adversary = new Adversary("Zombie", String.valueOf(i));
+      adversary.setPosition(posns.get(i));
+      actorAdversaries.add(adversary);
+    }
+    gameState.initLevelGrid();
+    gameState.initGameStateWhereActorsHavePositions(players, actorAdversaries, level.getExitKeyPosition());
+
+    // give each User an initial surroundings
+    // use the gameState
+    for (int i = 0; i < users.size(); i ++) {
+      List<List<Tile>> surroundings = gameState.getSurroundingsForPosn(players.get(i).getPosition());
+      users.get(i).setSurroundings(surroundings);
+    }
+  }
+
+
+
+
+
+  /**
+   * This method contacts every user via their update method and provides them with the newest
+   * relevant information, namely their new visible tiles and whether or not the level is exitable.
    */
   @Override
   public void updateUsers() {
+    // to do: get real position
     for (User user : this.users) {
-      user.update(this.gs.calculateVisibleTilesForUser(user.getCurrentPosition()), this.gs.isExitable());
+      user.update(this.gs.calculateVisibleTilesForUser(user.getCurrentPosition()), this.gs.isExitable(), user.getCurrentPosition());
     }
   }
 
   /**
-   *  This method prompts the next player to take their turn. It then executes the action returned
-   *  from the turn. This method is expected to run continously throughout the levels duration.
-   *
+   * This method prompts the next player to take their turn. It then executes the action returned
+   * from the turn. This method is expected to run continously throughout the levels duration.
    */
   @Override
   public void promptPlayerTurn() {
@@ -175,6 +220,40 @@ public class GameManagerClass implements GameManager {
     }
   }
 
+  /**
+   * Gets the user with the given string
+   * @param name the given string
+   * @return the User with the corresponding name. Returns null if no such user exists.
+   */
+  @Override
+  public User getUserByString(String name) {
+    for (User user : this.users) {
+        if (user.getName().equals(name)) {
+          return user;
+        }
+    }
+    return null;
+  }
+
+  /**
+   * Play out the move of the User's whose turn it is using the move input.
+   * @return Return the trace of their move in a JSONArray
+   */
+  @Override
+  public JSONArray playOutMove() {
+    User user = this.users.get(turn);
+
+  }
+
+
+  @Override
+  public List<String> getRemainingPlayers() {
+    return null;
+  }
+
+
+
+
   public GameState getGs() {
     return gs;
   }
@@ -210,4 +289,28 @@ public class GameManagerClass implements GameManager {
   public RuleChecker getRuleChecker() {
     return ruleChecker;
   }
+
+
+  public Subject getSubject() {
+    return subject;
+  }
+
+  public void setSubject(Subject subject) {
+    this.subject = subject;
+  }
+
+  public ArrayList<ArrayList<Posn>> getMoveInput() {
+    return moveInput;
+  }
+
+  /**
+   * Set the move input stream to the given list of list of positions
+   * @param actorMoveListList the positions represent the destination for each move
+   */
+  @Override
+  public void setMoveInput(ArrayList<ArrayList<Posn>> actorMoveListList) {
+    this.moveInput = actorMoveListList;
+  }
+
+
 }

@@ -7,7 +7,7 @@ import GameObjects.Level;
 import GameObjects.Player;
 import GameObjects.Posn;
 import GameObjects.Tile;
-import GameObjects.MoveAction;
+import Action.MoveAction;
 import RuleChecker.RuleChecker;
 
 /**
@@ -25,6 +25,14 @@ public interface GameState {
    * @param keyPosn is the position to place the key
    */
   void initGameState(List<Actor> players, List<Actor> adversaries, Posn keyPosn);
+
+
+  /**
+   * This method simply initializes the level grid. We created it so that we can initialize
+   * the level grid at the GS level from the test harnesses.
+   *
+   */
+  void initLevelGrid();
 
 
   /**
@@ -147,4 +155,11 @@ public interface GameState {
    * @return
    */
   boolean isPlayerIsOnExit();
+
+  /**
+   * Modifies the game state after a player/adversary collects exit key
+   */
+  void handleKeyCollection();
+
+  List<List<Tile>> getSurroundingsForPosn(Posn position);
 }

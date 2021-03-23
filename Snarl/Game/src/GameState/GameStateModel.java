@@ -7,7 +7,7 @@ import GameObjects.Actor;
 import GameObjects.Adversary;
 import GameObjects.Collectable;
 import GameObjects.Level;
-import GameObjects.MoveAction;
+import Action.MoveAction;
 import GameObjects.Player;
 import GameObjects.Posn;
 import GameObjects.Door;
@@ -85,6 +85,15 @@ public class GameStateModel implements GameState {
   }
 
   /**
+   * This method simply initializes the level grid. We created it so that we can initialize
+   * the level grid at the GS level from the test harnesses.
+   *
+   */
+  public void initLevelGrid() {
+    this.level.initGrid();
+  }
+
+  /**
    * Creates an intermediate game state. This method places the given players and adversaries in
    * this.level.
    *
@@ -118,6 +127,19 @@ public class GameStateModel implements GameState {
   public void handleKeyCollection() {
     this.isExitable = true;
     this.level.removeKey();
+  }
+
+  /**
+   *  This method returns a 5x5 grid of tiles where the given position is the center
+   *  if any of the surrounding positions are not tiles (ie. its on the edge of a room or level)
+   *  those spaces are set to null
+   *
+   * @param position the center position
+   * @return a 5x5 grid with the given position as the center
+   */
+  @Override
+  public List<List<Tile>> getSurroundingsForPosn(Posn position) {
+    return this.level.getSurroundingsForPosn(position);
   }
 
   /**

@@ -207,23 +207,35 @@ public class testState {
   private static JSONArray actorListToJSONArray(List<Actor> actors, String actorType) {
     JSONArray actorPositionList = new JSONArray();
     for (Actor actor : actors) {
-      JSONObject actorPositionObject = new JSONObject();
-      if (actor.isPlayer() && actorType.equals("player")) {
-        Player player = (Player) actor;
-        actorPositionObject.put("type","player");
-        actorPositionObject.put("name", player.getName());
-        actorPositionObject.put("position", testRoom.posnToJson(player.getPosition()));
-        actorPositionList.put(actorPositionObject);
-      } else if (!actor.isPlayer() && actorType.equals("adversary")) {
-        Adversary adversary = (Adversary) actor;
-        actorPositionObject.put("type", adversary.getType());
-        actorPositionObject.put("name", adversary.getName());
-        actorPositionObject.put("position", testRoom.posnToJson(adversary.getPosition()));
-        actorPositionList.put(actorPositionObject);
-      }
+      JSONObject actorPositionObject = createActorPositionListItem(actor, actorType);
+      actorPositionList.put(actorPositionObject);
     }
 
     return actorPositionList;
+  }
+
+  /**
+   * Creates a single entry for a actor-position-list given an actor and the string of its type
+   *
+   * @param actor the actor to create the entry for
+   * @param actorType the type of actor (player or adversary)
+   *
+   * @return the actor-position-list entry
+   */
+  public static JSONObject createActorPositionListItem(Actor actor, String actorType) {
+    JSONObject actorPositionObject = new JSONObject();
+    if (actor.isPlayer() && actorType.equals("player")) {
+      Player player = (Player) actor;
+      actorPositionObject.put("type","player");
+      actorPositionObject.put("name", player.getName());
+      actorPositionObject.put("position", testRoom.posnToJson(player.getPosition()));
+    } else if (!actor.isPlayer() && actorType.equals("adversary")) {
+      Adversary adversary = (Adversary) actor;
+      actorPositionObject.put("type", adversary.getType());
+      actorPositionObject.put("name", adversary.getName());
+      actorPositionObject.put("position", testRoom.posnToJson(adversary.getPosition()));
+    }
+    return actorPositionObject;
   }
 
 

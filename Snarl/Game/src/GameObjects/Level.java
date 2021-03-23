@@ -604,6 +604,37 @@ public class Level {
     return false;
   }
 
+  /**
+   *  This method returns a 5x5 grid of tiles where the given position is the center
+   *  if any of the surrounding positions are not tiles (ie. its on the edge of a room or level)
+   *  those spaces are set to null
+   *
+   * @param position the center position
+   * @return a 5x5 grid with the given position as the center
+   */
+  public List<List<Tile>> getSurroundingsForPosn(Posn position) {
+    int row = position.getRow();
+    int col = position.getCol();
+
+    int surroundingRow = row - 2;
+    int surroundingCol = col - 2;
+    List<List<Tile>> surroundingsGrid = new ArrayList<>();
+
+    for(int i = 0; i < 5; i ++) {
+      List<Tile> surroundings = new ArrayList<>();
+      for (int j = 0; j < 5; j++) {
+        // make sure that the tile is in the grid, if not add null
+        if (surroundingRow + i < this.tileGrid.length && surroundingRow + i >= 0 && surroundingCol + j < this.tileGrid[0].length && surroundingCol + j >= 0) {
+          surroundings.add(this.tileGrid[surroundingRow + i][surroundingCol + j]);
+        } else {
+          surroundings.add(null);
+        }
+      }
+      surroundingsGrid.add(surroundings);
+    }
+    return surroundingsGrid;
+  }
+
 
   public List<Room> getRooms() {
     return rooms;
@@ -668,4 +699,5 @@ public class Level {
   public void setExitDoorPosition(Posn exitDoorPosition) {
     this.exitDoorPosition = exitDoorPosition;
   }
+
 }

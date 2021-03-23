@@ -8,7 +8,6 @@ The goal of the Observer component is to provide a rendered view of the game to 
    - Iterate through all the observers and call observer.update()
 <br>
 The Observer will have the following methods:
-<br>
 - Void update()
   - This method updates all the information needed to render the view to the 3rd party.
   - This method may be expanded to take in parameters relevant to rendering. It will be called by the Subject in notifyObservers().

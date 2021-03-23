@@ -1,5 +1,7 @@
-package GameObjects;
+package Action;
 
+import Action.Action;
+import GameObjects.Posn;
 import GameState.GameState;
 
 /**
@@ -24,7 +26,7 @@ public class MoveAction implements Action {
 
   @Override
   public String getType() {
-    return "move";
+    return "Move";
   }
 
   public Posn getDestination() {
