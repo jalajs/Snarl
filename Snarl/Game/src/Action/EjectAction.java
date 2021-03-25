@@ -26,4 +26,11 @@ public class EjectAction implements Action {
     return "Eject";
   }
 
+  public String getEjectedPlayerName() {
+    return ejectedPlayerName;
+  }
+
+  public void setEjectedPlayerName(String ejectedPlayerName) {
+    this.ejectedPlayerName = ejectedPlayerName;
+  }
 }

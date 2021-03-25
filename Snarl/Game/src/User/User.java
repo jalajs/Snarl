@@ -12,9 +12,6 @@ import GameObjects.Tile;
  */
 public interface User {
 
-
-
-
   /**
    * Returns the name the user registered with
    * @return the name
@@ -65,8 +62,16 @@ public interface User {
    * Finds the Actors in the User's surroundings.
    */
   List<Actor> findActors();
+
+  /**
+   * This method returns the ascii string representation of the visible tiles
+   * @return the representation of the visible tiles
+   */
   String visibleTileRepresentation();
 
-
+  /**
+   * Sets the currentPosition to the given Posn
+   * @param posn
+   */
   void setCurrentPosition(Posn posn);
 }

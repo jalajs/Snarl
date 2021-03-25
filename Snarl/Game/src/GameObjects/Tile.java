@@ -69,11 +69,8 @@ public class Tile {
    */
   public boolean isInteractable(Actor actor, boolean isExitable) {
     if (actor.isPlayer()) {
-      if (this.getDoor() != null) {
-        return !door.isLevelExit() || (door.isLevelExit() && isExitable);
-      }
       if (this.getOccupier() != null) {
-        return !occupier.isPlayer();
+        return !occupier.isPlayer() || occupier.getName().equals(actor.getName());
       }
     }
 
@@ -83,15 +80,16 @@ public class Tile {
 
   /**
    * If a player lands on this tile, this interaction will take place
+   * @param player the player making the interaction on this tile
    * @return the string representation of the interaction type
    *         Possible interaction types are: Key, Adversary, None
    */
-  public String getInteraction() {
+  public String getInteraction(Player player) {
     if (door != null) {
       if(this.door.isLevelExit()) {
         return "Exit";
       } else {
-        return "None";
+        return "OK";
       }
     }
     if (collectable != null) {
@@ -99,10 +97,10 @@ public class Tile {
     }
     if (occupier != null) {
       if (!occupier.isPlayer()) {
-        return "Adversary";
+        return "Eject";
       }
     }
-      return "None";
+      return "OK";
   }
 
   /**

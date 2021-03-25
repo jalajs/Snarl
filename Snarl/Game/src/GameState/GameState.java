@@ -38,19 +38,10 @@ public interface GameState {
   /**
    * Modifies the game state after a player is expelled
    *
-   * @param expelledPlayer
+   * @param expelledPlayer the player being expelled
+   * @param oldPosition the position of where the player was
    */
-  void handlePlayerExpulsion(Player expelledPlayer);
-
-
-  /**
-   * This method handles when player exits the game. Note: end game not implemented,
-   * this method just removes the player from the game state and adds it to the exited
-   * players.
-   *
-   * @param exitedPlayer
-   */
-  void handlePlayerExit(Player exitedPlayer);
+  void handlePlayerExpulsion(Player expelledPlayer, Posn oldPosition);
 
   /**
    * Creates the initial game state by placing the given actors in the game. Players and adversaries
@@ -124,8 +115,9 @@ public interface GameState {
    *
    * @param action
    * @param checker
+   * @return boolean returns true if the move was executed
    */
-  void handleMoveAction(MoveAction action, RuleChecker checker);
+  boolean handleMoveAction(MoveAction action, RuleChecker checker);
 
   /**
    * Returns whether or not the current level is exitable
@@ -161,5 +153,16 @@ public interface GameState {
    */
   void handleKeyCollection();
 
+  /**
+   * Get the surrounding tiles around the given posn
+   * @param position the posn in the center of the layout returned
+   * @return a 5x5 layout of tiles
+   */
   List<List<Tile>> getSurroundingsForPosn(Posn position);
+
+  /**
+   * Get the players extied from the games. Exited or expelled
+   * @return a List of players exited from the games=.
+   */
+  List<Player> getExitedPlayers();
 }

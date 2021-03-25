@@ -8,6 +8,7 @@ import java.util.List;
 import GameObjects.Level;
 import Action.Action;
 import GameObjects.Posn;
+import GameState.GameState;
 import User.User;
 
 /**
@@ -82,9 +83,10 @@ public interface GameManager {
 
   /**
    * Play out the move of the User's whose turn it is.
-   * @return Return the trace of their move in a JSONArray
+   * @param managerTrace the JSONArray to add traces to
+   * @return whether or not all moves have been used
    */
-  JSONArray playOutMove();
+  boolean playOutMove(JSONArray managerTrace);
 
   /**
    * Set the move input stream to the given list of list of positions
@@ -97,4 +99,10 @@ public interface GameManager {
    * @return A list of the names of the players remaining
    */
   List<String> getRemainingPlayers();
+
+  /**
+   * Get the game state from the game manager.
+   * @return the current game state of the game.
+   */
+  GameState getGs();
 }

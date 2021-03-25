@@ -92,15 +92,13 @@ public class LocalUser implements User {
    * GameManager
    *
    * @return the action object the user does from this move.
-   * <p>
-   * first ask for coordinates of move then find tile thats indicates and build the Action return
-   * the action
    */
   @Override
   public Action turn() {
     Posn newPosition = this.promptUserForTurn();
 
     Tile newTile = this.findTile(newPosition);
+    newTile.setPosition(newPosition);
 
     return newTile.buildAction(this.currentPosition, this.name);
   }
@@ -188,9 +186,9 @@ public class LocalUser implements User {
   public List<Object> findObjects() {
     List<Object> objects = new ArrayList<>();
     for (int i = 0; i < this.surroundings.size(); i++) {
-      for (int j = 0; j < surroundings.get(i).size(); j++) {
-        if (surroundings.get(i).get(j) != null) {
-          Tile tile = surroundings.get(i).get(j);
+      for (int j = 0; j < this.surroundings.get(i).size(); j++) {
+        if (this.surroundings.get(i).get(j) != null) {
+          Tile tile = this.surroundings.get(i).get(j);
           Door door = tile.getDoor();
           if (tile.getCollectable() != null) {
             objects.add(tile.getCollectable());

@@ -17,6 +17,7 @@ import GameObjects.Posn;
 import GameObjects.Tile;
 import GameObjects.Room;
 
+import GameState.GameState;
 import User.User;
 
 public class testManager {
@@ -67,47 +68,56 @@ public class testManager {
       JSONArray managerTrace = new JSONArray();
 
       // issue initial update to each player in order
-     addUpdateTracesForGivenPlayers(managerTrace, nameList, gameManager);
+      addUpdateTracesForGivenPlayers(managerTrace, nameList, gameManager);
 
-      // play out game using moves from actorMoveList for each player.
-      // validate and perform moves
-      int roundNumber = 0;
-      gameManager.setMoveInput(actorMoveListList);
+      playOutGame(managerTrace, gameManager, actorMoveListList, maxRounds);
 
-      while(roundNumber < maxRounds) {
-        List<String> remainingPlayers = gameManager.getRemainingPlayers();
-        // move must be played for every remaining player in every round
-        for(int i = 0; i < remainingPlayers.size(); i ++) {
-          JSONArray response = gameManager.playOutMove(); // this should also process interactions
-          managerTrace.put(response);
-          if (checkIfGameTraceIsDone(roundNumber)) {
-            roundNumber = maxRounds;
-            break;
-          }
-          addUpdateTracesForGivenPlayers(managerTrace, remainingPlayers, gameManager);
-        }
-        roundNumber++;
-      }
+      JSONObject stateJSON = testState.gameStateToJSONObject(gameManager.getGs(), levelJSON);
+      output.put(stateJSON);
+      output.put(managerTrace);
 
-      // stop and return the results when:
-      //  - given number of turns was performed
-      //  - one of the move input stream is exhausted
-      //  - the level is over
-
-
+      System.out.println(output);
     }
-
-
   }
 
   /**
-   * The game is over if the level has exited or one of the move input streams is exhausted.
-   * @return
+   * Play out game using moves from actorMoveList for each player. Validate and perform moves
+   * @param managerTrace the manager trace to update as the game is played out
+   * @param gameManager the gameManager used to play out the game
+   * @param actorMoveListList the moveInput streams for each players
+   * @param maxRounds the maximum number of rounds/turns the game should be played out.
    */
-  public static boolean checkIfGameTraceIsDone(int roundNumber) {
-    return true;
+  private static void playOutGame(JSONArray managerTrace, GameManager gameManager,
+                                  ArrayList<ArrayList<Posn>> actorMoveListList, int maxRounds) {
+    int roundNumber = 0;
+
+    boolean outOfMoves;
+    gameManager.setMoveInput(actorMoveListList);
+
+    while (roundNumber < maxRounds) {
+      // move must be played for every remaining player in every round
+      for (int i = 0; i < gameManager.getRemainingPlayers().size(); i++) {
+        // adds the move response to the managerTrace and returns if the player is out of moves
+        outOfMoves = gameManager.playOutMove(managerTrace); // this should also process interactions
+
+        // check if the level is over or the player has run out of moves
+        if (outOfMoves || gameManager.getRemainingPlayers().size() == 0) {
+          roundNumber = maxRounds;
+          break;
+        }
+        addUpdateTracesForGivenPlayers(managerTrace, gameManager.getRemainingPlayers(), gameManager);
+      }
+      roundNumber++;
+    }
   }
 
+  /**
+   * This method adds update traces to the given managerTrace for all the given players
+   *
+   * @param managerTrace
+   * @param players
+   * @param gameManager
+   */
   public static void addUpdateTracesForGivenPlayers(JSONArray managerTrace, List<String> players, GameManager gameManager) {
     for (String s : players) {
       managerTrace.put(createUpdateTrace(s, gameManager));
@@ -116,6 +126,7 @@ public class testManager {
 
   /**
    * Creates the update trace for the player
+   *
    * @param name
    * @param gameManager
    * @return
@@ -156,8 +167,9 @@ public class testManager {
     JSONArray objectList = createObjectList(objects);
     playerUpdate.put("objects", objectList);
 
+    List<String> actorNames = gameManager.getRemainingPlayers();
     List<Actor> actors = user.findActors();
-    JSONArray actorPositionList = createActorPositionList(actors);
+    JSONArray actorPositionList = createActorPositionList(actors, actorNames);
     playerUpdate.put("actors", actorPositionList);
 
     return playerUpdate;
@@ -170,12 +182,14 @@ public class testManager {
    * @param actors
    * @return
    */
-  private static JSONArray createActorPositionList(List<Actor> actors) {
+  private static JSONArray createActorPositionList(List<Actor> actors, List<String> actorNames) {
     JSONArray actorPostionList = new JSONArray();
     for (Actor actor : actors) {
-      String actorType = actor.isPlayer() ? "player" : "adversary";
-      JSONObject actorPositionListItem = testState.createActorPositionListItem(actor, actorType);
-      actorPostionList.put(actorPositionListItem);
+      if (actorNames.contains(actor.getName()) || !actor.isPlayer()) {
+        String actorType = actor.isPlayer() ? "player" : "adversary";
+        JSONObject actorPositionListItem = testState.createActorPositionListItem(actor, actorType);
+        actorPostionList.put(actorPositionListItem);
+      }
     }
     return actorPostionList;
   }
@@ -239,11 +253,6 @@ public class testManager {
     return layout;
   }
 
-
-//  private static JSONArray createMoveTrace(String name, GameManager gameManager) {
-//
-//  }
-
   /**
    * Registers the players in the name list in order to a game manager.
    *
@@ -268,13 +277,18 @@ public class testManager {
    */
   private static ArrayList<ArrayList<Posn>> parseActorMoveListList(JSONArray actorMoveListListJSON) {
     ArrayList<ArrayList<Posn>> actorMoveListList = new ArrayList<>();
-    for (int i = 0; i < actorMoveListListJSON.length(); i++){
+    for (int i = 0; i < actorMoveListListJSON.length(); i++) {
       JSONArray innerList = (JSONArray) actorMoveListListJSON.get(i);
       ArrayList<Posn> moveList = new ArrayList<>();
       for (int j = 0; j < innerList.length(); j++) {
         JSONObject moveObj = (JSONObject) innerList.get(j);
-        Posn posn = testRoom.jsonToPosn((JSONArray) moveObj.get("to"));
-        moveList.add(posn);
+        if (moveObj.get("to") == JSONObject.NULL) {
+          moveList.add(null);
+        } else {
+          Posn posn = testRoom.jsonToPosn((JSONArray) moveObj.get("to"));
+          moveList.add(posn);
+        }
+
       }
       actorMoveListList.add(moveList);
     }

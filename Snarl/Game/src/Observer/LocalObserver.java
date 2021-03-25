@@ -2,6 +2,9 @@ package Observer;
 
 import GameState.GameState;
 
+/**
+ * This class represents a local observer of the Snarl game
+ */
 public class LocalObserver implements Observer {
 
   /**

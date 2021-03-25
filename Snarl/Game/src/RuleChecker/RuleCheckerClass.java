@@ -54,7 +54,7 @@ public class RuleCheckerClass implements RuleChecker {
    */
   @Override
   public boolean isMoveValid(Level level, Actor actor, Posn destination) {
-    return level.canActorMoveHere(actor, destination);
+    return level.canActorMoveLevel(actor.getPosition(), destination);
   }
 
   /**

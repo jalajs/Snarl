@@ -1,7 +1,13 @@
+
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
+
+import Action.EjectAction;
+import Action.MoveAction;
 import GameObjects.Adversary;
 import GameObjects.Player;
 import GameObjects.Posn;
@@ -9,8 +15,14 @@ import GameObjects.Tile;
 import User.LocalUser;
 
 public class testLocalUser {
+  /**
+   * Testing the user being interactively prompted to chose a destination.
+   *
+   * @param args the user input
+   */
   public static void main(String[] args) {
-
+    System.out.println("NOTE: testLocalUser is designed to first test a simple move, then an eject. After" +
+            "running one simple move (with however many invalids you like), run the move (2,2) ");
     LocalUser user = new LocalUser("Bob");
     List<List<Tile>> initSurroundings = new ArrayList<>();
     List<Tile> row1 = new ArrayList<>();
@@ -22,7 +34,7 @@ public class testLocalUser {
     Tile playerTile = new Tile(false);
     Tile adversaryTile = new Tile(false);
     playerTile.setOccupier(new Player("Bob"));
-    adversaryTile.setOccupier(new Adversary("Zombie","Jimbo"));
+    adversaryTile.setOccupier(new Adversary("Zombie", "Jimbo"));
 
     row1.add(wallTile);
     row1.add(playerTile);
@@ -43,7 +55,11 @@ public class testLocalUser {
     user.setSurroundings(initSurroundings);
     user.setCurrentPosition(new Posn(0, 1));
 
-    user.turn();
+    MoveAction moveAction = (MoveAction) user.turn();
 
+    // Testing that the user provides the correct action when turn is called
+    System.out.print("Is this the position you gave us? ");
+    System.out.println("(" + moveAction.getDestination().getRow() + ", "
+            + moveAction.getDestination().getCol() + ")");
   }
 }
