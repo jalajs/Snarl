@@ -8,6 +8,7 @@ The goal of the Observer component is to provide a rendered view of the game to 
    - Iterate through all the observers and call observer.update()
 <br>
 The Observer will have the following methods:
+
 <br>
 
 - Void update()

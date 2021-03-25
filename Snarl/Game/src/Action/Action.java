@@ -1,4 +1,4 @@
-package GameObjects;
+package Action;
 
 import GameState.GameState;
 

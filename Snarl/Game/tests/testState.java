@@ -1,6 +1,5 @@
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 import org.json.JSONTokener;
 
 import java.util.List;
@@ -14,7 +13,6 @@ import GameObjects.Level;
 import GameObjects.Player;
 import GameObjects.Posn;
 import GameObjects.Room;
-import GameObjects.Tile;
 import GameState.GameState;
 import GameState.GameStateModel;
 
@@ -151,21 +149,21 @@ public class testState {
                                           JSONObject levelObject, String name, Posn point) {
     JSONArray outputArray = new JSONArray();
     Player player = findPlayer(name, players);
+    Posn oldPosition = player.getPosition();
     String interactionType = gs.handleMovePlayer(player, point);
     if (gs.isPlayerIsOnExit() && !exitLocked) {
-      gs.handlePlayerExit(player);
+      gs.handlePlayerExpulsion(player, oldPosition);
       outputArray.put("Success");
       outputArray.put("Player ");
       outputArray.put(name);
       outputArray.put(" exited.");
       outputArray.put(gameStateToJSONObject(gs, levelObject));
-    }
-    else if (interactionType.equals("None") || interactionType.equals("Key")) {
+    } else if (interactionType.equals("None") || interactionType.equals("Key")) {
       outputArray.put("Success");
       outputArray.put(gameStateToJSONObject(gs, levelObject));
 
     } else if (interactionType.equals("Adversary")) {
-      gs.handlePlayerExpulsion(player);
+      gs.handlePlayerExpulsion(player, oldPosition);
       outputArray.put("Success");
       outputArray.put("Player ");
       outputArray.put(name);
@@ -177,48 +175,56 @@ public class testState {
   }
 
   /**
-   * Given a gameState, returns a JSON gameState object, which looks like this
-   * { "type": "state",
-   *   "level": (level),
-   *   "players": (actor-position-list),
-   *   "adversaries": (actor-position-list),
-   *   "exit-locked": (boolean) }
+   * Given a gameState, returns a JSON gameState object, which looks like this { "type": "state",
+   * "level": (level), "players": (actor-position-list), "adversaries": (actor-position-list),
+   * "exit-locked": (boolean) }
    *
    * @param gs
    * @return
    */
-  private static JSONObject gameStateToJSONObject(GameState gs, JSONObject levelObject) {
+  public static JSONObject gameStateToJSONObject(GameState gs, JSONObject levelObject) {
     JSONObject gameStateObject = new JSONObject();
     gameStateObject.put("type", "state");
+    if (gs.isExitable()) {
+      removeKeyFromLevelJSON(levelObject);
+    }
     gameStateObject.put("level", levelObject);
     gameStateObject.put("players", actorListToJSONArray(gs.getActors(), "player"));
     gameStateObject.put("adversaries", actorListToJSONArray(gs.getActors(), "adversary"));
-    gameStateObject.put("exit-locked", gs.isExitable());
+    gameStateObject.put("exit-locked", !gs.isExitable());
 
     return gameStateObject;
   }
 
   /**
-   * Turns the given list of actors into a actor-position list
-   *  [{ "type": (actor-type), "name": (string), "position": (point) }, ...]
+   *
+   * @param levelObject
+   */
+  private static void removeKeyFromLevelJSON(JSONObject levelObject) {
+    JSONArray oldObjects = (JSONArray) levelObject.get("objects");
+
+    JSONObject firstObject = (JSONObject) oldObjects.get(0);
+    JSONObject secondObject = (JSONObject) oldObjects.get(1);
+
+    JSONObject exitObject = firstObject.get("type").equals("exit") ? firstObject : secondObject;
+    JSONArray newObjects = new JSONArray();
+    newObjects.put(exitObject);
+
+    levelObject.put("objects", newObjects);
+  }
+
+  /**
+   * Turns the given list of actors into a actor-position list [{ "type": (actor-type), "name":
+   * (string), "position": (point) }, ...]
+   *
    * @param actors the list of actors we want to convert to a JSON list
    * @return actor-position-list JSONArray
    */
   private static JSONArray actorListToJSONArray(List<Actor> actors, String actorType) {
     JSONArray actorPositionList = new JSONArray();
     for (Actor actor : actors) {
-      JSONObject actorPositionObject = new JSONObject();
-      if (actor.isPlayer() && actorType.equals("player")) {
-        Player player = (Player) actor;
-        actorPositionObject.put("type","player");
-        actorPositionObject.put("name", player.getName());
-        actorPositionObject.put("position", testRoom.posnToJson(player.getPosition()));
-        actorPositionList.put(actorPositionObject);
-      } else if (!actor.isPlayer() && actorType.equals("adversary")) {
-        Adversary adversary = (Adversary) actor;
-        actorPositionObject.put("type", adversary.getType());
-        actorPositionObject.put("name", adversary.getName());
-        actorPositionObject.put("position", testRoom.posnToJson(adversary.getPosition()));
+      JSONObject actorPositionObject = createActorPositionListItem(actor, actorType);
+      if (!actorPositionObject.isEmpty()) {
         actorPositionList.put(actorPositionObject);
       }
     }
@@ -226,6 +232,29 @@ public class testState {
     return actorPositionList;
   }
 
+  /**
+   * Creates a single entry for a actor-position-list given an actor and the string of its type
+   *
+   * @param actor     the actor to create the entry for
+   * @param actorType the type of actor (player or adversary)
+   * @return the actor-position-list entry
+   */
+  public static JSONObject createActorPositionListItem(Actor actor, String actorType) {
+    JSONObject actorPositionObject = new JSONObject();
+    if (actor.isPlayer() && actorType.equals("player")) {
+      Player player = (Player) actor;
+      actorPositionObject.put("type", "player");
+      actorPositionObject.put("name", player.getName());
+      actorPositionObject.put("position", testRoom.posnToJson(player.getPosition()));
+    } else if (!actor.isPlayer() && actorType.equals("adversary")) {
+      Adversary adversary = (Adversary) actor;
+      actorPositionObject.put("type", adversary.getType());
+      actorPositionObject.put("name", adversary.getName());
+      actorPositionObject.put("position", testRoom.posnToJson(adversary.getPosition()));
+    }
+    return actorPositionObject;
+
+  }
 
 
   /**
@@ -282,8 +311,9 @@ public class testState {
 
   /**
    * Parses the JSONArray of objects into a list of positions for the key and exit
+   *
    * @param jsonObjects the JSONArray for the positions of the key and exit
-   * @param exitLocked whether or not the exit door is locked
+   * @param exitLocked  whether or not the exit door is locked
    * @return A list of posn for the locations of the key and exit. Key position is first and exit
    * position is second.
    */
@@ -312,10 +342,10 @@ public class testState {
   /**
    * Builds a level from a given list of rooms, hallways, and posns.
    *
-   * @param rooms List<Rooms> indicates the level's rooms
-   * @param hallways List<Hallway> indicates the level's hallways
+   * @param rooms           List<Rooms> indicates the level's rooms
+   * @param hallways        List<Hallway> indicates the level's hallways
    * @param exitAndKeyPosns List<Posn> includes the exit and the key position (ordered as listed)
-   * @param exitLocked whether or not the exit door is locked
+   * @param exitLocked      whether or not the exit door is locked
    * @return the level
    */
   static Level buildLevel(List<Room> rooms,

@@ -65,8 +65,9 @@ public class Hallway {
         return true;
       }
     }
-    List<Posn> allPoints = this.getWaypoints();
+    List<Posn> allPoints = new ArrayList<>();
     allPoints.add(doors.get(0).getTileCoord());
+    allPoints.addAll(this.getWaypoints());
     allPoints.add(doors.get(1).getTileCoord());
 
     for (int i = 0; i < allPoints.size() - 1; i++) {
@@ -77,27 +78,27 @@ public class Hallway {
       }
     }
 
-    return false;
+    return allPoints.contains(point);
   }
 
   /**
    * Returns true if the given Posn point lies in the segment between to and from
    *
-   * @param to the end waypoint of the segment
-   * @param from the from waypoint of the segment
+   * @param from  the from waypoint of the segment
+   * @param to    the end waypoint of the segment
    * @param point the given posn
    * @return
    */
-  private boolean isPosnInSegment(Posn to, Posn from, Posn point) {
+  public boolean isPosnInSegment(Posn to, Posn from, Posn point) {
     if (to.getRow() == from.getRow()) {
-      // vertical segment
+      // horizontal segment
       // if the points' row = from row and the col is between the to and from
       if (point.getRow() == from.getRow() && isPointInRange(point.getCol(), from.getCol(), to.getCol())) {
         return true;
       }
     }
     if (to.getCol() == from.getCol()) {
-      // horizontal segment
+      // vertical segment
       if (point.getCol() == from.getCol() && isPointInRange(point.getRow(), from.getRow(), to.getRow())) {
         return true;
       }
@@ -113,7 +114,7 @@ public class Hallway {
    * @param to    edge of range
    * @return boolean if in range
    */
-  private boolean isPointInRange(int point, int from, int to) {
+  public boolean isPointInRange(int point, int from, int to) {
     return (point >= from && point <= to) || (point <= from && point >= to);
   }
 
@@ -175,7 +176,7 @@ public class Hallway {
     allPoints.addAll(this.getWaypoints());
     allPoints.add(doors.get(1).getTileCoord());
 
-   List<Posn> possibleMoves = this.generatePossibleMoves(position);
+    List<Posn> possibleMoves = this.generatePossibleMoves(position);
 
     for (Posn wayPointOrDoor : allPoints) {
       if (possibleMoves.contains(wayPointOrDoor)) {
@@ -196,6 +197,7 @@ public class Hallway {
 
   /**
    * Create a list of possible positions a person can move from the given position in a hallway
+   *
    * @param position the origin position
    * @return An enumeration of possible moves
    */

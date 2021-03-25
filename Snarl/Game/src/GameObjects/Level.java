@@ -280,12 +280,11 @@ public class Level {
   /**
    * Expels the given player from the level
    *
-   * @param expelledPlayer the player to be expelled
+   * @param oldPosition is the old position the player to be expelled
    */
-  public void expelPlayer(Actor expelledPlayer) {
-    Posn expelPosition = expelledPlayer.getPosition();
-    int row = expelPosition.getRow();
-    int col = expelPosition.getCol();
+  public void expelPlayer(Posn oldPosition) {
+    int row = oldPosition.getRow();
+    int col = oldPosition.getCol();
 
     this.tileGrid[row][col].setOccupier(null);
     this.levelGrid[row][col] = ".";
@@ -564,46 +563,93 @@ public class Level {
   }
 
   /**
-   * Invalid if too far, wall, empty space (no tile) or interaction is invalid A move is to far if
-   * the desired tile is more than two cardinal moves away
+   * This method returns true if the destination Posn is reachable from the given current position by two
+   * cardinal moves. The destination must also be traversable
    *
-   * @param actor       the given actor moving
-   * @param destination the destination it is trying to move to
-   * @return whether or not there move is valid
+   * @param currentPosition the players current position
+   * @param destination  the destination
+   * @return
    */
-  public boolean canActorMoveHere(Actor actor, Posn destination) {
-    boolean isDestinationTraversable = checkTraversable(destination);
-    if (!isDestinationTraversable) {
-      return false;
+  public boolean canActorMoveLevel(Posn currentPosition, Posn destination) {
+    List<Posn> firstPossibleMoves = getCardinalMoves(currentPosition);
+    List<Posn> allPossibleMoves = new ArrayList(firstPossibleMoves);
+    for(Posn move : firstPossibleMoves) {
+      allPossibleMoves.addAll(getCardinalMoves(move));
     }
-    // check if the player is any of the rooms. If so, check the possible cardinal moves
-    // from the players position in the room and see if the destination is one of them
-    for (Room room : this.rooms) {
-      if (room.isPosnInRoom(actor.getPosition())) {
-        List<Posn> oneCardinalMove = room.getNextPossibleCardinalMoves(actor.getPosition());
-        List<Posn> allCardinalMoves = new ArrayList(oneCardinalMove);
-        for (Posn cardinalMove : oneCardinalMove) {
-          allCardinalMoves.addAll(room.getNextPossibleCardinalMoves(cardinalMove));
-        }
-        return allCardinalMoves.contains(destination);
-      }
-    }
-    // check if the player is any of the rooms. If so, check the possible cardinal moves
-    // from the players position in the room and see if the destination is one of them
-    for (Hallway hallway : this.hallways) {
-      if (hallway.isPosnInHallway(actor.getPosition())) {
-        List<Posn> oneCardinalMove = hallway.getNextPossibleCardinalMoves(actor.getPosition());
-        List<Posn> allCardinalMoves = new ArrayList(oneCardinalMove);
-        for (Posn cardinalMove : oneCardinalMove) {
-          allCardinalMoves.addAll(hallway.getNextPossibleCardinalMoves(cardinalMove));
-        }
-        return allCardinalMoves.contains(destination);
-      }
-    }
-    // if none of the above conditions are true, then actor cannot move here
-    return false;
+    return currentPosition.equals(destination) ||
+            (checkTraversable(destination) && allPossibleMoves.contains(destination));
   }
 
+  /**
+   * Returns the list of Posns referencing the NORTH EAST SOUTH WEST positions relative to the given position
+   * makes sure that all the moves are within bounds
+   *
+   * @param position
+   * @return
+   */
+  private List<Posn> getCardinalMoves(Posn position) {
+    List<Posn> possiblePosns = new ArrayList<>();
+
+    int playerRow = position.getRow();
+    int playerCol = position.getCol();
+
+    // find the north tile
+    if ((playerRow - 1) >= 0) {
+        possiblePosns.add(new Posn(playerRow - 1, playerCol));
+      }
+    // find the west tile
+    if ((playerCol - 1) >= 0) {
+        possiblePosns.add(new Posn(playerRow, playerCol - 1));
+      }
+    // find the east tile
+    if ((playerCol + 1) < this.tileGrid[0].length) {
+        possiblePosns.add(new Posn(playerRow, playerCol + 1));
+      }
+    // find the south tile
+    if ((playerRow + 1) < this.tileGrid.length) {
+        possiblePosns.add(new Posn(playerRow + 1, playerCol));
+    }
+    return possiblePosns;
+  }
+
+
+  /**
+   *  This method returns a 5x5 grid of tiles where the given position is the center
+   *  if any of the surrounding positions are not tiles (ie. its on the edge of a room or level)
+   *  those spaces are set to null
+   *
+   * @param position the center position
+   * @return a 5x5 grid with the given position as the center
+   */
+  public List<List<Tile>> getSurroundingsForPosn(Posn position) {
+    int row = position.getRow();
+    int col = position.getCol();
+
+    int surroundingRow = row - 2;
+    int surroundingCol = col - 2;
+    List<List<Tile>> surroundingsGrid = new ArrayList<>();
+
+    for(int i = 0; i < 5; i ++) {
+      List<Tile> surroundings = new ArrayList<>();
+      for (int j = 0; j < 5; j++) {
+        // make sure that the tile is in the grid, if not add null
+        if (surroundingRow + i < this.tileGrid.length && surroundingRow + i >= 0 && surroundingCol + j < this.tileGrid[0].length && surroundingCol + j >= 0) {
+          surroundings.add(this.tileGrid[surroundingRow + i][surroundingCol + j]);
+        } else {
+          surroundings.add(null);
+        }
+      }
+      surroundingsGrid.add(surroundings);
+    }
+    return surroundingsGrid;
+  }
+
+  /**
+   * Removes any occupiers on the exit door
+   */
+  public void clearExitDoor() {
+    this.tileGrid[exitDoorPosition.getRow()][exitDoorPosition.getCol()].setOccupier(null);
+  }
 
   public List<Room> getRooms() {
     return rooms;
@@ -668,4 +714,6 @@ public class Level {
   public void setExitDoorPosition(Posn exitDoorPosition) {
     this.exitDoorPosition = exitDoorPosition;
   }
+
+
 }

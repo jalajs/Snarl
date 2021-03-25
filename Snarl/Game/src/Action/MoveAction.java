@@ -1,5 +1,7 @@
-package GameObjects;
+package Action;
 
+import Action.Action;
+import GameObjects.Posn;
 import GameState.GameState;
 
 /**
@@ -8,13 +10,19 @@ import GameState.GameState;
 public class MoveAction implements Action {
   private Posn destination;
   private Posn currentPosition;
+  private String interactionType;
 
   /**
    * This constructor builds a move with a destination and a currentPosition
    */
   public MoveAction(Posn destination, Posn currentPosition) {
-    this.destination = destination;
+    if (destination == null) {
+      this.destination = currentPosition;
+    } else {
+      this.destination = destination;
+    }
     this.currentPosition = currentPosition;
+    this.interactionType = "";
   }
 
   @Override
@@ -24,7 +32,7 @@ public class MoveAction implements Action {
 
   @Override
   public String getType() {
-    return "move";
+    return "Move";
   }
 
   public Posn getDestination() {
@@ -42,4 +50,8 @@ public class MoveAction implements Action {
   public void setCurrentPosition(Posn currentPosition) {
     this.currentPosition = currentPosition;
   }
+
+  public void setInteractionType(String interactionType) { this.interactionType = interactionType; }
+
+  public String getInteractionType() { return this.interactionType; }
 }

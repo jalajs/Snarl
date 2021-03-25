@@ -1,7 +1,15 @@
 package GameManager;
 
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import GameObjects.Level;
-import GameObjects.Action;
+import Action.Action;
+import GameObjects.Posn;
+import GameState.GameState;
+import User.User;
 
 /**
  * The GameManager is tasked with sequencing the game. It must register players and adversaries, update
@@ -34,6 +42,15 @@ public interface GameManager {
   void startGame(Level level);
 
   /**
+   * Starts the game trace for the testing task.
+   *
+   * @param level the level to start the game with
+   * @param posnList the list of intital positions for actors.
+   *              The first n positions are for the users and any subsequent posn is for an Adversary we create
+   */
+  void startGameTrace(Level level, List<Posn> posnList);
+
+  /**
    * This method iterates through the Users and sends them each the current information on the
    * GameState.
    *
@@ -56,4 +73,36 @@ public interface GameManager {
    * @param actorType indicates the type of actor making the move
    */
   void executeAction(String actorType, Action action);
+
+  /**
+   * Returns the user with the given name
+   * @param name the String representing the user's name
+   * @return the user with the given name. null if a user does not exist with that name
+   */
+  User getUserByString(String name);
+
+  /**
+   * Play out the move of the User's whose turn it is.
+   * @param managerTrace the JSONArray to add traces to
+   * @return whether or not all moves have been used
+   */
+  boolean playOutMove(JSONArray managerTrace);
+
+  /**
+   * Set the move input stream to the given list of list of positions
+   * @param actorMoveListList the positions represent the destination for each move
+   */
+  void setMoveInput(ArrayList<ArrayList<Posn>> actorMoveListList);
+
+  /**
+   * Get the remaining players still in the game
+   * @return A list of the names of the players remaining
+   */
+  List<String> getRemainingPlayers();
+
+  /**
+   * Get the game state from the game manager.
+   * @return the current game state of the game.
+   */
+  GameState getGs();
 }

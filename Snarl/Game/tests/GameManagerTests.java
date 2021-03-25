@@ -3,21 +3,14 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import GameManager.GameManager;
 import GameManager.GameManagerClass;
 import GameObjects.Actor;
-import GameObjects.MoveAction;
+import Action.MoveAction;
 import GameObjects.Adversary;
 import GameObjects.Level;
 import GameObjects.Player;
 import GameObjects.Posn;
-import GameObjects.Tile;
-import GameObjects.Door;
-import GameObjects.Collectable;
-import GameObjects.ExitKey;
-import GameState.GameState;
 import GameState.GameStateModel;
-import RuleChecker.RuleCheckerClass;
 
 
 import static org.junit.Assert.*;

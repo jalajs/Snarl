@@ -7,7 +7,7 @@ import GameObjects.Actor;
 import GameObjects.Adversary;
 import GameObjects.Collectable;
 import GameObjects.Level;
-import GameObjects.MoveAction;
+import Action.MoveAction;
 import GameObjects.Player;
 import GameObjects.Posn;
 import GameObjects.Door;
@@ -85,6 +85,14 @@ public class GameStateModel implements GameState {
   }
 
   /**
+   * This method simply initializes the level grid. We created it so that we can initialize the
+   * level grid at the GS level from the test harnesses.
+   */
+  public void initLevelGrid() {
+    this.level.initGrid();
+  }
+
+  /**
    * Creates an intermediate game state. This method places the given players and adversaries in
    * this.level.
    *
@@ -121,28 +129,44 @@ public class GameStateModel implements GameState {
   }
 
   /**
+   * This method returns a 5x5 grid of tiles where the given position is the center if any of the
+   * surrounding positions are not tiles (ie. its on the edge of a room or level) those spaces are
+   * set to null
+   *
+   * @param position the center position
+   * @return a 5x5 grid with the given position as the center
+   */
+  @Override
+  public List<List<Tile>> getSurroundingsForPosn(Posn position) {
+    return this.level.getSurroundingsForPosn(position);
+  }
+
+  /**
    * Modifies the game state after a player is expelled
    *
    * @param expelledPlayer
+   * @param oldPosition    the position the player/adversary moves from
    */
-  public void handlePlayerExpulsion(Player expelledPlayer) {
+  public void handlePlayerExpulsion(Player expelledPlayer, Posn oldPosition) {
     this.exitedPlayers.add(expelledPlayer);
     this.actors.remove(expelledPlayer);
-    this.level.expelPlayer(expelledPlayer);
+    this.level.expelPlayer(oldPosition);
   }
 
 
   /**
-   * This method handles when player exits the game. Note: end game not implemented,
-   * this method just removes the player from the game state and adds it to the exited
-   * players.
+   * Modifies the game state after a player is expelled
    *
    * @param exitedPlayer
+   * @param oldPosition  the position the player/adversary moves from
    */
-  public void handlePlayerExit(Player exitedPlayer) {
+  public void handlePlayerExit(Player exitedPlayer, Posn oldPosition) {
     this.exitedPlayers.add(exitedPlayer);
     this.actors.remove(exitedPlayer);
+    this.level.expelPlayer(oldPosition);
+    this.level.clearExitDoor();
   }
+
 
   /**
    * Modifies the game state to reflect a player move. This method assumed the move has already been
@@ -159,7 +183,7 @@ public class GameStateModel implements GameState {
     }
     // set the player's position to the new posn
     p.setPosition(posn);
-    return dest.getInteraction();
+    return dest.getInteraction(p);
   }
 
   /**
@@ -256,36 +280,53 @@ public class GameStateModel implements GameState {
    * @param action  the given MoveAction object, containing the players current position, the
    *                interation type, and the destination
    * @param checker the given RuleChecker
+   * @return boolean returns true if the move was executed
    */
   @Override
-  public void handleMoveAction(MoveAction action, RuleChecker checker) {
+  public boolean handleMoveAction(MoveAction action, RuleChecker checker) {
     Posn destination = action.getDestination();
     Posn currentPosition = action.getCurrentPosition();
-
     Player player = this.findPlayerByPosition(currentPosition);
     if (checker.isMoveValid(this.level, player, destination)) {
       if (checker.isInteractionValid(this.isExitable, player,
               this.level.getTileGrid()[destination.getRow()][destination.getCol()])) {
         // move the player to the new tile
         String interactionType = this.handleMovePlayer(player, destination);
-
+        action.setInteractionType(interactionType);
         // perform the prescribed interaction
-        switch (interactionType) {
-          case "Exit":
-            if (this.isExitable()) {
-              this.handlePlayerExit(player);
-            }
-            break;
-          case "Key":
-            this.handleKeyCollection();
-            break;
-          case "Adversary":
-            this.handlePlayerExpulsion(player);
-            break;
-          case "None":
-            break;
-        }
+        handleInteractionType(interactionType, player, currentPosition, action);
+        return true;
       }
+    }
+    action.setInteractionType("Invalid");
+    return false;
+  }
+
+  /**
+   * This method handles the interactionType and performs the appropriate mutation
+   *
+   * @param interactionType
+   * @param player
+   * @param currentPosition
+   * @param action
+   */
+  private void handleInteractionType(String interactionType, Player player, Posn currentPosition, MoveAction action) {
+    switch (interactionType) {
+      case "Exit":
+        if (this.isExitable()) {
+          this.handlePlayerExit(player, currentPosition);
+        } else {
+          action.setInteractionType("OK");
+        }
+        break;
+      case "Key":
+        this.handleKeyCollection();
+        break;
+      case "Eject":
+        this.handlePlayerExpulsion(player, currentPosition);
+        break;
+      case "OK":
+        break;
     }
   }
 

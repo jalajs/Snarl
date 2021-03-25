@@ -165,7 +165,7 @@ public class LevelGridTest {
 
         assertEquals(level.getLevelGrid()[0][0], "O");
 
-        level.expelPlayer(player);
+        level.expelPlayer(new Posn(0, 0));
 
         assertEquals(level.getLevelGrid()[0][0], ".");
     }

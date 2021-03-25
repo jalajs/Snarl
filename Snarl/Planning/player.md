@@ -33,4 +33,4 @@ Please let us know if you have questions about the contents of this memo.
 <br>
 Best regards,
 <br>
-  Megan Larson & Jalaj Signh
+  Megan Larson & Jalaj Singh

@@ -213,14 +213,20 @@ public class testLevel {
    */
   static List<Posn> parseObjects(JSONArray jsonObjects) {
     List<Posn> positions = new ArrayList<>();
-    JSONObject objectKey = (JSONObject) jsonObjects.get(0);
-    JSONObject objectExit = (JSONObject) jsonObjects.get(1);
+    Posn keyPosn = new Posn(-1, -1);
+    Posn exitPosn = new Posn(-1,-1);
 
-    Posn keyPosition = testRoom.jsonToPosn((JSONArray) objectKey.get("position"));
-    Posn exitPosition = testRoom.jsonToPosn((JSONArray) objectExit.get("position"));
+    for (int i = 0; i < jsonObjects.length(); i++) {
+      JSONObject object = (JSONObject) jsonObjects.get(i);
+      if (object.get("type").equals("key")) {
+        keyPosn = testRoom.jsonToPosn((JSONArray) object.get("position"));
+      } else if (object.get("type").equals("exit")) {
+        exitPosn = testRoom.jsonToPosn((JSONArray) object.get("position"));
+      }
+    }
 
-    positions.add(keyPosition);
-    positions.add(exitPosition);
+    positions.add(keyPosn);
+    positions.add(exitPosn);
 
     return positions;
   }

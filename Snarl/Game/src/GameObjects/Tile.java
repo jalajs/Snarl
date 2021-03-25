@@ -1,5 +1,11 @@
 package GameObjects;
 
+import Action.Action;
+import Action.DoNothingAction;
+import Action.EjectAction;
+import Action.MoveAction;
+import Action.PickUpKeyAction;
+
 /**
  * Represents a game tile and contains information on if it is a wall and what is on the tile
  */
@@ -63,11 +69,8 @@ public class Tile {
    */
   public boolean isInteractable(Actor actor, boolean isExitable) {
     if (actor.isPlayer()) {
-      if (this.getDoor() != null) {
-        return !door.isLevelExit() || (door.isLevelExit() && isExitable);
-      }
       if (this.getOccupier() != null) {
-        return !occupier.isPlayer();
+        return !occupier.isPlayer() || occupier.getName().equals(actor.getName());
       }
     }
 
@@ -77,15 +80,16 @@ public class Tile {
 
   /**
    * If a player lands on this tile, this interaction will take place
+   * @param player the player making the interaction on this tile
    * @return the string representation of the interaction type
    *         Possible interaction types are: Key, Adversary, None
    */
-  public String getInteraction() {
+  public String getInteraction(Player player) {
     if (door != null) {
       if(this.door.isLevelExit()) {
         return "Exit";
       } else {
-        return "None";
+        return "OK";
       }
     }
     if (collectable != null) {
@@ -93,10 +97,29 @@ public class Tile {
     }
     if (occupier != null) {
       if (!occupier.isPlayer()) {
-        return "Adversary";
+        return "Eject";
       }
     }
-      return "None";
+      return "OK";
+  }
+
+  /**
+   * Creates an action for the new tile
+   *  possible actions: move, ejected, pickUpKey
+   * @param originalPosition the original position the user is moving from
+   * @return
+   */
+  public Action buildAction(Posn originalPosition, String playerName) {
+    if (originalPosition.equals(this.position)) {
+      return new DoNothingAction();
+    } else if (this.collectable != null) {
+      // at the moment we assume all collectables are exit keys
+      return new PickUpKeyAction();
+    } else if (this.occupier != null) {
+      return new EjectAction(playerName);
+    } else {
+      return new MoveAction(position, originalPosition);
+    }
   }
 
   public Actor getOccupier() {
@@ -139,5 +162,4 @@ public class Tile {
   public void setPosition(Posn position) {
     this.position = position;
   }
-
 }

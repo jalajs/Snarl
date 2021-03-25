@@ -1,5 +1,7 @@
 package GameObjects;
 
+import Action.Action;
+
 /**
  * Represents a type of actor in the game. Adversaries are trying to eliminate players from the level.
  */

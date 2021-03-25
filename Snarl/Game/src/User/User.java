@@ -2,10 +2,10 @@ package User;
 
 import java.util.List;
 
-import GameObjects.Action;
+import Action.Action;
+import GameObjects.Actor;
 import GameObjects.Posn;
 import GameObjects.Tile;
-import GameState.GameState;
 
 /**
  * This interface represents an actual human playing the game.
@@ -25,11 +25,26 @@ public interface User {
   Posn getCurrentPosition();
 
   /**
+   * This method returns a users surrounding tiles
+   *
+   * @return the surrounding tiles
+   */
+  List<List<Tile>> getSurroundings();
+
+  /**
+   * This method sets the visible tiles for the user
+   *
+   * @param surroundings are the visible tiles
+   */
+  void setSurroundings(List<List<Tile>> surroundings);
+
+  /**
    * Updates the user with any changes that happened in the game state. This is only called in GameManager
    * @param updatedSurroundings the new surrounding of the user
    * @param isExitable whether or not the door has been unlocked
+   * @param currentPosition where the player currently is
    */
-  void update(List<List<Tile>> updatedSurroundings, boolean isExitable);
+  void update(List<List<Tile>> updatedSurroundings, boolean isExitable, Posn currentPosition);
 
   /**
    * Prompts the user for its turn/move. The user does its move and returns an Action ack to the GameManager
@@ -37,6 +52,26 @@ public interface User {
    */
   Action turn();
 
+  /**
+   * Finds the objects in the User's surroundings.
+   * @return
+   */
+  List<Object> findObjects();
 
+  /**
+   * Finds the Actors in the User's surroundings.
+   */
+  List<Actor> findActors();
 
+  /**
+   * This method returns the ascii string representation of the visible tiles
+   * @return the representation of the visible tiles
+   */
+  String visibleTileRepresentation();
+
+  /**
+   * Sets the currentPosition to the given Posn
+   * @param posn
+   */
+  void setCurrentPosition(Posn posn);
 }

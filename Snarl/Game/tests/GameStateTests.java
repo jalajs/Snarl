@@ -184,7 +184,7 @@ public class GameStateTests {
     simpleGameState.setActors(actors);
 
     assertEquals(new ArrayList<>(), simpleGameState.getExitedPlayers());
-    simpleGameState.handlePlayerExpulsion(player1);
+    simpleGameState.handlePlayerExpulsion(player1, player1.getPosition());
 
     List<Player> expelledPlayers = new ArrayList<>();
     expelledPlayers.add(player1);
