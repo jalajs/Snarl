@@ -94,10 +94,19 @@ public class LocalUser implements User {
    * @return the action object the user does from this move.
    */
   @Override
-  public Action turn() {
-    Posn newPosition = this.promptUserForTurn();
+  public Action turn(Scanner scanner) {
+    //  *****
+    //  *****
+    //  **8**
+    //  *****
+    //  *****
+    // rel pos: (2, 2) level pos : (10, 10)
+    // given the new move (11, 10)
+    // how to make it relative??
 
-    Tile newTile = this.findTile(newPosition);
+    Posn newPosition = this.promptUserForTurn(scanner);
+
+    Tile newTile = this.findTile(generatePosnRelativeToSurroundingsn(newPosition.getRow(), newPosition.getCol()));
     newTile.setPosition(newPosition);
 
     return newTile.buildAction(this.currentPosition, this.name);
@@ -109,21 +118,28 @@ public class LocalUser implements User {
    *
    * @return the players new position
    */
-  private Posn promptUserForTurn() {
+  private Posn promptUserForTurn(Scanner scanner) {
     Posn posn = new Posn(-1, -1);
-    Scanner scanner = new Scanner(System.in);
-    while(!isPosnValid(posn)) {
+    Posn relToSurroundings = new Posn(-1, -1);
+    while(!isPosnValid(relToSurroundings)) {
       this.renderView();
       System.out.println("Please enter the desired coordinates for your move in the form row col all on the same line");
-      System.out.println("If your move is invalid, you will be prompted for another coordinate");
+      System.out.println("If your move is invalid, you will be prompted for another coordinate.");
 
       int row = scanner.nextInt();
       int col = scanner.nextInt();
 
       posn = new Posn(row, col);
+      relToSurroundings = this.generatePosnRelativeToSurroundingsn(row, col);
     }
-    scanner.close();
     return posn;
+  }
+
+  private Posn generatePosnRelativeToSurroundingsn(int row, int col) {
+    int x = 2 + (row- currentPosition.getRow());
+    int y = 2 + (col - currentPosition.getCol());
+    System.out.println("rel posn X: " + x + " y: " + y);
+    return new Posn(2 + (row - this.currentPosition.getRow()), 2 + (col - this.currentPosition.getCol()));
   }
 
   /**
@@ -153,12 +169,13 @@ public class LocalUser implements User {
     if ((row < rowLength && row >= 0) && (col < colLength && col >= 0)) {
       Tile tile = this.surroundings.get(row).get(col);
       if (tile.getDoor() != null) {
-        return !tile.getDoor().isLevelExit() || (tile.getDoor().isLevelExit() && isExitable);
+        // you can land on doors, but elsewhere should protect you from leaving
+        return true;
       }
       if (tile.getOccupier() != null) {
         return !tile.getOccupier().isPlayer();
       } else {
-        return !tile.getisWall();
+        return !tile.isWall();
       }
     } else {
       return false;

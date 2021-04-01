@@ -1,7 +1,9 @@
 package GameState;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import GameObjects.Actor;
 import GameObjects.Adversary;
@@ -55,6 +57,37 @@ public class GameStateModel implements GameState {
     for (Actor adversary : adversaries) {
       this.actors.add(adversary);
     }
+  }
+
+  /**
+   * Initializes the game state such adversaries and players are dropped randomly on to
+   * valid tiles throughout the whole level.
+   *
+   * @param players     are the list of players in the game
+   * @param adversaries are the adversaries in the game
+   * @param keyPosn     is the position to place the key
+   * @return a map associating the player's names to their position
+   */
+  public Map<String, Posn> initLocalGameState(List<Actor> players, List<Actor> adversaries, Posn keyPosn) {
+    //this.level.initGrid();
+    this.level.dropKey(keyPosn);
+    // place the player and adversaries randomly
+    this.level.spawnActorsRandomly(players, adversaries);
+
+    Map<String, Posn> nameToPosnMap = new HashMap<String, Posn>();
+
+
+    // place the key somewhere in the level
+    // set the this.actors to the list of players and adversaries
+    for (Actor player : players) {
+      this.actors.add(player);
+      nameToPosnMap.put(player.getName(), player.getPosition());
+    }
+    for (Actor adversary : adversaries) {
+      this.actors.add(adversary);
+    }
+
+    return nameToPosnMap;
   }
 
   /**
@@ -236,7 +269,7 @@ public class GameStateModel implements GameState {
     if (exitedPlayers.size() == this.numberOfPlayers()) {
       return true;
     }
-    return this.isExitable() && this.playerIsOnExit;
+    return this.isExitable && this.playerIsOnExit;
   }
 
 
@@ -357,6 +390,16 @@ public class GameStateModel implements GameState {
     List<List<Tile>> visibleTiles = new ArrayList<>();
 
     return visibleTiles;
+  }
+
+  public List<Adversary> getAdversaries() {
+    List<Adversary> adversaries = new ArrayList<>();
+    for (Actor actor : this.actors) {
+      if (!actor.isPlayer()) {
+        adversaries.add((Adversary) actor);
+      }
+    }
+    return adversaries;
   }
 
   public boolean isExitable() {

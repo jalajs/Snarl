@@ -1,6 +1,7 @@
 package User;
 
 import java.util.List;
+import java.util.Scanner;
 
 import Action.Action;
 import GameObjects.Actor;
@@ -50,7 +51,7 @@ public interface User {
    * Prompts the user for its turn/move. The user does its move and returns an Action ack to the GameManager
    * @return the action object the user does from this move.
    */
-  Action turn();
+  Action turn(Scanner scanner);
 
   /**
    * Finds the objects in the User's surroundings.

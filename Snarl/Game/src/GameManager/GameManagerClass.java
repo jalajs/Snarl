@@ -3,8 +3,11 @@ package GameManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Scanner;
 
 import Action.Action;
 import GameObjects.Actor;
@@ -21,6 +24,9 @@ import RuleChecker.RuleChecker;
 import RuleChecker.RuleCheckerClass;
 import User.User;
 import User.LocalUser;
+import Adversary.Zombie;
+import Adversary.Ghost;
+import Adversary.SnarlAdversary;
 
 /**
  * Represents the GameManger tasked with sequencing the game
@@ -30,10 +36,13 @@ public class GameManagerClass implements GameManager {
   private List<User> users;
   private int turn; // this references who's turn it is in
   private String nextUser;
-  private List<Adversary> adversaries;
+  private List<SnarlAdversary> adversaries;
   private final RuleChecker ruleChecker = new RuleCheckerClass();
   private Subject subject;
   private ArrayList<ArrayList<Posn>> moveInput;
+  private List<Level> levels;
+  private int startLevel;
+
 
   /**
    * This initialized the GameManager as a blank slate
@@ -44,6 +53,25 @@ public class GameManagerClass implements GameManager {
     this.turn = 0;
     this.adversaries = new ArrayList<>();
     this.nextUser = "";
+    this.startLevel = 0;
+    this.levels = new ArrayList<>();
+  }
+
+  /**
+   * This creates a GameManagerClass object with a list of levels and the current level. It is used
+   * by localSnarl.
+   *
+   * @param levels     List of levels
+   * @param startLevel the starting level
+   */
+  public GameManagerClass(List<Level> levels, int startLevel) {
+    this.gs = null;
+    this.users = new ArrayList<>();
+    this.turn = 0;
+    this.adversaries = new ArrayList<>();
+    this.nextUser = "";
+    this.startLevel = startLevel;
+    this.levels = levels;
   }
 
   /**
@@ -84,8 +112,13 @@ public class GameManagerClass implements GameManager {
    */
   @Override
   public void addAdversary(String type, String name) {
-    Adversary adversary = new Adversary(type, name);
-    adversaries.add(adversary);
+    if (type.equals("zombie")) {
+      SnarlAdversary adversary = new Zombie(name);
+      adversaries.add(adversary);
+    } else if (type.equals("ghost")) {
+      SnarlAdversary adversary = new Ghost(name);
+      adversaries.add(adversary);
+    }
   }
 
   /**
@@ -95,25 +128,97 @@ public class GameManagerClass implements GameManager {
    * @param level the level to start the game with
    */
   @Override
-  public void startGame(Level level) {
+  public boolean startLocalGame(Level level, int levelNumber) {
     GameState gameState = new GameStateModel(level);
     List<Actor> players = new ArrayList<>();
     List<Actor> actorAdversaries = new ArrayList<>();
-
+    addLocalAdversaries(levelNumber, level);
     for (User user : this.users) {
       Actor player = new Player(user.getName());
       players.add(player);
     }
-    for (Adversary adversary : this.adversaries) {
-      actorAdversaries.add(adversary);
+    for (SnarlAdversary snarlAdversary : this.adversaries) {
+      Adversary gameAdversary = new Adversary(snarlAdversary.getType(), snarlAdversary.getName());
+      actorAdversaries.add(gameAdversary);
     }
 
-    gameState.initGameState(players, actorAdversaries, level.getExitKeyPosition());
+    Map<String, Posn> actorNameToLocation =
+            gameState.initLocalGameState(players, actorAdversaries, level.getExitKeyPosition());
+    this.gs = gameState;
+    this.useActorsToSetUserPositionsAndSurroundings(actorNameToLocation);
 
+    System.out.println(level.createLevelString());
+
+    Scanner scanner = new Scanner(System.in);
     // run game
     // note, this currently only goes to the completion of a single level
-    while (ruleChecker.isLevelEnd(this.gs)) {
-      this.promptPlayerTurn();
+    // todo: we need some way to check the condition of level end
+    while (!ruleChecker.isLevelEnd(this.gs)) {
+      this.promptPlayerTurn(scanner);
+      this.updateEveryone();
+    }
+    return true;
+  }
+
+  private void updateEveryone() {
+    this.updateUsers();
+    this.updateSnarlAdversaries();
+  }
+
+  private void updateSnarlAdversaries() {
+    System.out.println("updating the adversaries");
+    Map<Posn, Adversary> adversaryPosnMap = this.generateAdversaryMap();
+    for (SnarlAdversary snarlAdversary : this.adversaries) {
+      snarlAdversary.update(gs.getLevel(), adversaryPosnMap);
+    }
+  }
+
+  private Map<Posn, Adversary> generateAdversaryMap() {
+    Map<Posn, Adversary> posnAdversaryMap = new HashMap<>();
+    List<Adversary> adversaries = this.gs.getAdversaries();
+    for (Adversary adversary : adversaries) {
+      posnAdversaryMap.put(adversary.getPosition(), adversary);
+    }
+    return posnAdversaryMap;
+  }
+
+
+  /**
+   * The purpose of this method is match the players and adversaries to their User and
+   * SnarlAdversary components and assign them the game object's current position
+   *
+   * @param actorNameToPosn is the map of actor names to their current position
+   */
+  private void useActorsToSetUserPositionsAndSurroundings(Map<String, Posn> actorNameToPosn) {
+    for (User user : this.users) {
+      Posn currentPosition = actorNameToPosn.get(user.getName());
+      user.setCurrentPosition(currentPosition);
+      user.setSurroundings(this.gs.getSurroundingsForPosn(currentPosition));
+    }
+    for (SnarlAdversary snarlAdversary : this.adversaries) {
+      Posn currentPosition = actorNameToPosn.get(snarlAdversary.getName());
+      snarlAdversary.setCurrentPosition(currentPosition);
+    }
+  }
+
+  /**
+   * Clear the adversaries list and compute the number of zombies and ghosts to be added and add
+   * them to the given level.
+   *
+   * @param l     the current level number
+   * @param level the provided level the adversaries are added
+   */
+  private void addLocalAdversaries(int l, Level level) {
+    this.adversaries = new ArrayList<>();
+    int numZombies = Math.floorDiv(l, 2) + 1;
+    int numGhosts = Math.floorDiv((l - 1), 2);
+    for (int j = 0; j < numZombies; j++) {
+      Zombie frank = new Zombie(level, null);
+      this.adversaries.add(frank);
+    }
+    for (int g = 0; g < numGhosts; g++) {
+      Ghost casper = new Ghost(level, null);
+      this.adversaries.add(casper);
     }
   }
 
@@ -150,9 +255,9 @@ public class GameManagerClass implements GameManager {
     // give each User an initial surround
     for (int i = 0; i < users.size(); i++) {
       users.get(i).setSurroundings(gameState.getSurroundingsForPosn(players.get(i).getPosition()));
-  }
+    }
 
-}
+  }
 
   /**
    * This method contacts every user via their update method and provides them with the newest
@@ -160,9 +265,9 @@ public class GameManagerClass implements GameManager {
    */
   @Override
   public void updateUsers() {
-    // to do: get real position
+    System.out.println("updating the users");
     for (User user : this.users) {
-      user.update(this.gs.calculateVisibleTilesForUser(user.getCurrentPosition()), this.gs.isExitable(), user.getCurrentPosition());
+      user.update(this.gs.getSurroundingsForPosn(user.getCurrentPosition()), this.gs.isExitable(), user.getCurrentPosition());
     }
   }
 
@@ -171,31 +276,36 @@ public class GameManagerClass implements GameManager {
    * from the turn. This method is expected to run continously throughout the levels duration.
    */
   @Override
-  public void promptPlayerTurn() {
+  public void promptPlayerTurn(Scanner scanner) {
     // check if it is the user's turn
     if (turn < this.users.size()) {
       // ask for input again if invalid
-      Action action = users.get(turn).turn();
-      this.executeAction("player", action);
+      User user = this.users.get(turn);
+      Action action = user.turn(scanner);
+      this.executeAction("player", action, user);
     }
     // check if it is an adversaries turn
-    if (this.turn > this.users.size()) {
-      Action action = adversaries.get(turn).turn();
-      this.executeAction("adversary", action);
+    if (this.turn >= this.users.size()) {
+      System.out.println("adversary turn");
+      // todo: execute adversaries turn
+      // get map of players and adversaries for adversary
+      // Action action = adversaries.get(turn).turn();
+      //  this.executeAction("adversary", action);
     }
     this.updateTurn();
-    this.updateUsers();
   }
 
   /**
    * Called after each turn, increased the turn count or sets it to zero
    */
   public void updateTurn() {
-    if (turn == this.users.size() + this.adversaries.size() - 1) {
+    System.out.println("users size: " + this.users.size() + "adv size: " + this.adversaries.size());
+    if (this.turn == this.users.size() + this.adversaries.size() - 1) {
       this.turn = 0;
     } else {
       this.turn++;
     }
+    System.out.println("turn at the end of UpdateTurn is: " + this.turn);
   }
 
   /**
@@ -207,13 +317,18 @@ public class GameManagerClass implements GameManager {
    * @param action
    */
   @Override
-  public void executeAction(String actorType, Action action) {
+  public void executeAction(String actorType, Action action, User user) {
     if (actorType.equals("player")) {
-      String actionType = action.getType();
-      if (actionType.equals("move")) {
-        MoveAction moveAction = (MoveAction) action;
-        this.gs.handleMoveAction(moveAction, ruleChecker);
+      MoveAction moveAction = (MoveAction) action;
+      this.gs.handleMoveAction(moveAction, ruleChecker);
+      String interactionType = moveAction.getInteractionType();
+      if (interactionType.equals("Eject")) {
+        System.out.println("Player " + user.getName() + " was ejected");
+      } else if (interactionType.equals("Key")) {
+        System.out.println("Player " + user.getName() + " picked up key");
       }
+      user.setCurrentPosition(moveAction.getDestination());
+
     } else if (actorType.equals("adversary")) {
       // todo: implement adversary interaction with more information at a future milestone
     }
@@ -273,7 +388,8 @@ public class GameManagerClass implements GameManager {
   }
 
   /**
-   * This method tries out moves from the given move list and returns true if none of the moves work
+   * This method tries out moves from the given move list and returns true if none of the moves
+   * work
    *
    * @param managerTrace
    * @param movesList
@@ -390,6 +506,24 @@ public class GameManagerClass implements GameManager {
     return remainingPlayers;
   }
 
+  /**
+   * This is the highest level method that runs the local game
+   */
+  @Override
+  public void runLocalGame() {
+    // add adversaries to the game manager using the assignment specs
+    // for (int i = startLevel - 1; i < levels.size(); i++) {
+    Level currentLevel = levels.get(0);
+    boolean advanceToNextLevel = startLocalGame(currentLevel, 1);
+    if (!advanceToNextLevel) {
+      // game was lost
+      int levelNumber = startLevel - 1;
+      System.out.print("you failed at level: " + levelNumber);
+      // todo: display stats - number of times player exited and number of keys picked up
+    }
+    // }
+    System.out.println("You won!!!");
+  }
 
   public GameState getGs() {
     return gs;
@@ -415,11 +549,11 @@ public class GameManagerClass implements GameManager {
     this.turn = turn;
   }
 
-  public List<Adversary> getAdversaries() {
+  public List<SnarlAdversary> getAdversaries() {
     return adversaries;
   }
 
-  public void setAdversaries(List<Adversary> adversaries) {
+  public void setAdversaries(List<SnarlAdversary> adversaries) {
     this.adversaries = adversaries;
   }
 
@@ -466,4 +600,20 @@ public class GameManagerClass implements GameManager {
   }
 
 
+  public List<Level> getLevels() {
+    return levels;
+  }
+
+  public void setLevels(List<Level> levels) {
+    this.levels = levels;
+  }
+
+
+  public int getStartLevel() {
+    return startLevel;
+  }
+
+  public void setStartLevel(int startLevel) {
+    this.startLevel = startLevel;
+  }
 }

@@ -1,3 +1,5 @@
+package TestHarnesses;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -17,7 +19,7 @@ import GameState.GameState;
 import GameState.GameStateModel;
 
 public class testState {
-  private static testLevel testLevel;
+  private static TestHarnesses.testLevel testLevel;
   private static testRoom testRoom;
 
   /**

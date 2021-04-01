@@ -4,6 +4,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import GameObjects.Level;
 import Action.Action;
@@ -35,11 +36,11 @@ public interface GameManager {
 
 
   /**
-   * This method starts the game by initializing the GameState.
+   * This method starts a local game by initializing the GameState.
    * This entails setting the level and creating Player objects to represent each User object
    * @param level the level to start the game with
    */
-  void startGame(Level level);
+  boolean startLocalGame(Level level, int levelNumber);
 
   /**
    * Starts the game trace for the testing task.
@@ -65,14 +66,14 @@ public interface GameManager {
    * The turn int is upped after every call
    * If it is an Adversary's turn, it's automated turn code is called.
    */
-  void promptPlayerTurn();
+  void promptPlayerTurn(Scanner scanner);
 
   /**
    * Execute action performs the given action on the GameState
    * @param action
    * @param actorType indicates the type of actor making the move
    */
-  void executeAction(String actorType, Action action);
+  void executeAction(String actorType, Action action, User user);
 
   /**
    * Returns the user with the given name
@@ -105,4 +106,6 @@ public interface GameManager {
    * @return the current game state of the game.
    */
   GameState getGs();
+
+  void runLocalGame();
 }

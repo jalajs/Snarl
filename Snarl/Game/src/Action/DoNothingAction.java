@@ -6,6 +6,9 @@ import GameState.GameState;
 
 public class DoNothingAction implements Action {
 
+  public DoNothingAction() {
+  }
+
   /**
    * At the moment, this does nothing. It's possible that in the future doing nothing could
    * have reprecussions we would implement here.

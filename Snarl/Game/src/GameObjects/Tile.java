@@ -15,6 +15,7 @@ public class Tile {
   private Door door;
   private boolean isWall;
   private Posn position;
+  private boolean nothing; // this indicates whether or not this tile is in the void or not
 
   /**
    * Default tile constructor
@@ -24,6 +25,7 @@ public class Tile {
     this.collectable = null;
     this.door = null;
     this.isWall = false;
+    this.nothing = false;
   }
 
   /**
@@ -36,6 +38,7 @@ public class Tile {
     this.occupier = null;
     this.collectable = null;
     this.door = null;
+    this.nothing = false;
   }
 
 
@@ -44,7 +47,9 @@ public class Tile {
    * Returns string representation of the tile, dependent on what is on the tile
    */
   public String toString() {
-    if (isWall) {
+    if (nothing) {
+      return " ";
+    } else if (isWall) {
       return "X";
     } else if (occupier != null) {
       return occupier.representation();
@@ -110,17 +115,20 @@ public class Tile {
    * @return
    */
   public Action buildAction(Posn originalPosition, String playerName) {
-    if (originalPosition.equals(this.position)) {
-      return new DoNothingAction();
-    } else if (this.collectable != null) {
-      // at the moment we assume all collectables are exit keys
-      return new PickUpKeyAction();
-    } else if (this.occupier != null) {
-      return new EjectAction(playerName);
-    } else {
       return new MoveAction(position, originalPosition);
-    }
   }
+
+  /**
+   * Checks that the given tile is a valid tile for a ghost to transport to in a room.
+   * A tile is valid to transport to if it is not another wall or there is not occupied.
+   * We allow a ghost to transport to a door/exit.
+   * @return whether or not this tile is a valid transport tile.
+   */
+  public boolean validTransportTile() {
+    return !this.isWall &&  occupier == null;
+  }
+
+
 
   public Actor getOccupier() {
     return occupier;
@@ -147,11 +155,11 @@ public class Tile {
 
   }
 
-  public boolean getisWall() {
+  public boolean isWall() {
     return isWall;
   }
 
-  public void setisWall(boolean isWall) {
+  public void setIsWall(boolean isWall) {
     this.isWall = isWall;
   }
 
@@ -161,5 +169,14 @@ public class Tile {
 
   public void setPosition(Posn position) {
     this.position = position;
+  }
+
+
+  public boolean isNothing() {
+    return nothing;
+  }
+
+  public void setNothing(boolean nothing) {
+    this.nothing = nothing;
   }
 }

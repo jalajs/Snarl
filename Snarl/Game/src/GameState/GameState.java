@@ -1,8 +1,10 @@
 package GameState;
 
 import java.util.List;
+import java.util.Map;
 
 import GameObjects.Actor;
+import GameObjects.Adversary;
 import GameObjects.Level;
 import GameObjects.Player;
 import GameObjects.Posn;
@@ -165,4 +167,15 @@ public interface GameState {
    * @return a List of players exited from the games=.
    */
   List<Player> getExitedPlayers();
+
+  /**
+   * This method drops players and adversaries randomly in the level
+   * @param players
+   * @param adversaries
+   * @param keyPosn
+   * @return a map associatning the players names to their initial positions
+   */
+  Map<String, Posn> initLocalGameState(List<Actor> players, List<Actor> adversaries, Posn keyPosn);
+
+  List<Adversary> getAdversaries();
 }

@@ -10,7 +10,7 @@
 
 ## Changes
 
-- In order to change the tile field in Room from List<ArrayList<Tile> tiles to Tile[][], we needed to update the Room class and the methods renderRoom, toString, and getNextPossibleCardinalMove. We also amended our testing data in testUtils and the testing harness testRoom.
+- In order to change the tile field in Room from List<ArrayList<Tile> tiles to Tile[][], we needed to update the Room class and the methods renderRoom, toString, and getNextPossibleCardinalMove. We also amended our testing data in testUtils and the testing harness TestHarnesses.testRoom.
 - Code clean up! Added in missing docs, removed old imports, removed duplicate methods, and substituted in helper methods where needed
 - We changed the x and y fields in the Posn class to row and col, and made changes throughout the code base and testing suite
 

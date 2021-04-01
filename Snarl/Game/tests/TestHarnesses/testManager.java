@@ -1,3 +1,5 @@
+package TestHarnesses;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -17,11 +19,10 @@ import GameObjects.Posn;
 import GameObjects.Tile;
 import GameObjects.Room;
 
-import GameState.GameState;
 import User.User;
 
 public class testManager {
-  private static testLevel testLevel;
+  private static TestHarnesses.testLevel testLevel;
   private static testRoom testRoom;
   private static testState testState;
 
@@ -239,7 +240,7 @@ public class testManager {
           Tile tile = tiles.get(i).get(j);
           if (tile.getDoor() != null) {
             row.put(2);
-          } else if (tile.getisWall()) {
+          } else if (tile.isWall()) {
             row.put(0);
           } else {
             row.put(1);

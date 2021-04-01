@@ -2,6 +2,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
@@ -55,7 +56,7 @@ public class testLocalUser {
     user.setSurroundings(initSurroundings);
     user.setCurrentPosition(new Posn(0, 1));
 
-    MoveAction moveAction = (MoveAction) user.turn();
+    MoveAction moveAction = (MoveAction) user.turn(new Scanner(System.in));
 
     // Testing that the user provides the correct action when turn is called
     System.out.print("Is this the position you gave us? ");

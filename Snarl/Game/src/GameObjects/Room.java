@@ -3,6 +3,7 @@ package GameObjects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * Represents a room in the level dungeon. Each room has a tile grid, upper-left Cartesian position,
@@ -15,6 +16,7 @@ public class Room {
   private int cols;
   private List<Collectable> collectables;
   private List<Door> doors;
+  private Random rand;
 
 
   public Room() {
@@ -24,6 +26,7 @@ public class Room {
     this.cols = 0;
     this.collectables = new ArrayList<>();
     this.doors = new ArrayList<>();
+    this.rand = new Random();
   }
 
   public Room(Tile[][] tileGrid, Posn upperLeft, int rows, int cols, List<Collectable> collectables, List<Door> doors) {
@@ -33,6 +36,7 @@ public class Room {
     this.cols = cols;
     this.collectables = collectables;
     this.doors = doors;
+    this.rand = new Random();
   }
 
 
@@ -157,7 +161,7 @@ public class Room {
       int roomCol = playerCol - this.upperLeft.getCol();
       Tile north = this.tileGrid[roomRow][roomCol];
       int row = playerRow - 1;
-      if (!north.getisWall()) {
+      if (!north.isWall()) {
         possiblePosns.add(new Posn(playerRow - 1, playerCol));
       }
     }
@@ -166,7 +170,7 @@ public class Room {
       int roomRow = playerRow - this.upperLeft.getRow();
       int roomCol = (playerCol - 1) - this.upperLeft.getCol();
       Tile west = this.tileGrid[roomRow][roomCol];
-      if (!west.getisWall()) {
+      if (!west.isWall()) {
         possiblePosns.add(new Posn(playerRow, playerCol - 1));
       }
     }
@@ -175,7 +179,7 @@ public class Room {
       int roomRow = playerRow - this.upperLeft.getRow();
       int roomCol = (playerCol + 1) - this.upperLeft.getCol();
       Tile east = this.tileGrid[roomRow][roomCol];
-      if (!east.getisWall()) {
+      if (!east.isWall()) {
         possiblePosns.add(new Posn(playerRow, playerCol + 1));
       }
     }
@@ -184,12 +188,10 @@ public class Room {
       int roomRow = (playerRow + 1) - this.upperLeft.getRow();
       int roomCol = playerCol - this.upperLeft.getCol();
       Tile south = this.tileGrid[roomRow][roomCol];
-      if (!south.getisWall()) {
+      if (!south.isWall()) {
         possiblePosns.add(new Posn(playerRow + 1, playerCol));
       }
     }
-
-
     return possiblePosns;
   }
 
@@ -254,6 +256,64 @@ public class Room {
     }
   }
 
+  /**
+   * Checks that there is a tile in the level with no wall or adversary. This means that a
+   * ghost can appear in the room
+   *
+   * @return true is a valid tile exists within the room
+   */
+  public boolean checkForValidSpace() {
+    for (int i = 0; i < this.tileGrid.length; i++) {
+      for (int j = 0; j < this.tileGrid[i].length; j++) {
+        Tile tile = this.tileGrid[i][j];
+        // return true if there is a tile that is not a wall and is occupied by a player
+        if (tile.validTransportTile()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Get a random valid space in this room for the ghost to spawn to
+   * @return the position of the random valid space
+   */
+  public Posn getRandomValidSpace() {
+    int row = rand.nextInt(rows);
+    int col = rand.nextInt(cols);
+    Tile tile = this.tileGrid[row][col];
+    while (!tile.validTransportTile()) {
+      row = rand.nextInt(rows);
+      col = rand.nextInt(cols);
+      tile = this.tileGrid[row][col];
+    }
+    return new Posn(row + upperLeft.getRow(), col + upperLeft.getCol());
+  }
+
+  /**
+   * Helper method to generates the position for a random unoccupied tile in this room.
+   *
+   * @return Posn of random unoccupied tile relative to the level
+   */
+  public Posn generateRandomUnoccupiedTile() {
+    Posn posn = new Posn(-1, -1);
+    Random random = new Random();
+    int counter = 0;
+    while (counter < rows * cols) {
+      int randomX = random.nextInt(rows);
+      int randomY = random.nextInt(cols);
+      String tileString = tileGrid[randomX][randomY].toString();
+      if (tileString.equals(".")) {
+        posn.setRow(randomX);
+        posn.setCol(randomY);
+        break;
+      }
+      counter++;
+    }
+    return posnRelativeToLevel(posn);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -281,5 +341,13 @@ public class Room {
 
   public void setDoors(List<Door> doors) {
     this.doors = doors;
+  }
+
+  public Random getRand() {
+    return rand;
+  }
+
+  public void setRand(Random rand) {
+    this.rand = rand;
   }
 }

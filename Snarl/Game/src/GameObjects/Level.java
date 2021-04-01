@@ -15,6 +15,7 @@ public class Level {
   private Tile[][] tileGrid;
   private Posn exitKeyPosition;
   private Posn exitDoorPosition;
+  private Random rand;
 
   /**
    * this basic no input constructor creates an empty 10x10 level (mostly used for testing)
@@ -30,6 +31,7 @@ public class Level {
     this.initEmptyTileGrid();
     this.exitKeyPosition = new Posn(-1, -1);
     this.exitDoorPosition = new Posn(-1, -1);
+    this.rand = new Random();
   }
 
   /**
@@ -49,6 +51,7 @@ public class Level {
     this.initEmptyTileGrid();
     this.exitKeyPosition = new Posn(-1, -1);
     this.exitDoorPosition = new Posn(-1, -1);
+    this.rand = new Random();
   }
 
   /**
@@ -78,6 +81,7 @@ public class Level {
 
     this.dropKey(keyPosn);
     this.createLevelExit(exitPosn);
+    this.rand = new Random();
   }
 
   /**
@@ -119,6 +123,7 @@ public class Level {
       this.dropKey(keyPosn);
       this.createLevelExit(exitPosn);
     }
+    this.rand = new Random();
 
   }
 
@@ -142,6 +147,7 @@ public class Level {
     for (int row = 0; row < this.levelRows; row++) {
       for (int col = 0; col < this.levelCols; col++) {
         Tile tile = new Tile(true);
+        tile.setNothing(true);
         tile.setPosition(new Posn(row, col));
         tileGrid[row][col] = tile;
       }
@@ -212,6 +218,41 @@ public class Level {
   }
 
   /**
+   * Spawns players and adversaries in the level randomly on valid placements.
+   * Valid placements (any traversable room tile, not already occupied by a player or an adversary and not containing a key or exit).
+   * @param players the list of players to be placed
+   * @param adversaries the list of adversaries to be places
+   */
+  public void spawnActorsRandomly(List<Actor> players, List<Actor> adversaries) {
+    List<Room> copyRooms = new ArrayList<>(this.rooms);
+    Room room1 = copyRooms.get(this.rand.nextInt(copyRooms.size()));
+    copyRooms.remove(room1);
+    Room room2 = copyRooms.get(this.rand.nextInt(copyRooms.size()));
+
+    // place actors on traversable tiles in a random room
+    this.placeActorsInRoomRand(room1, players);
+    // place adversaries on traversable tiles a seperate random room
+    this.placeActorsInRoomRand(room2, adversaries);
+  }
+
+  /**
+   * Randomly places the given list of actors in the given room.
+   *
+   * @param room the room in which the actors should be placed
+   * @param actors the actors
+   */
+  private void placeActorsInRoomRand(Room room, List<Actor> actors) {
+    Posn levelPosition;
+    for (Actor actor : actors) {
+      levelPosition = room.generateRandomUnoccupiedTile();
+      System.out.println("X: " + levelPosition.getRow() + " Y: " + levelPosition.getCol());
+      actor.setPosition(levelPosition);
+      tileGrid[levelPosition.getRow()][levelPosition.getCol()].setOccupier(actor);
+      levelGrid[levelPosition.getRow()][levelPosition.getCol()] = actor.representation();
+    }
+  }
+
+  /**
    * Helper method that places the given actors in traversable tiles in the given room. Players are
    * placed starting in the upper left corner.
    *
@@ -219,7 +260,7 @@ public class Level {
    * @param actors the given actors that need to be placed
    */
   private void placeActorsInRoom(Room room, List<Actor> actors) {
-    Posn levelPosition = new Posn(0, 0);
+    Posn levelPosition;
     for (Actor actor : actors) {
       levelPosition = firstUnoccupiedTilePosition(room);
       actor.setPosition(levelPosition);
@@ -445,31 +486,6 @@ public class Level {
     return start > end ? -1 : 1;
   }
 
-
-  /**
-   * Helper method to generates the position for a random unoccupied tile. Unused currently but will
-   * likely be needed for future milestones.
-   *
-   * @return GameObjects.Posn of random unoccupied tile
-   */
-  private Posn generateRandomUnoccupiedTile() {
-    Posn posn = new Posn(-1, -1);
-    Random random = new Random();
-    int counter = 0;
-    while (counter < levelRows * levelCols) {
-      int randomX = random.nextInt(levelRows);
-      int randomY = random.nextInt(levelCols);
-      String tileString = levelGrid[randomX][randomY];
-      if (tileString.equals(".")) {
-        posn.setRow(randomX);
-        posn.setCol(randomY);
-        break;
-      }
-      counter++;
-    }
-    return posn;
-  }
-
   /**
    * Check whether the given point is traversable (door or "floor" or in a hallway)
    *
@@ -486,7 +502,7 @@ public class Level {
       return false;
     }
     Tile tile = this.tileGrid[row][col];
-    return !tile.getisWall();
+    return !tile.isWall();
   }
 
   /**
@@ -587,7 +603,7 @@ public class Level {
    * @param position
    * @return
    */
-  private List<Posn> getCardinalMoves(Posn position) {
+  public List<Posn> getCardinalMoves(Posn position) {
     List<Posn> possiblePosns = new ArrayList<>();
 
     int playerRow = position.getRow();
@@ -649,6 +665,51 @@ public class Level {
    */
   public void clearExitDoor() {
     this.tileGrid[exitDoorPosition.getRow()][exitDoorPosition.getCol()].setOccupier(null);
+  }
+
+  /**
+   * Generate a random posn in another random room that is different from the current position.
+   * If no room has places, choose from the current position's room.
+   * @param currentPosition
+   */
+  public Posn generateTransportPosition(Posn currentPosition) {
+    List<Room> roomsCopy = new ArrayList<>(this.getRooms());
+    Room currentRoom = this.getRoomOfPosn(currentPosition);
+
+    roomsCopy.remove(currentRoom);
+    Room room = roomsCopy.get(rand.nextInt(roomsCopy.size()));
+    roomsCopy.remove(room);
+    while (!room.checkForValidSpace()) {
+      room = roomsCopy.get(rand.nextInt(roomsCopy.size()));
+      roomsCopy.remove(room);
+      if (roomsCopy.isEmpty()) {
+        break;
+      }
+    }
+
+    if (roomsCopy.isEmpty()) {
+      if (currentRoom.checkForValidSpace()) {
+        return currentRoom.getRandomValidSpace();
+      } else {
+        return currentPosition;
+      }
+    } else {
+      return room.getRandomValidSpace();
+    }
+  }
+
+  /**
+   * Returns the room that a given position is in
+   * @param currentPosition the given position
+   * @return
+   */
+  private Room getRoomOfPosn(Posn currentPosition) {
+    for (Room room : this.rooms) {
+      if(room.isPosnInRoom(currentPosition)) {
+        return room;
+      }
+    }
+    return null;
   }
 
   public List<Room> getRooms() {
@@ -713,6 +774,14 @@ public class Level {
 
   public void setExitDoorPosition(Posn exitDoorPosition) {
     this.exitDoorPosition = exitDoorPosition;
+  }
+
+  public Random getRand() {
+    return rand;
+  }
+
+  public void setRand(Random rand) {
+    this.rand = rand;
   }
 
 
