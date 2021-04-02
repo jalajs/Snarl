@@ -1,5 +1,5 @@
-##Adversary Strategies
-###Zombies:
+## Adversary Strategies
+### Zombies:
 - Strategies:
     - Every Zombie has a search radius. If a player is detected within it's search radius, the Zombie moves to the available tile closest to the player.
     - If the player is directly beside (one cardinal move away) the Zombie, the Zombie moves to and ejects the player.
@@ -11,8 +11,8 @@
     - A player is in a Zombie's search radius but behind a door or otherwise non-Zombie-friendly tile. The Zombie still selects moves closest to the player, leading it to navigate around the obstacle.
     - Two or more players are in a Zombie's search radius. The Zombie moves towards the closest player.
     - A Zombie is chasing a player and the player enters a hallway. The Zombie cannot cross the door, and will not follow the player.
-      <br> <br>
-###Ghosts:
+<br> <br>
+### Ghosts:
 - Strategies
     - Similar to Zombies, Ghosts have a search radius. If a player is within the search radius, Ghosts advance towards the player and avoids wall. Ghosts have a larger search radius than Zombies.
     - If a player is next to a Ghost (one cardinal move away), the Ghost lands on the player.
