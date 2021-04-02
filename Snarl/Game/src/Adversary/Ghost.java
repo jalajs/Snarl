@@ -18,29 +18,15 @@ import GameObjects.Tile;
 /**
  * This class represents a ghost adversary
  */
-public class Ghost implements SnarlAdversary {
-  private Level level;
-  private Posn currentPosition;
-  private Map<Posn, Adversary> adversaries;
+public class Ghost extends SnarlAdversaryAbstract {
   private static int searchRadius = 4;
-  private String name;
-
-  private Random rand;
 
   public Ghost(Level level, Posn currentPosition) {
-    this.level = level;
-    this.currentPosition = currentPosition;
-    this.adversaries = new HashMap<>();
-    this.rand = new Random();
-    this.name = "";
+    super(level, currentPosition);
   }
 
   public Ghost(String name) {
-    this.level = null;
-    this.currentPosition = null;
-    this.adversaries = new HashMap<>();
-    this.rand = new Random();
-    this.name = name;
+    super(name);
   }
 
 
@@ -118,7 +104,6 @@ public class Ghost implements SnarlAdversary {
   }
 
 
-
   /**
    * Returns all the nonwalled tiles that the ghost could move too
    *
@@ -162,29 +147,6 @@ public class Ghost implements SnarlAdversary {
   return destination;
   }
 
-  /**
-   * The distance formula
-   * @param start
-   * @param end
-   * @return
-   */
-  private double distance(Posn start, Posn end) {
-    return Math.sqrt(
-            Math.pow((start.getCol() - end.getCol()), 2) +
-                    Math.pow((start.getRow() - end.getRow()), 2));
-  }
-
-
-  /**
-   * This method updates all of the ghost's game information
-   * @param level the updated level
-   * @param adversary the updated locations of other adversaries
-   */
-  @Override
-  public void update(Level level, Map<Posn, Adversary> adversary) {
-    this.level = level;
-    this.adversaries = adversary;
-  }
 
   public Level getLevel() {
     return level;

@@ -18,21 +18,16 @@ import GameObjects.Tile;
 /**
  * This class represents a zombie adversary
  */
-public class Zombie implements SnarlAdversary {
-  private Level level;
-  private Posn currentPosition;
-  private Map<Posn, Adversary> adversaries;
-  private Random rand;
+public class Zombie extends SnarlAdversaryAbstract {
   private static final int searchRadius = 3;
-  private String name;
 
-
+  /**
+   * this constructor builds a zombie with a given level and position
+   * @param level
+   * @param currentPosition
+   */
   public Zombie(Level level, Posn currentPosition){
-    this.level = level;
-    this.currentPosition = currentPosition;
-    this.adversaries = new HashMap<>();
-    this.rand = new Random();
-    this.name = "";
+    super(level, currentPosition);
   }
 
   /**
@@ -40,11 +35,7 @@ public class Zombie implements SnarlAdversary {
    * @param name
    */
   public Zombie(String name) {
-    this.level = null;
-    this.currentPosition = null;
-    this.adversaries = new HashMap<>();
-    this.rand = new Random();
-    this.name = name;
+    super(name);
   }
 
   /**
@@ -89,17 +80,6 @@ public class Zombie implements SnarlAdversary {
     return destination;
   }
 
-  /**
-   * The distance formula
-   * @param start
-   * @param end
-   * @return
-   */
-  private double distance(Posn start, Posn end) {
-    return Math.sqrt(
-            Math.pow((start.getCol() - end.getCol()), 2) +
-            Math.pow((start.getRow() - end.getRow()), 2));
-  }
 
   /**
    * This method uses the distance formula to find the move that brings the
@@ -144,17 +124,6 @@ public class Zombie implements SnarlAdversary {
       }
     }
     return verifiedMoves;
-  }
-
-  /**
-   * Updates all the information the Zombie has about the level, including the Level itself and the other adversary locations
-   * @param level the updated level
-   * @param adversary the updated locations of other adversaries
-   */
-  @Override
-  public void update(Level level, Map<Posn, Adversary> adversary) {
-    this.level = level;
-    this.adversaries = adversary;
   }
 
   public Level getLevel() {
