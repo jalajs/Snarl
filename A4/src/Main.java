@@ -12,7 +12,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
+// { "towns" : [ "Seattle", "Boston", "NYC"], "roads" : [ {"from" : "Seattle", "to" : "Boston" } ] }
+// { "command" : "roads",  "params" : [ {"from" : "Boston", "to" : "Seattle" }]}
+// { "command" : "place",  "params" : { "character" : "bOB", "town" : "Seattle" } }
+// { "command" : "passage-safe?", "params" : { "character" : "bOB", "town" : "Boston" } }
+// { "invalid" : [ ], "response" :  false }
 
 public class Main {
 
@@ -33,8 +37,7 @@ public class Main {
     }
 
     try {
-      ServerSocket serverSocket = new ServerSocket(Integer.parseInt(port), 0, InetAddress.getByName(ipAddress));
-      Socket socket = serverSocket.accept();
+      Socket socket = new Socket(InetAddress.getByName(ipAddress), Integer.parseInt(port));
       Scanner serverScanner = new Scanner(socket.getInputStream());
       OutputStream output = socket.getOutputStream();
       PrintWriter clientWriter = new PrintWriter(output, true);
@@ -99,7 +102,6 @@ public class Main {
       userScanner.close();
       serverScanner.close();
       socket.close();
-      serverSocket.close();
 
     } catch (IOException e) {
       System.out.print(e);
