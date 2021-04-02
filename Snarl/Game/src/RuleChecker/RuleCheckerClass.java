@@ -116,15 +116,16 @@ public class RuleCheckerClass implements RuleChecker {
      * checks the cardinal placement of the move
      *
      * @param destination     the destination it is trying to move to
-     * @param currentPosition
+     * @param currentPosition the current position of the user
+     * @param surroundings    the surrounding tiles of the user
      * @return whether or not the move is valid
      */
     @Override
-    public boolean isMoveValid (Posn currentPosition, Posn destination){
-      List<Posn> firstPossibleMoves = getCardinalMoves(currentPosition);
+    public boolean isMoveValid(Posn currentPosition, Posn destination, List<List<Tile>> surroundings){
+      List<Posn> firstPossibleMoves = getCardinalMoves(currentPosition, surroundings);
       List<Posn> allPossibleMoves = new ArrayList(firstPossibleMoves);
       for (Posn move : firstPossibleMoves) {
-        allPossibleMoves.addAll(getCardinalMoves(move));
+        allPossibleMoves.addAll(getCardinalMoves(move, surroundings));
       }
       return currentPosition.equals(destination) || allPossibleMoves.contains(destination);
     }
@@ -136,16 +137,35 @@ public class RuleCheckerClass implements RuleChecker {
      * @param position
      * @return
      */
-    private List<Posn> getCardinalMoves (Posn position){
+    private List<Posn> getCardinalMoves(Posn position, List<List<Tile>> surroundings){
       List<Posn> possiblePosns = new ArrayList<>();
 
       int playerRow = position.getRow();
       int playerCol = position.getCol();
 
-      possiblePosns.add(new Posn(playerRow - 1, playerCol));
-      possiblePosns.add(new Posn(playerRow, playerCol - 1));
-      possiblePosns.add(new Posn(playerRow, playerCol + 1));
-      possiblePosns.add(new Posn(playerRow + 1, playerCol));
+      int southRow = playerRow - 1;
+      int westCol = playerCol - 1;
+      int eastCol = playerCol + 1;
+      int northRow = playerRow + 1;
+
+      Posn south = new Posn(playerRow - 1, playerCol);
+      Posn west = new Posn(playerRow, playerCol - 1);
+      Posn east = new Posn(playerRow, playerCol + 1);
+      Posn north = new Posn(playerRow + 1, playerCol);
+
+      if (!surroundings.get(southRow).get(playerCol).isNothing()) {
+        possiblePosns.add(south);
+      }
+      if (!surroundings.get(playerRow).get(westCol).isNothing()) {
+        possiblePosns.add(west);
+      }
+      if (!surroundings.get(playerRow).get(eastCol).isNothing()) {
+        possiblePosns.add(east);
+      }
+      if (!surroundings.get(northRow).get(playerCol).isNothing()) {
+        possiblePosns.add(north);
+      }
+
 
       return possiblePosns;
     }

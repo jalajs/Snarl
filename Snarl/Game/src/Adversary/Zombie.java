@@ -83,7 +83,6 @@ public class Zombie implements SnarlAdversary {
     for (Map.Entry<Posn,Player> entry : players.entrySet()) {
       Posn posn = entry.getKey();
       if (distance(currentPosition, posn) <= searchRadius) {
-        System.out.println("Zombie is close to move");
         destination = closestMove(destinations, posn);
       }
     }

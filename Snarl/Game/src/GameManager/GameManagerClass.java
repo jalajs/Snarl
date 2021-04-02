@@ -135,6 +135,7 @@ public class GameManagerClass implements GameManager {
     List<Actor> actorAdversaries = new ArrayList<>();
     addLocalAdversaries(levelNumber, level);
     for (User user : this.users) {
+      user.setExitable(false);
       Actor player = new Player(user.getName());
       players.add(player);
     }
@@ -338,7 +339,7 @@ public class GameManagerClass implements GameManager {
       if (interactionType.equals("Eject")) {
         System.out.println("Player " + user.getName() + " was expelled");
       } else if (interactionType.equals("Key")) {
-        System.out.println("Player " + user.getName() + " found up key");
+        System.out.println("Player " + user.getName() + " found the key");
       }
       else if (interactionType.equals("Exit")) {
         System.out.println("Player " + user.getName() + " exited");
@@ -549,23 +550,24 @@ public class GameManagerClass implements GameManager {
           break;
       }
       levelNumber++;
+      turn = 0;
     }
     this.printEndResult(gameCondition, levelNumber);
   }
 
   private void printEndResult(String gameCondition, int levelNumber) {
-    int exitNumber = levelNumber;
-    int keyNumber = levelNumber;
+    int exitNumber = levelNumber - (startLevel - 1);
+    int keyNumber = levelNumber - (startLevel - 1);
     if (gameCondition.equals("Win")) {
       System.out.println("You won Snarl!");
     } else {
       System.out.println("You lost :(");
       exitNumber--;
-      keyNumber = gs.isExitable() ? keyNumber : keyNumber--;
+      keyNumber = this.gs.isExitable() ? keyNumber : keyNumber - 1;
     }
     // note, only one player is in the game right now. Notification will be more complicated
     // for larger games
-    System.out.println("Player " + users.get(0).getName() + " exited " + levelNumber + " levels and collected " + keyNumber + " keys.");
+    System.out.println("Player " + users.get(0).getName() + " exited " + exitNumber + " levels and collected " + keyNumber + " keys.");
   }
 
   public GameState getGs() {

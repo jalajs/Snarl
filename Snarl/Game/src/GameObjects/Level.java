@@ -107,7 +107,7 @@ public class Level {
         maxRow = maxRoomRow;
       }
     }
-    return maxRow + 1;
+    return maxRow + 5;
   }
 
   private int getMaxCol() {
@@ -125,7 +125,7 @@ public class Level {
         maxCol = maxRoomCol;
       }
     }
-    return maxCol + 1;
+    return maxCol + 5;
   }
 
   /**
@@ -298,7 +298,6 @@ public class Level {
     Posn levelPosition;
     for (Actor actor : actors) {
       levelPosition = room.generateRandomUnoccupiedTile();
-      System.out.println("X: " + levelPosition.getRow() + " Y: " + levelPosition.getCol());
       actor.setPosition(levelPosition);
       tileGrid[levelPosition.getRow()][levelPosition.getCol()].setOccupier(actor);
       levelGrid[levelPosition.getRow()][levelPosition.getCol()] = actor.representation();
@@ -407,7 +406,6 @@ public class Level {
     if (newTile.getOccupier() == null) {
       newTile.setOccupier(p);
       levelGrid[newRow][newCol] = "O";
-      p.setPosition(newPosition);
     }
     return newTile;
   }
@@ -585,7 +583,7 @@ public class Level {
       return false;
     }
     Tile tile = this.tileGrid[row][col];
-    return !tile.isWall();
+    return !tile.isWall() && !tile.isNothing();
   }
 
   /**
@@ -682,6 +680,7 @@ public class Level {
   /**
    * Returns the list of Posns referencing the NORTH EAST SOUTH WEST positions relative to the given
    * position makes sure that all the moves are within bounds
+   * Restricts moves to void spaces
    *
    * @param position
    * @return
@@ -694,173 +693,189 @@ public class Level {
 
     // find the north tile
     if ((playerRow - 1) >= 0) {
-      possiblePosns.add(new Posn(playerRow - 1, playerCol));
+      int newRow = playerRow - 1;
+      Tile tile = tileGrid[newRow][playerCol];
+      if (!tile.isNothing()) {
+        possiblePosns.add(new Posn(playerRow - 1, playerCol));
+      }
     }
     // find the west tile
     if ((playerCol - 1) >= 0) {
-      possiblePosns.add(new Posn(playerRow, playerCol - 1));
+      int newCol = playerCol - 1;
+      Tile tile = tileGrid[playerRow][newCol];
+      if (!tile.isNothing()) {
+        possiblePosns.add(new Posn(playerRow, newCol));
+      }
     }
     // find the east tile
     if ((playerCol + 1) < this.tileGrid[0].length) {
-      possiblePosns.add(new Posn(playerRow, playerCol + 1));
+      int newCol = playerCol + 1;
+      Tile tile = tileGrid[playerRow][newCol];
+      if (!tile.isNothing()) {
+        possiblePosns.add(new Posn(playerRow, newCol));
+      }
     }
-    // find the south tile
-    if ((playerRow + 1) < this.tileGrid.length) {
-      possiblePosns.add(new Posn(playerRow + 1, playerCol));
-    }
-    return possiblePosns;
-  }
-
-
-  /**
-   * This method returns a 5x5 grid of tiles where the given position is the center if any of the
-   * surrounding positions are not tiles (ie. its on the edge of a room or level) those spaces are
-   * set to null
-   *
-   * @param position the center position
-   * @return a 5x5 grid with the given position as the center
-   */
-  public List<List<Tile>> getSurroundingsForPosn(Posn position) {
-    int row = position.getRow();
-    int col = position.getCol();
-
-    int surroundingRow = row - 2;
-    int surroundingCol = col - 2;
-    List<List<Tile>> surroundingsGrid = new ArrayList<>();
-
-    for (int i = 0; i < 5; i++) {
-      List<Tile> surroundings = new ArrayList<>();
-      for (int j = 0; j < 5; j++) {
-        // make sure that the tile is in the grid, if not add null
-        if (surroundingRow + i < this.tileGrid.length && surroundingRow + i >= 0 && surroundingCol + j < this.tileGrid[0].length && surroundingCol + j >= 0) {
-          surroundings.add(this.tileGrid[surroundingRow + i][surroundingCol + j]);
-        } else {
-          surroundings.add(null);
+      // find the south tile
+      if ((playerRow + 1) < this.tileGrid.length) {
+        int newRow = playerRow + 1;
+        Tile tile = tileGrid[newRow][playerCol];
+        if (!tile.isNothing()) {
+          possiblePosns.add(new Posn(newRow, playerCol));
         }
       }
-      surroundingsGrid.add(surroundings);
+      return possiblePosns;
     }
-    return surroundingsGrid;
-  }
 
-  /**
-   * Removes any occupiers on the exit door
-   */
-  public void clearExitDoor() {
-    this.tileGrid[exitDoorPosition.getRow()][exitDoorPosition.getCol()].setOccupier(null);
-  }
 
-  /**
-   * Generate a random posn in another random room that is different from the current position. If
-   * no room has places, choose from the current position's room.
-   *
-   * @param currentPosition
-   */
-  public Posn generateTransportPosition(Posn currentPosition) {
-    List<Room> roomsCopy = new ArrayList<>(this.getRooms());
-    Collections.shuffle(roomsCopy);
-    Room currentRoom = this.getRoomOfPosn(currentPosition);
-    roomsCopy.remove(currentRoom);
-    // for every room, if posn not in room, transport there
-    for (Room room : roomsCopy) {
-      if (room.checkForValidSpace()) {
-        return room.getRandomValidSpace();
+    /**
+     * This method returns a 5x5 grid of tiles where the given position is the center if any of the
+     * surrounding positions are not tiles (ie. its on the edge of a room or level) those spaces are
+     * set to null
+     *
+     * @param position the center position
+     * @return a 5x5 grid with the given position as the center
+     */
+    public List<List<Tile>> getSurroundingsForPosn (Posn position){
+      int row = position.getRow();
+      int col = position.getCol();
+
+      int surroundingRow = row - 2;
+      int surroundingCol = col - 2;
+      List<List<Tile>> surroundingsGrid = new ArrayList<>();
+
+      for (int i = 0; i < 5; i++) {
+        List<Tile> surroundings = new ArrayList<>();
+        for (int j = 0; j < 5; j++) {
+          // make sure that the tile is in the grid, if not add null
+          if (surroundingRow + i < this.tileGrid.length && surroundingRow + i >= 0 && surroundingCol + j < this.tileGrid[0].length && surroundingCol + j >= 0) {
+            surroundings.add(this.tileGrid[surroundingRow + i][surroundingCol + j]);
+          } else {
+            surroundings.add(null);
+          }
+        }
+        surroundingsGrid.add(surroundings);
+      }
+      return surroundingsGrid;
+    }
+
+    /**
+     * Removes any occupiers on the exit door
+     */
+    public void clearExitDoor () {
+      this.tileGrid[exitDoorPosition.getRow()][exitDoorPosition.getCol()].setOccupier(null);
+    }
+
+    /**
+     * Generate a random posn in another random room that is different from the current position. If
+     * no room has places, choose from the current position's room.
+     *
+     * @param currentPosition
+     */
+    public Posn generateTransportPosition (Posn currentPosition){
+      List<Room> roomsCopy = new ArrayList<>(this.getRooms());
+      Collections.shuffle(roomsCopy);
+      Room currentRoom = this.getRoomOfPosn(currentPosition);
+      roomsCopy.remove(currentRoom);
+      // for every room, if posn not in room, transport there
+      for (Room room : roomsCopy) {
+        if (room.checkForValidSpace()) {
+          return room.getRandomValidSpace();
+        }
+      }
+
+      if (currentRoom.checkForValidSpace()) {
+        return currentRoom.getRandomValidSpace();
+      } else {
+        return currentPosition;
       }
     }
 
-    if (currentRoom.checkForValidSpace()) {
-      return currentRoom.getRandomValidSpace();
-    } else {
-      return currentPosition;
-    }
-  }
-
-  /**
-   * Returns the room that a given position is in
-   *
-   * @param currentPosition the given position
-   * @return
-   */
-  private Room getRoomOfPosn(Posn currentPosition) {
-    for (Room room : this.rooms) {
-      if (room.isPosnInRoom(currentPosition)) {
-        return room;
+    /**
+     * Returns the room that a given position is in
+     *
+     * @param currentPosition the given position
+     * @return
+     */
+    private Room getRoomOfPosn (Posn currentPosition){
+      for (Room room : this.rooms) {
+        if (room.isPosnInRoom(currentPosition)) {
+          return room;
+        }
       }
+      return null;
     }
-    return null;
+
+    public List<Room> getRooms () {
+      return rooms;
+    }
+
+    public void setRooms (List < Room > rooms) {
+      this.rooms = rooms;
+    }
+
+    public List<Hallway> getHallways () {
+      return hallways;
+    }
+
+    public void setHallways (List < Hallway > hallways) {
+      this.hallways = hallways;
+    }
+
+    public int getLevelRows () {
+      return levelRows;
+    }
+
+    public void setLevelRows ( int levelRows){
+      this.levelRows = levelRows;
+    }
+
+    public int getLevelCols () {
+      return levelCols;
+    }
+
+    public void setLevelCols ( int levelCols){
+      this.levelCols = levelCols;
+    }
+
+    public String[][] getLevelGrid () {
+      return levelGrid;
+    }
+
+    public void setLevelGrid (String[][]levelGrid){
+      this.levelGrid = levelGrid;
+    }
+
+    public Tile[][] getTileGrid () {
+      return tileGrid;
+    }
+
+    public void setTileGrid (Tile[][]tileGrid){
+      this.tileGrid = tileGrid;
+    }
+
+    public Posn getExitKeyPosition () {
+      return exitKeyPosition;
+    }
+
+    public void setExitKeyPosition (Posn exitKeyPosition){
+      this.exitKeyPosition = exitKeyPosition;
+    }
+
+    public Posn getExitDoorPosition () {
+      return exitDoorPosition;
+    }
+
+    public void setExitDoorPosition (Posn exitDoorPosition){
+      this.exitDoorPosition = exitDoorPosition;
+    }
+
+    public Random getRand () {
+      return rand;
+    }
+
+    public void setRand (Random rand){
+      this.rand = rand;
+    }
+
+
   }
-
-  public List<Room> getRooms() {
-    return rooms;
-  }
-
-  public void setRooms(List<Room> rooms) {
-    this.rooms = rooms;
-  }
-
-  public List<Hallway> getHallways() {
-    return hallways;
-  }
-
-  public void setHallways(List<Hallway> hallways) {
-    this.hallways = hallways;
-  }
-
-  public int getLevelRows() {
-    return levelRows;
-  }
-
-  public void setLevelRows(int levelRows) {
-    this.levelRows = levelRows;
-  }
-
-  public int getLevelCols() {
-    return levelCols;
-  }
-
-  public void setLevelCols(int levelCols) {
-    this.levelCols = levelCols;
-  }
-
-  public String[][] getLevelGrid() {
-    return levelGrid;
-  }
-
-  public void setLevelGrid(String[][] levelGrid) {
-    this.levelGrid = levelGrid;
-  }
-
-  public Tile[][] getTileGrid() {
-    return tileGrid;
-  }
-
-  public void setTileGrid(Tile[][] tileGrid) {
-    this.tileGrid = tileGrid;
-  }
-
-  public Posn getExitKeyPosition() {
-    return exitKeyPosition;
-  }
-
-  public void setExitKeyPosition(Posn exitKeyPosition) {
-    this.exitKeyPosition = exitKeyPosition;
-  }
-
-  public Posn getExitDoorPosition() {
-    return exitDoorPosition;
-  }
-
-  public void setExitDoorPosition(Posn exitDoorPosition) {
-    this.exitDoorPosition = exitDoorPosition;
-  }
-
-  public Random getRand() {
-    return rand;
-  }
-
-  public void setRand(Random rand) {
-    this.rand = rand;
-  }
-
-
-}

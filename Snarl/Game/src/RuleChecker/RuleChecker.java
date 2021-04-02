@@ -1,6 +1,8 @@
 package RuleChecker;
 
 
+import java.util.List;
+
 import GameObjects.Actor;
 import GameObjects.Posn;
 import GameObjects.Tile;
@@ -53,7 +55,7 @@ public interface RuleChecker {
    * @param currentPosition
    * @return whether or not there move is valid
    */
-  boolean isMoveValid(Posn currentPosition, Posn destination);
+  boolean isMoveValid(Posn currentPosition, Posn destination, List<List<Tile>> surroundings);
 
 
   /**

@@ -100,7 +100,7 @@ public class LocalUser implements User {
   public Action turn(Scanner scanner) {
     Posn newPosition = this.promptUserForTurn(scanner);
 
-    Tile newTile = this.findTile(generatePosnRelativeToSurroundingsn(newPosition.getRow(), newPosition.getCol()));
+    Tile newTile = this.findTile(generatePosnRelativeToSurroundings(newPosition.getRow(), newPosition.getCol()));
     newTile.setPosition(newPosition);
 
     return newTile.buildAction(this.currentPosition, this.name);
@@ -115,7 +115,7 @@ public class LocalUser implements User {
   private Posn promptUserForTurn(Scanner scanner) {
     Posn posn = new Posn(-1, -1);
     Posn relToSurroundings = new Posn(-1, -1);
-    while(!isPosnValid(relToSurroundings, posn)) {
+    while(!isPosnValid(relToSurroundings)) {
       this.renderView();
       System.out.println("Please enter the desired coordinates for your move in the form row col all on the same line");
       System.out.println("If your move is invalid, you will be prompted for another coordinate.");
@@ -124,12 +124,12 @@ public class LocalUser implements User {
       int col = scanner.nextInt();
 
       posn = new Posn(row, col);
-      relToSurroundings = this.generatePosnRelativeToSurroundingsn(row, col);
+      relToSurroundings = this.generatePosnRelativeToSurroundings(row, col);
     }
     return posn;
   }
 
-  private Posn generatePosnRelativeToSurroundingsn(int row, int col) {
+  private Posn generatePosnRelativeToSurroundings(int row, int col) {
     int x = 2 + (row- currentPosition.getRow());
     int y = 2 + (col - currentPosition.getCol());
     return new Posn(2 + (row - this.currentPosition.getRow()), 2 + (col - this.currentPosition.getCol()));
@@ -152,15 +152,15 @@ public class LocalUser implements User {
    * Checks whether or not the given Posn is valid.
    *
    * @param surroundingPosn the posn relative to surroundings
-   * @param levelPosn is the posn relative to the level
    * @return A posn is valid if it is within the surroundings of the user AND traversable
    */
-  private boolean isPosnValid(Posn surroundingPosn, Posn levelPosn) {
+  private boolean isPosnValid(Posn surroundingPosn) {
     int row = surroundingPosn.getRow();
     int col = surroundingPosn.getCol();
     int rowLength = this.surroundings.size();
     int colLength = this.surroundings.get(0).size();
-    if ((row < rowLength && row >= 0) && (col < colLength && col >= 0) && ruleChecker.isMoveValid(currentPosition, levelPosn)) {
+    if ((row < rowLength && row >= 0) && (col < colLength && col >= 0)
+            && ruleChecker.isMoveValid(generatePosnRelativeToSurroundings(currentPosition.getRow(), currentPosition.getCol()), surroundingPosn, surroundings)) {
       Tile tile = this.surroundings.get(row).get(col);
       if (tile.getDoor() != null) {
         // you can land on doors, but elsewhere should protect you from leaving

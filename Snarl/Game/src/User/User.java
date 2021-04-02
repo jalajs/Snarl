@@ -75,4 +75,9 @@ public interface User {
    * @param posn
    */
   void setCurrentPosition(Posn posn);
+
+  /*
+   * Sets exitable to the given posn
+   */
+  void setExitable(boolean exitable);
 }

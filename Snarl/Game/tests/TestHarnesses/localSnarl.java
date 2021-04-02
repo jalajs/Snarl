@@ -112,7 +112,7 @@ public class localSnarl {
     try {
       File file = new File(levelValue);
 
-      Scanner scanner = new Scanner(file.getAbsoluteFile());
+      Scanner scanner = new Scanner(file);
       String tokenerSource = "";
       while (scanner.hasNextLine()) {
         String next = scanner.nextLine();

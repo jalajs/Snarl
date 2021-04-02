@@ -212,9 +212,17 @@ public class GameStateModel implements GameState {
    */
   public String handleMovePlayer(Player p, Posn posn) {
     Tile dest = this.level.handlePlayerMove(p, posn);
+    Tile currentPosition = this.level.getTileGrid()[p.getPosition().getRow()][p.getPosition().getCol()];
     if (dest.getDoor() != null) {
       Door door = dest.getDoor();
       this.playerIsOnExit = door.isLevelExit();
+    }
+//    // set playerOnExitToFalse if it is moving off an exit
+    if  (currentPosition.getDoor() != null && !p.getPosition().equals(posn)) {
+      Door door = currentPosition.getDoor();
+      if (door.isLevelExit()) {
+        this.playerIsOnExit = false;
+      }
     }
     // set the player's position to the new posn
     p.setPosition(posn);

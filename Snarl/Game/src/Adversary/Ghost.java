@@ -58,9 +58,6 @@ public class Ghost implements SnarlAdversary {
   public Action turn(Map<Posn, Player> players, Map<Posn, Adversary> adversaryMap) {
     this.adversaries = adversaryMap;
     List<Posn> destinations = this.level.getCardinalMoves(this.currentPosition);
-    for (Posn posn : destinations) {
-      System.out.println(posn.getRow() + ", " + posn.getCol());
-    }
     if (destinations.size() > 0) {
       Posn destination = this.getBestMove(players, destinations);
       // return the action to the gameManager
@@ -162,8 +159,7 @@ public class Ghost implements SnarlAdversary {
         minDistance = distance(playerPosn, posn);
       }
     }
-    System.out.println("chosen distance: " + distance(playerPosn, destination));
-    return destination;
+  return destination;
   }
 
   /**
