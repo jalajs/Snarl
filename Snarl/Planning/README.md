@@ -1,5 +1,5 @@
-##Welcome to SNARL
-###Game Play Instructions
+##Welcome to SNARL <br>
+###Game Play Instructions <br>
 - Run the local game using the command ./p8, adding any optional arguments if desired
 - Once the game starts, enter a name to register yourself
     - our local demo currently only supports one user
