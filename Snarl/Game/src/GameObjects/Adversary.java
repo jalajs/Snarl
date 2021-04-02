@@ -30,7 +30,7 @@ public class Adversary extends Actor {
    * @return the string for the representation of an adversary
    */
   public String representation() {
-    return "#";
+    return type.equals("Zombie") ? "Z" : "G";
   }
 
   /**

@@ -58,13 +58,16 @@ public class Ghost implements SnarlAdversary {
   public Action turn(Map<Posn, Player> players, Map<Posn, Adversary> adversaryMap) {
     this.adversaries = adversaryMap;
     List<Posn> destinations = this.level.getCardinalMoves(this.currentPosition);
-    //  pick one randomly
+    for (Posn posn : destinations) {
+      System.out.println(posn.getRow() + ", " + posn.getCol());
+    }
     if (destinations.size() > 0) {
       Posn destination = this.getBestMove(players, destinations);
       // return the action to the gameManager
+      this.currentPosition = destination;
       return new MoveAction(destination, this.currentPosition);
     }
-    return new DoNothingAction();
+    return new MoveAction(this.currentPosition, this.currentPosition);
   }
 
   /**
@@ -107,7 +110,8 @@ public class Ghost implements SnarlAdversary {
       int col = posn.getCol();
       Tile tile = tileGrid[row][col];
       if (tile.isWall() && !tile.isNothing()) {
-        return this.level.generateTransportPosition(currentPosition);
+        Posn transportPosition = this.level.generateTransportPosition(currentPosition);
+        return transportPosition;
       }
       else if (!tile.isNothing()) {
         validDestinations.add(posn);
@@ -150,11 +154,15 @@ public class Ghost implements SnarlAdversary {
     Posn destination = destinations.get(0);
     double minDistance = distance(playerPosn, destination);
     for (Posn posn : destinations) {
-      if (distance(playerPosn, posn) < minDistance) {
+      if (playerPosn.equals(posn)) {
+        return posn;
+      }
+      if (distance(playerPosn, posn) < minDistance && !posn.equals(currentPosition)) {
         destination = posn;
         minDistance = distance(playerPosn, posn);
       }
     }
+    System.out.println("chosen distance: " + distance(playerPosn, destination));
     return destination;
   }
 
@@ -167,7 +175,7 @@ public class Ghost implements SnarlAdversary {
   private double distance(Posn start, Posn end) {
     return Math.sqrt(
             Math.pow((start.getCol() - end.getCol()), 2) +
-                    Math.pow((start.getCol() - end.getCol()), 2));
+                    Math.pow((start.getRow() - end.getRow()), 2));
   }
 
 

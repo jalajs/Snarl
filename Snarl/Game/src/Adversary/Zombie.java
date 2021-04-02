@@ -63,9 +63,10 @@ public class Zombie implements SnarlAdversary {
       // this employs our strategies to select the best possible move
       Posn destination = this.getBestMove(players, destinations);
       // return the action to the gameManager
+      this.currentPosition = destination;
       return new MoveAction(destination, this.currentPosition);
     }
-    return new DoNothingAction();
+    return new MoveAction(this.currentPosition, this.currentPosition);
   }
 
   /**
@@ -82,6 +83,7 @@ public class Zombie implements SnarlAdversary {
     for (Map.Entry<Posn,Player> entry : players.entrySet()) {
       Posn posn = entry.getKey();
       if (distance(currentPosition, posn) <= searchRadius) {
+        System.out.println("Zombie is close to move");
         destination = closestMove(destinations, posn);
       }
     }
@@ -97,7 +99,7 @@ public class Zombie implements SnarlAdversary {
   private double distance(Posn start, Posn end) {
     return Math.sqrt(
             Math.pow((start.getCol() - end.getCol()), 2) +
-            Math.pow((start.getCol() - end.getCol()), 2));
+            Math.pow((start.getRow() - end.getRow()), 2));
   }
 
   /**
@@ -112,7 +114,10 @@ public class Zombie implements SnarlAdversary {
     Posn destination = destinations.get(0);
     double minDistance = distance(playerPosn, destination);
     for (Posn posn : destinations) {
-      if (distance(playerPosn, posn) < minDistance) {
+      if (playerPosn.equals(posn)) {
+        return posn;
+      }
+      if (distance(playerPosn, posn) < minDistance && !posn.equals(currentPosition)) {
          destination = posn;
          minDistance = distance(playerPosn, posn);
       }

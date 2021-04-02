@@ -15,6 +15,7 @@ import GameObjects.Posn;
 import GameObjects.Door;
 import GameObjects.Tile;
 import RuleChecker.RuleChecker;
+import Adversary.SnarlAdversary;
 
 public class GameStateModel implements GameState {
   private Level level;
@@ -60,8 +61,8 @@ public class GameStateModel implements GameState {
   }
 
   /**
-   * Initializes the game state such adversaries and players are dropped randomly on to
-   * valid tiles throughout the whole level.
+   * Initializes the game state such adversaries and players are dropped randomly on to valid tiles
+   * throughout the whole level.
    *
    * @param players     are the list of players in the game
    * @param adversaries are the adversaries in the game
@@ -85,6 +86,7 @@ public class GameStateModel implements GameState {
     }
     for (Actor adversary : adversaries) {
       this.actors.add(adversary);
+      nameToPosnMap.put(adversary.getName(), adversary.getPosition());
     }
 
     return nameToPosnMap;
@@ -266,7 +268,7 @@ public class GameStateModel implements GameState {
    * @return whether or not the given Level is over or not
    */
   public boolean isLevelEnd() {
-    if (exitedPlayers.size() == this.numberOfPlayers()) {
+    if (this.numberOfPlayers() == 0) {
       return true;
     }
     return this.isExitable && this.playerIsOnExit;
@@ -296,7 +298,7 @@ public class GameStateModel implements GameState {
    *
    * @return the number of players
    */
-  private int numberOfPlayers() {
+  public int numberOfPlayers() {
     int numberOfPlayers = 0;
     for (Actor actor : actors) {
       if (actor.isPlayer()) {
@@ -333,6 +335,68 @@ public class GameStateModel implements GameState {
     }
     action.setInteractionType("Invalid");
     return false;
+  }
+
+  /**
+   * This method handles a very simple move performed by an adversary that has already been verified
+   * before this step. Ergo, no rule checker is needed.
+   *
+   * @param action the given move action
+   * @return
+   */
+  public boolean handleMoveAction(MoveAction action, SnarlAdversary snarlAdversary) {
+    Posn destination = action.getDestination();
+    Adversary adversary = getAdversaryByName(snarlAdversary.getName());
+    // for an adversary, the interaction type can be Eject or Move
+    String interactionType = this.handleMoveAdversary(adversary, destination);
+    action.setInteractionType(interactionType);
+    // perform the prescribed interaction
+    handleInteractionType(interactionType, destination, adversary);
+    return true;
+  }
+
+  /**
+   * Retrieve the adversary with the given name
+   * todo : what if player names self "Ghost 1" ?
+   * @param name
+   * @return
+   */
+  private Adversary getAdversaryByName(String name) {
+    for(Actor actor : actors) {
+      if (actor.getName().equals(name)) {
+        return (Adversary) actor;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * This method c
+   * @param adversary
+   * @param  destination
+   * @return
+   */
+  private String handleMoveAdversary(Adversary adversary, Posn destination) {
+    Tile tile = this.level.getTileGrid()[destination.getRow()][destination.getCol()];
+    if (tile.getOccupier() != null && tile.getOccupier().isPlayer()) {
+      return "Eject";
+    } else {
+      return "Move";
+    }
+  }
+
+  private void handleInteractionType(String interactionType, Posn destination, Adversary adversary) {
+    switch(interactionType) {
+      case "Eject":
+        Player player = (Player) this.level.getTileGrid()[destination.getRow()][destination.getCol()].getOccupier();
+        this.handlePlayerExpulsion(player, destination);
+        break;
+      case "Move":
+        // as of this moment, no additional work is needed for this interaction type
+        break;
+    }
+    this.level.handleAdversaryMove(adversary, destination);
+    adversary.setPosition(destination);
   }
 
   /**
@@ -380,27 +444,27 @@ public class GameStateModel implements GameState {
   }
 
   /**
-   * This method calculate the tiles visible from the given posn. This method is currently just a
-   * STUB and will be implemented when relevant to a future milestone.
+   * Gets particular actors from the game state
    *
-   * @param userPosn the current position of the user
-   * @return
+   * @param isPlayer if this method should get only the players or only the adversaries
+   * @return a list of actors containing only the type specified
    */
-  public List<List<Tile>> calculateVisibleTilesForUser(Posn userPosn) {
-    List<List<Tile>> visibleTiles = new ArrayList<>();
-
-    return visibleTiles;
-  }
-
-  public List<Adversary> getAdversaries() {
-    List<Adversary> adversaries = new ArrayList<>();
+  public List<Actor> getActors(boolean isPlayer) {
+    List<Actor> actors = new ArrayList<>();
     for (Actor actor : this.actors) {
-      if (!actor.isPlayer()) {
-        adversaries.add((Adversary) actor);
+      if (isPlayer) {
+        if (actor.isPlayer()) {
+          actors.add(actor);
+        }
+      } else {
+        if (!actor.isPlayer()) {
+          actors.add(actor);
+        }
       }
     }
-    return adversaries;
+    return actors;
   }
+
 
   public boolean isExitable() {
     return isExitable;

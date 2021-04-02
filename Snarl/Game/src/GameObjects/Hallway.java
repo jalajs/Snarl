@@ -152,50 +152,6 @@ public class Hallway {
   }
 
   /**
-   * Determines if this hallways is valid. A hallway is valid if it connects two rooms at its
-   * endpoints. Each segment as delimited by subsequent points1) is either horizontal or vertical
-   * (i.e., perpendicular with the x or y axis).
-   *
-   * @return whether or not this hallway is valid
-   */
-  public static boolean isValidHallway() {
-    return true;
-  }
-
-  /**
-   * Returns the position in front of the given and behind it in the hallway
-   *
-   * @param position the position from which to calculate the other moves
-   * @return
-   */
-  public List<Posn> getNextPossibleCardinalMoves(Posn position) {
-    List<Posn> cardinalMoves = new ArrayList<>();
-
-    List<Posn> allPoints = new ArrayList<>();
-    allPoints.add(doors.get(0).getTileCoord());
-    allPoints.addAll(this.getWaypoints());
-    allPoints.add(doors.get(1).getTileCoord());
-
-    List<Posn> possibleMoves = this.generatePossibleMoves(position);
-
-    for (Posn wayPointOrDoor : allPoints) {
-      if (possibleMoves.contains(wayPointOrDoor)) {
-        cardinalMoves.add(wayPointOrDoor);
-      }
-    }
-    for (List<Tile> segment : tileSegments) {
-      for (Tile tile : segment) {
-        Posn tilePosition = tile.getPosition();
-        if (possibleMoves.contains(tilePosition)) {
-          cardinalMoves.add(tilePosition);
-        }
-      }
-    }
-
-    return cardinalMoves;
-  }
-
-  /**
    * Create a list of possible positions a person can move from the given position in a hallway
    *
    * @param position the origin position

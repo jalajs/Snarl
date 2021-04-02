@@ -7,3 +7,4 @@ Ghost
 - move towards closest player in the radius
 - if no player with in certain radius, teleport through wall in next one, else move through wall (move towards wall)
 - if player within radius move in direction of player and avoid walls
+- don't allow identity moves

@@ -16,6 +16,7 @@ public class Tile {
   private boolean isWall;
   private Posn position;
   private boolean nothing; // this indicates whether or not this tile is in the void or not
+  private boolean wayPoint;
 
   /**
    * Default tile constructor
@@ -53,6 +54,8 @@ public class Tile {
       return "X";
     } else if (occupier != null) {
       return occupier.representation();
+    } else if (wayPoint) {
+      return "+";
     } else if (collectable != null) {
       return collectable.toString();
     } else if (door != null) {
@@ -178,5 +181,13 @@ public class Tile {
 
   public void setNothing(boolean nothing) {
     this.nothing = nothing;
+  }
+
+  public boolean isWayPoint() {
+    return wayPoint;
+  }
+
+  public void setWayPoint(boolean wayPoint) {
+    this.wayPoint = wayPoint;
   }
 }

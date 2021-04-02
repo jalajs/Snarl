@@ -59,8 +59,8 @@ public class AdversaryTest {
     adversaryMap.put(new Posn(1, 1), new Adversary());
 
     // if surrounded by walls, doors, and or adversaries, the zombie will do nothing
-    Action doNothingAction = zombie.turn(new HashMap<>(), adversaryMap);
-    assertTrue(doNothingAction instanceof DoNothingAction);
+    MoveAction nothingMove = (MoveAction) zombie.turn(new HashMap<>(), adversaryMap);
+    assertTrue(nothingMove.getCurrentPosition().equals(nothingMove.getDestination()));
 
     // testing that a zombie moves to a player when they are close
     Posn frankPoint = new Posn(0, 7);

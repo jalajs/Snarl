@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 import GameObjects.Actor;
-import GameObjects.Adversary;
 import GameObjects.Level;
 import GameObjects.Player;
 import GameObjects.Posn;
 import GameObjects.Tile;
 import Action.MoveAction;
 import RuleChecker.RuleChecker;
+import Adversary.SnarlAdversary;
 
 /**
  * Represents the game's current state and its rules.
@@ -129,20 +129,21 @@ public interface GameState {
   boolean isExitable();
 
   /**
-   * This method returns all the tiles the user can see at its position
-   *
-   * @param userPosn the current position of the user
-   * @return
-   */
-  List<List<Tile>> calculateVisibleTilesForUser(Posn userPosn);
-
-  /**
    * This method a string interaction resulting from the player move
    * @param p
    * @param posn
    * @return
    */
   String handleMovePlayer(Player p, Posn posn);
+
+  /**
+   * This method handles a very simple move performed by an adversary that has already been
+   * verified before this step. Ergo, no rule checker is needed.
+   *
+   * @param action the given move action
+   * @return
+   */
+  boolean handleMoveAction(MoveAction action, SnarlAdversary adversary);
 
   /**
    * Returns whether or not the player is currently on the exit in this game state.
@@ -177,5 +178,41 @@ public interface GameState {
    */
   Map<String, Posn> initLocalGameState(List<Actor> players, List<Actor> adversaries, Posn keyPosn);
 
-  List<Adversary> getAdversaries();
+  /**
+   * Gets particular actors from the game state
+   * @param isPlayer if this method should get only the players or only the adversaries
+   * @return a list of actors containing only the type specified
+   */
+  List<Actor> getActors(boolean isPlayer);
+
+  /**
+   * Set the current level the game state is representing
+   * @param currentLevelNumber the number of the current level to be set
+   */
+  void setCurrentLevelNumber(int currentLevelNumber);
+
+  /**
+   * Gets the current level number in the game
+   * @return the current level
+   */
+  int getCurrentLevelNumber();
+
+  /**
+   * set the total number of levels
+   * @param totalLevels
+   */
+  void setTotalLevels(int totalLevels);
+
+  /**
+   * Gets the total number of levels in the game
+   * @return
+   */
+  int getTotalLevels();
+
+  /**
+   * Calculates the number of players in the list of actors
+   *
+   * @return the number of players
+   */
+   int numberOfPlayers();
 }

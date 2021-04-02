@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import Adversary.SnarlAdversary;
 import GameObjects.Level;
 import Action.Action;
 import GameObjects.Posn;
@@ -39,8 +40,9 @@ public interface GameManager {
    * This method starts a local game by initializing the GameState.
    * This entails setting the level and creating Player objects to represent each User object
    * @param level the level to start the game with
+   * @return the gameCondition
    */
-  boolean startLocalGame(Level level, int levelNumber);
+  String startLocalLevel(Level level, int levelNumber, boolean observeValue);
 
   /**
    * Starts the game trace for the testing task.
@@ -69,11 +71,18 @@ public interface GameManager {
   void promptPlayerTurn(Scanner scanner);
 
   /**
-   * Execute action performs the given action on the GameState
+   * Execute the give action performed by the given user
    * @param action
-   * @param actorType indicates the type of actor making the move
+   * @param user indicates the user making the move
    */
-  void executeAction(String actorType, Action action, User user);
+  void executeAction(Action action, User user);
+
+  /**
+   * Execute the given action performed by the given snarlAdversary
+   * @param action
+   * @param user indicates the user making the move
+   */
+  void executeAction(Action action, SnarlAdversary user);
 
   /**
    * Returns the user with the given name
@@ -107,5 +116,5 @@ public interface GameManager {
    */
   GameState getGs();
 
-  void runLocalGame();
+  void runLocalGame(boolean observeValue);
 }

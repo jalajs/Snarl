@@ -12,7 +12,7 @@ public interface RuleChecker {
   /**
    * A level is over if the exit door is unlocked and a player goes through it or
    *  if all players in the level are expelled.
-   * @param GameState the current gameState
+   * @param gameState the current gameState
    * @return
    */
   boolean isLevelEnd(GameState gameState);
@@ -46,6 +46,17 @@ public interface RuleChecker {
   boolean isMoveValid(Level level, Actor actor, Posn destination);
 
   /**
+   * Invalid if the destination is to far from the current position. This isMoveValid method
+   * only checks the cardinal placement of the move
+   *
+   * @param destination the destination it is trying to move to
+   * @param currentPosition
+   * @return whether or not there move is valid
+   */
+  boolean isMoveValid(Posn currentPosition, Posn destination);
+
+
+  /**
    * See if an actor can interact with the Adversary or Door or Collectable on the given tile
    * Players cannot interact with other players, but adversaries can interact with players
    * Actor must be on the tile in order to interact with the Collectable or occupier
@@ -57,4 +68,10 @@ public interface RuleChecker {
    */
   boolean isInteractionValid(boolean isExitable, Actor actor, Tile tile);
 
+  /**
+   * Calculate the gameConditon.
+   * @param gameState the game state to get the game condition from
+   * @return A game will be deemed either a "Win", "Loss" or "Ongoing"
+   */
+  String getGameCondition(GameState gameState);
 }

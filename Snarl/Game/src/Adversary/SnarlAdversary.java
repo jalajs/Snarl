@@ -46,4 +46,9 @@ public interface SnarlAdversary {
    */
   void setCurrentPosition(Posn currentPosition);
 
+  /**
+   * Gets the current position of the adversary,
+   */
+  Posn getCurrentPosition();
+
 }

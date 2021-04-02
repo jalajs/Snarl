@@ -10,6 +10,8 @@ import GameObjects.Posn;
 import GameObjects.Tile;
 import GameObjects.Door;
 import GameObjects.Actor;
+import RuleChecker.RuleChecker;
+import RuleChecker.RuleCheckerClass;
 
 /**
  * This represents the logics behind a local player (i.e. one operating through the local console)
@@ -21,6 +23,7 @@ public class LocalUser implements User {
   private List<List<Tile>> surroundings;
   private Posn currentPosition;
   private boolean isExitable;
+  private final RuleChecker ruleChecker = new RuleCheckerClass();
 
   /**
    * This builds a LocalUser given a name
@@ -95,15 +98,6 @@ public class LocalUser implements User {
    */
   @Override
   public Action turn(Scanner scanner) {
-    //  *****
-    //  *****
-    //  **8**
-    //  *****
-    //  *****
-    // rel pos: (2, 2) level pos : (10, 10)
-    // given the new move (11, 10)
-    // how to make it relative??
-
     Posn newPosition = this.promptUserForTurn(scanner);
 
     Tile newTile = this.findTile(generatePosnRelativeToSurroundingsn(newPosition.getRow(), newPosition.getCol()));
@@ -121,7 +115,7 @@ public class LocalUser implements User {
   private Posn promptUserForTurn(Scanner scanner) {
     Posn posn = new Posn(-1, -1);
     Posn relToSurroundings = new Posn(-1, -1);
-    while(!isPosnValid(relToSurroundings)) {
+    while(!isPosnValid(relToSurroundings, posn)) {
       this.renderView();
       System.out.println("Please enter the desired coordinates for your move in the form row col all on the same line");
       System.out.println("If your move is invalid, you will be prompted for another coordinate.");
@@ -138,7 +132,6 @@ public class LocalUser implements User {
   private Posn generatePosnRelativeToSurroundingsn(int row, int col) {
     int x = 2 + (row- currentPosition.getRow());
     int y = 2 + (col - currentPosition.getCol());
-    System.out.println("rel posn X: " + x + " y: " + y);
     return new Posn(2 + (row - this.currentPosition.getRow()), 2 + (col - this.currentPosition.getCol()));
   }
 
@@ -158,22 +151,23 @@ public class LocalUser implements User {
   /**
    * Checks whether or not the given Posn is valid.
    *
-   * @param posn the posn being checked
+   * @param surroundingPosn the posn relative to surroundings
+   * @param levelPosn is the posn relative to the level
    * @return A posn is valid if it is within the surroundings of the user AND traversable
    */
-  private boolean isPosnValid(Posn posn) {
-    int row = posn.getRow();
-    int col = posn.getCol();
+  private boolean isPosnValid(Posn surroundingPosn, Posn levelPosn) {
+    int row = surroundingPosn.getRow();
+    int col = surroundingPosn.getCol();
     int rowLength = this.surroundings.size();
     int colLength = this.surroundings.get(0).size();
-    if ((row < rowLength && row >= 0) && (col < colLength && col >= 0)) {
+    if ((row < rowLength && row >= 0) && (col < colLength && col >= 0) && ruleChecker.isMoveValid(currentPosition, levelPosn)) {
       Tile tile = this.surroundings.get(row).get(col);
       if (tile.getDoor() != null) {
         // you can land on doors, but elsewhere should protect you from leaving
         return true;
       }
       if (tile.getOccupier() != null) {
-        return !tile.getOccupier().isPlayer();
+        return !tile.getOccupier().isPlayer() || tile.getOccupier().getName().equals(name);
       } else {
         return !tile.isWall();
       }

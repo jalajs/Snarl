@@ -50,7 +50,7 @@ public class localSnarl {
       String userName = scanner.nextLine();
       gameManager.addPlayer(userName);
       // delegate game play to game manager
-      gameManager.runLocalGame();
+      gameManager.runLocalGame(observerValue);
 
     } catch (ParseException e) {
       HelpFormatter formatter = new HelpFormatter();
@@ -111,7 +111,6 @@ public class localSnarl {
     List<Level> levels = new ArrayList<>();
     try {
       File file = new File(levelValue);
-      System.out.println(file.exists());
 
       Scanner scanner = new Scanner(file.getAbsoluteFile());
       String tokenerSource = "";
