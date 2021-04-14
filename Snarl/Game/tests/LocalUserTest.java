@@ -63,7 +63,7 @@ public class LocalUserTest {
 
     List<List<Tile>> newSurroundings = new ArrayList<>();
 
-    user.update(newSurroundings, true, new Posn(1, 2));
+    // user.update(newSurroundings, true, new Posn(1, 2));
 
     assertEquals(user.getSurroundings(), newSurroundings);
     assertTrue(user.isExitable());

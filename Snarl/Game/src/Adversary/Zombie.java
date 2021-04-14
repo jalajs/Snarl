@@ -8,7 +8,7 @@ import java.util.Random;
 
 import Action.Action;
 import Action.MoveAction;
-import Action.DoNothingAction;
+
 import GameObjects.Adversary;
 import GameObjects.Level;
 import GameObjects.Player;
@@ -49,7 +49,6 @@ public class Zombie extends SnarlAdversaryAbstract {
     this.adversaries = adversaryMap;
     // calculate the possible tiles it can move to (so 1 cardinal move (no skip)/no door/ no adversary)
     List<Posn> destinations = this.calculatePossibleDestinations();
-    //  pick one randomly
     if (destinations.size() > 0) {
       // this employs our strategies to select the best possible move
       Posn destination = this.getBestMove(players, destinations);
@@ -74,35 +73,13 @@ public class Zombie extends SnarlAdversaryAbstract {
     for (Map.Entry<Posn,Player> entry : players.entrySet()) {
       Posn posn = entry.getKey();
       if (distance(currentPosition, posn) <= searchRadius) {
-        destination = closestMove(destinations, posn);
+        destination = closestMoveToPlayer(destinations, posn);
       }
     }
     return destination;
   }
 
 
-  /**
-   * This method uses the distance formula to find the move that brings the
-   * zombie closest to the given player posn
-   *
-   * @param destinations
-   * @param playerPosn
-   * @return
-   */
-  private Posn closestMove(List<Posn> destinations, Posn playerPosn) {
-    Posn destination = destinations.get(0);
-    double minDistance = distance(playerPosn, destination);
-    for (Posn posn : destinations) {
-      if (playerPosn.equals(posn)) {
-        return posn;
-      }
-      if (distance(playerPosn, posn) < minDistance && !posn.equals(currentPosition)) {
-         destination = posn;
-         minDistance = distance(playerPosn, posn);
-      }
-    }
-    return destination;
-  }
 
 
   /**

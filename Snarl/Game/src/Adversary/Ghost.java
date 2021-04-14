@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Random;
 
 import Action.Action;
-import Action.DoNothingAction;
 import Action.MoveAction;
 import GameObjects.Adversary;
 import GameObjects.Level;
@@ -28,7 +27,6 @@ public class Ghost extends SnarlAdversaryAbstract {
   public Ghost(String name) {
     super(name);
   }
-
 
   /**
    * A ghost can move at most one tile at a time in a cardinal direction. A ghost cannot skip a
@@ -55,16 +53,15 @@ public class Ghost extends SnarlAdversaryAbstract {
 
   /**
    * - move towards closest player in the radius
-   * - if no player with in certain radius, teleport through wall if next to one, else move through wall (move towards wall)
+   * - if no player with in certain radius, teleport through wall if next to one, else pick random move
    * - if player within radius move in direction of player and avoid walls
-   * @param players
-   * @param destinations
+   * @param players map of player locations surrounding the user
+   * @param destinations  list of potential destinations
    * @return
    */
   private Posn getBestMove(Map<Posn, Player> players, List<Posn> destinations) {
     List<Posn> nonWallDestinations = this.getNonWallDestinations(destinations);
     Posn destination = new Posn(-100, -100);
-    // if player in radius, chase player. else, go to nearest wall
     for (Map.Entry<Posn,Player> entry : players.entrySet()) {
       Posn posn = entry.getKey();
       if (distance(currentPosition, posn) <= searchRadius) {
@@ -122,29 +119,6 @@ public class Ghost extends SnarlAdversaryAbstract {
       }
     }
     return nonWallDestinations;
-  }
-
-  /**
-   * This method uses the distance formula to find the move that brings the
-   * ghost closest to the given player posn
-   *
-   * @param destinations
-   * @param playerPosn
-   * @return
-   */
-  private Posn closestMoveToPlayer(List<Posn> destinations, Posn playerPosn) {
-    Posn destination = destinations.get(0);
-    double minDistance = distance(playerPosn, destination);
-    for (Posn posn : destinations) {
-      if (playerPosn.equals(posn)) {
-        return posn;
-      }
-      if (distance(playerPosn, posn) < minDistance && !posn.equals(currentPosition)) {
-        destination = posn;
-        minDistance = distance(playerPosn, posn);
-      }
-    }
-  return destination;
   }
 
 

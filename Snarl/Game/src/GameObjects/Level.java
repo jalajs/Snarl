@@ -300,6 +300,7 @@ public class Level {
       levelPosition = room.generateRandomUnoccupiedTile();
       actor.setPosition(levelPosition);
       tileGrid[levelPosition.getRow()][levelPosition.getCol()].setOccupier(actor);
+      System.out.println("actor name: " + actor.getName());
       levelGrid[levelPosition.getRow()][levelPosition.getCol()] = actor.representation();
     }
   }

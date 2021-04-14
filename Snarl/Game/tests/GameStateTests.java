@@ -77,7 +77,7 @@ public class GameStateTests {
     assertFalse(simpleGameState.isExitable());
     assertTrue(initLevel.createLevelString().contains("K"));
 
-    simpleGameState.handleKeyCollection();
+    simpleGameState.handleKeyCollection(new Player());
 
     assertTrue(simpleGameState.isExitable());
     assertFalse(initLevel.createLevelString().contains("K"));

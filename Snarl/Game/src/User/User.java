@@ -1,5 +1,6 @@
 package User;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -45,7 +46,7 @@ public interface User {
    * @param isExitable whether or not the door has been unlocked
    * @param currentPosition where the player currently is
    */
-  void update(List<List<Tile>> updatedSurroundings, boolean isExitable, Posn currentPosition);
+  void update(List<List<Tile>> updatedSurroundings, boolean isExitable, Posn currentPosition, List<String> remainingPlayers, String event);
 
   /**
    * Prompts the user for its turn/move. The user does its move and returns an Action ack to the GameManager
@@ -80,4 +81,22 @@ public interface User {
    * Sets exitable to the given posn
    */
   void setExitable(boolean exitable);
+
+  /**
+   * Prompts the user for their name
+   * @return A string, their name
+   */
+  String promptForName(Scanner scanner);
+
+  void send(String message);
+
+  String receive();
+
+  int getNumExits();
+
+  int getNumEjects();
+
+  int getNumKeysCollected();
+
+  void updateStats(boolean isEjected, boolean isExited, boolean isKeyFinder);
 }

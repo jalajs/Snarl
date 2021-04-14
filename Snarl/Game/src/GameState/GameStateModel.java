@@ -24,9 +24,15 @@ public class GameStateModel implements GameState {
   private List<Actor> actors;
   private List<Collectable> collectables;
   private List<Player> exitedPlayers;
+  private List<Player> ejectedPlayers;
   private int currentLevelNumber;
   private int totalLevels;
+  private Player keyFinder;
 
+  /**
+   * This constructor initializes a game state with a set of levels
+   * @param level
+   */
   public GameStateModel(Level level) {
     this.level = level;
     this.isExitable = false;
@@ -34,6 +40,7 @@ public class GameStateModel implements GameState {
     this.actors = new ArrayList<>();
     this.collectables = new ArrayList<>();
     this.exitedPlayers = new ArrayList<>();
+    this.ejectedPlayers = new ArrayList<>();
   }
 
   /**
@@ -75,8 +82,7 @@ public class GameStateModel implements GameState {
     // place the player and adversaries randomly
     this.level.spawnActorsRandomly(players, adversaries);
 
-    Map<String, Posn> nameToPosnMap = new HashMap<String, Posn>();
-
+    Map<String, Posn> nameToPosnMap = new HashMap<>();
 
     // place the key somewhere in the level
     // set the this.actors to the list of players and adversaries
@@ -96,7 +102,7 @@ public class GameStateModel implements GameState {
    * Creates the initial game state by placing the given actors in the game. Players and adversaries
    * are placed where their positions are. The key is placed on the given position.
    * <p>
-   * This is used testState
+   * This is used JSONUtils.testState
    *
    * @param players     are the list of players in the game
    * @param adversaries are the adversaries in the game
@@ -158,7 +164,8 @@ public class GameStateModel implements GameState {
   /**
    * Modifies the game state after a player/adversary collects exit key
    */
-  public void handleKeyCollection() {
+  public void handleKeyCollection(Player player) {
+    this.keyFinder = player;
     this.isExitable = true;
     this.level.removeKey();
   }
@@ -179,12 +186,13 @@ public class GameStateModel implements GameState {
   /**
    * Modifies the game state after a player is expelled
    *
-   * @param expelledPlayer
+   * @param ejectedPlayer
    * @param oldPosition    the position the player/adversary moves from
    */
-  public void handlePlayerExpulsion(Player expelledPlayer, Posn oldPosition) {
-    this.exitedPlayers.add(expelledPlayer);
-    this.actors.remove(expelledPlayer);
+  public void handlePlayerExpulsion(Player ejectedPlayer, Posn oldPosition) {
+    System.out.println("handling the player " + ejectedPlayer.getName() + "'s ejection");
+    this.ejectedPlayers.add(ejectedPlayer);
+    this.actors.remove(ejectedPlayer);
     this.level.expelPlayer(oldPosition);
   }
 
@@ -387,19 +395,24 @@ public class GameStateModel implements GameState {
   private String handleMoveAdversary(Adversary adversary, Posn destination) {
     Tile tile = this.level.getTileGrid()[destination.getRow()][destination.getCol()];
     if (tile.getOccupier() != null && tile.getOccupier().isPlayer()) {
-      return "Eject";
+      return "Adversary Eject";
     } else {
-      return "Move";
+      return "OK";
     }
   }
 
   private void handleInteractionType(String interactionType, Posn destination, Adversary adversary) {
+    System.out.println("INTERACTIONTYPE IS " + interactionType);
     switch(interactionType) {
-      case "Eject":
+      case "Adversary Eject":
         Player player = (Player) this.level.getTileGrid()[destination.getRow()][destination.getCol()].getOccupier();
         this.handlePlayerExpulsion(player, destination);
         break;
-      case "Move":
+      case "Eject":
+        player = (Player) this.level.getTileGrid()[destination.getRow()][destination.getCol()].getOccupier();
+        this.handlePlayerExpulsion(player, destination);
+        break;
+      case "OK":
         // as of this moment, no additional work is needed for this interaction type
         break;
     }
@@ -425,7 +438,7 @@ public class GameStateModel implements GameState {
         }
         break;
       case "Key":
-        this.handleKeyCollection();
+        this.handleKeyCollection(player);
         break;
       case "Eject":
         this.handlePlayerExpulsion(player, currentPosition);
@@ -528,5 +541,21 @@ public class GameStateModel implements GameState {
 
   public void setTotalLevels(int totalLevels) {
     this.totalLevels = totalLevels;
+  }
+
+  public List<Player> getEjectedPlayers() {
+    return ejectedPlayers;
+  }
+
+  public void setEjectedPlayers(List<Player> ejectedPlayers) {
+    this.ejectedPlayers = ejectedPlayers;
+  }
+
+  public Player getKeyFinder() {
+    return keyFinder;
+  }
+
+  public void setKeyFinder(Player keyFinder) {
+    this.keyFinder = keyFinder;
   }
 }

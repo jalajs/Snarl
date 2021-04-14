@@ -56,7 +56,6 @@ public class localSnarl {
       HelpFormatter formatter = new HelpFormatter();
       System.out.println(e.getMessage());
       formatter.printHelp("utility-name", options);
-
       System.exit(1);
     }
 

@@ -1,5 +1,6 @@
 package Action;
 
+import GameObjects.Posn;
 import GameState.GameState;
 
 /**
@@ -20,4 +21,10 @@ public interface Action {
    *
    */
   String getType();
+
+  /**
+   * This method returns the actions destination
+   * @return
+   */
+  Posn getDestination();
 }

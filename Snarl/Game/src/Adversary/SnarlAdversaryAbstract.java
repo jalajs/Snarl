@@ -1,6 +1,7 @@
 package Adversary;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -10,6 +11,10 @@ import GameObjects.Level;
 import GameObjects.Player;
 import GameObjects.Posn;
 
+/**
+ * This abstract class is the common representation for the snarl adversary and contains
+ * common behavior between the adversary classes (Ghost and Zombie)
+ */
 public abstract class SnarlAdversaryAbstract implements SnarlAdversary {
   protected Level level;
   protected Posn currentPosition;
@@ -72,6 +77,29 @@ public abstract class SnarlAdversaryAbstract implements SnarlAdversary {
     return Math.sqrt(
             Math.pow((start.getCol() - end.getCol()), 2) +
                     Math.pow((start.getRow() - end.getRow()), 2));
+  }
+
+  /**
+   * This method uses the distance formula to find the move that brings the
+   * adversary closest to the given player posn
+   *
+   * @param destinations
+   * @param playerPosn
+   * @return
+   */
+  protected Posn closestMoveToPlayer(List<Posn> destinations, Posn playerPosn) {
+    Posn destination = destinations.get(0);
+    double minDistance = distance(playerPosn, destination);
+    for (Posn posn : destinations) {
+      if (playerPosn.equals(posn)) {
+        return posn;
+      }
+      if (distance(playerPosn, posn) < minDistance && !posn.equals(currentPosition)) {
+        destination = posn;
+        minDistance = distance(playerPosn, posn);
+      }
+    }
+    return destination;
   }
 
   @Override

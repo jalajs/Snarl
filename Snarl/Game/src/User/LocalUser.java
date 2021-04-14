@@ -25,6 +25,13 @@ public class LocalUser implements User {
   private boolean isExitable;
   private final RuleChecker ruleChecker = new RuleCheckerClass();
 
+
+  public LocalUser() {
+    this.surroundings = new ArrayList<>();
+    this.currentPosition = new Posn(0, 0);
+    this.isExitable = false;
+  }
+
   /**
    * This builds a LocalUser given a name
    *
@@ -38,6 +45,49 @@ public class LocalUser implements User {
   }
 
   /**
+   * This method asks the user to provide a name
+   * @param scanner the scanner that reads the input
+   * @return
+   */
+  @Override
+  public String promptForName(Scanner scanner) {
+    System.out.println("Enter a name: ");
+    String name = scanner.nextLine();
+    this.name = name;
+    return name;
+  }
+
+  @Override
+  public void send(String message) {
+
+  }
+
+  @Override
+  public String receive() {
+    return null;
+  }
+
+  @Override
+  public int getNumExits() {
+    return 0;
+  }
+
+  @Override
+  public int getNumEjects() {
+    return 0;
+  }
+
+  @Override
+  public int getNumKeysCollected() {
+    return 0;
+  }
+
+  @Override
+  public void updateStats(boolean isEjected, boolean isExited, boolean isKeyFinder) {
+
+  }
+
+  /**
    * Updates the user with any changes that happened in the game state. This is only called in
    * GameManager
    *
@@ -46,7 +96,7 @@ public class LocalUser implements User {
    * @param currentPosition     the current position of the user
    */
   @Override
-  public void update(List<List<Tile>> updatedSurroundings, boolean isExitable, Posn currentPosition) {
+  public void update(List<List<Tile>> updatedSurroundings, boolean isExitable, Posn currentPosition, List<String> remainingPlayers, String event) {
     this.currentPosition = currentPosition;
     this.surroundings = updatedSurroundings;
     this.isExitable = isExitable;
@@ -117,22 +167,30 @@ public class LocalUser implements User {
     Posn relToSurroundings = new Posn(-1, -1);
     while(!isPosnValid(relToSurroundings)) {
       this.renderView();
-      System.out.println("Please enter the desired coordinates for your move in the form row col all on the same line");
-      System.out.println("If your move is invalid, you will be prompted for another coordinate.");
-
+      System.out.println("Player " + this.name + " it's your turn");
       int row = scanner.nextInt();
       int col = scanner.nextInt();
 
       posn = new Posn(row, col);
+      // allow for identity moves
+      if (posn.equals(currentPosition)) {
+        break;
+      }
       relToSurroundings = this.generatePosnRelativeToSurroundings(row, col);
     }
     return posn;
   }
 
+  /**
+   * Calculate the position relative to the surroundings (rather than rel to the level)
+   * @param row
+   * @param col
+   * @return
+   */
   private Posn generatePosnRelativeToSurroundings(int row, int col) {
     int x = 2 + (row- currentPosition.getRow());
     int y = 2 + (col - currentPosition.getCol());
-    return new Posn(2 + (row - this.currentPosition.getRow()), 2 + (col - this.currentPosition.getCol()));
+    return new Posn(x, y);
   }
 
   /**
@@ -167,7 +225,7 @@ public class LocalUser implements User {
         return true;
       }
       if (tile.getOccupier() != null) {
-        return !tile.getOccupier().isPlayer() || tile.getOccupier().getName().equals(name);
+        return !tile.getOccupier().isPlayer();
       } else {
         return !tile.isWall();
       }
@@ -266,4 +324,5 @@ public class LocalUser implements User {
   public void setExitable(boolean exitable) {
     isExitable = exitable;
   }
+
 }

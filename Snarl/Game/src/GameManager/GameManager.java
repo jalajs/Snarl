@@ -29,6 +29,12 @@ public interface GameManager {
   void addPlayer(String name);
 
   /**
+   *  This method adds a remote player to the game
+   * @param user
+   */
+  void addRemotePlayer(User user);
+
+  /**
    * This method takes in the string type of an adversary and registers it to the game
    * @param type
    *
@@ -58,7 +64,7 @@ public interface GameManager {
    * GameState.
    *
    */
-  void updateUsers();
+  void updateUsers(String interactionType);
 
   /**
    * This method prompts the correct Actor to take a turn by calling the correct User's turn method
@@ -67,8 +73,9 @@ public interface GameManager {
    * An example of this is if one User moves into other Users' visible tiles, than we know that their visible tiles must be updated
    * The turn int is upped after every call
    * If it is an Adversary's turn, it's automated turn code is called.
+   * @return
    */
-  void promptPlayerTurn(Scanner scanner);
+  String promptPlayerTurn(Scanner scanner);
 
   /**
    * Execute the give action performed by the given user
@@ -117,4 +124,6 @@ public interface GameManager {
   GameState getGs();
 
   void runLocalGame(boolean observeValue);
+
+  void runRemoteGame(boolean b);
 }

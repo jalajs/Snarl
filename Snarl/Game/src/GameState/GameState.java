@@ -153,8 +153,9 @@ public interface GameState {
 
   /**
    * Modifies the game state after a player/adversary collects exit key
+   * @param player the player who collected the key
    */
-  void handleKeyCollection();
+  void handleKeyCollection(Player player);
 
   /**
    * Get the surrounding tiles around the given posn
@@ -164,10 +165,16 @@ public interface GameState {
   List<List<Tile>> getSurroundingsForPosn(Posn position);
 
   /**
-   * Get the players extied from the games. Exited or expelled
+   * Get the players extied from the games. Exited
    * @return a List of players exited from the games=.
    */
   List<Player> getExitedPlayers();
+
+  /**
+   * Get the players  who were ejected from the games.  expelled
+   * @return a List of players ejected from the games.
+   */
+  List<Player> getEjectedPlayers();
 
   /**
    * This method drops players and adversaries randomly in the level
@@ -215,4 +222,10 @@ public interface GameState {
    * @return the number of players
    */
    int numberOfPlayers();
+
+  /**
+   * Returns the player who found the key in this game
+   * @return null, if no player has found the key
+   */
+  Player getKeyFinder();
 }

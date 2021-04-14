@@ -8,9 +8,7 @@ import java.util.Random;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
-import Action.Action;
 import Action.MoveAction;
-import Action.DoNothingAction;
 import Adversary.Zombie;
 import Adversary.Ghost;
 import GameObjects.Actor;

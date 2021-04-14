@@ -1,10 +1,8 @@
 package GameObjects;
 
 import Action.Action;
-import Action.DoNothingAction;
-import Action.EjectAction;
+
 import Action.MoveAction;
-import Action.PickUpKeyAction;
 
 /**
  * Represents a game tile and contains information on if it is a wall and what is on the tile

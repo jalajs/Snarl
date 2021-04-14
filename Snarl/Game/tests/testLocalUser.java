@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
-
-import Action.EjectAction;
 import Action.MoveAction;
 import GameObjects.Adversary;
 import GameObjects.Player;
