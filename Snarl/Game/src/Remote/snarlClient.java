@@ -34,9 +34,7 @@ public class snarlClient {
     }
 
     Client client = new Client(addressValue, portValue);
-    System.out.println("running the client");
     client.run();
-    System.out.println("client is not running anymore");
   }
 
   /**

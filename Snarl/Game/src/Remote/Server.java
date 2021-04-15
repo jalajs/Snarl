@@ -12,6 +12,7 @@ import java.util.List;
 
 import GameManager.GameManager;
 import User.RemoteUser;
+import User.User;
 
 public class Server {
   private static GameManager gameManager;
@@ -68,7 +69,6 @@ public class Server {
   private static void waitForPlayers(int numPlayers) throws IOException {
     for (int i = 0; i < numPlayers; i++) {
       Socket playerSocket = serverSocket.accept();
-      System.out.println(playerSocket);
       playerSockets.add(playerSocket);
       RemoteUser user = new RemoteUser(playerSocket);
       gameManager.addRemotePlayer(user);

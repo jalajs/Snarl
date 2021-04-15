@@ -47,7 +47,6 @@ public class Client {
     while (alive) {
       // process request from game server
       String serverData = receive();
-      System.out.println("serverData: " + serverData);
       if (serverData.equals("null")) {
         try {
           socket.close();
@@ -77,7 +76,6 @@ public class Client {
       response.put("to", utils.posnToJson(action.getDestination()));
       return response.toString();
     } else if (serverData.charAt(0) == '{') {
-      System.out.println("data from the server: " + serverData);
       JSONObject serverRequest = new JSONObject(serverData);
       String type = (String) serverRequest.get("type");
       switch (type) {
@@ -102,7 +100,7 @@ public class Client {
           if (message.contains("key")) {
             user.setExitable(true);
           }
-          System.out.println(message);
+          System.out.println("game update: " + message);
           break;
         case "end-level":
           System.out.println("Level is over");
@@ -135,10 +133,8 @@ public class Client {
       try {
         message = message + reader.readLine();
       } catch (IOException e) {
-        System.out.println("IO exception" + e);
+        System.out.println(e);
       }
       return message;
     }
-
-
   }

@@ -40,15 +40,15 @@ public class RemoteUser implements User {
   /**
    * This constructs a remote user with the given socket. To set a name, it prompts the client for
    * the name and sets it.
-   *
-   * @param socket
    */
   public RemoteUser(Socket socket) {
     this.socket = socket;
     this.numExits = 0;
     this.numEjects = 0;
     this.numKeysCollected = 0;
+    this.name = "";
     try {
+
       this.input = this.socket.getInputStream();
       this.reader = new BufferedReader(new InputStreamReader(input));
       this.output = this.socket.getOutputStream();
@@ -68,33 +68,37 @@ public class RemoteUser implements User {
    * Sends a message to client socket corresponding to this remote user
    *
    * @param message the message to be sent
-   * @throws IOException
    */
   public void send(String message) {
-    System.out.println("Server is sending: " + message);
     try {
-    if (message == null) {
-      socket.close();
-    }
+      if (message == null) {
+        socket.close();
+      }
     } catch (IOException e) {
-      System.out.print("hmm");
+      System.out.print("Unable to close socket with error: " + e);
     }
-    writer.println(message);
+    try {
+      this.output = this.socket.getOutputStream();
+      this.writer = new PrintWriter(output, true);
+      writer.println(message);
+    } catch (IOException e) {
+      System.out.print("Unable to write to client with message: " + e);
+    }
   }
 
   /**
    * Receives messages from the client socket associated with this remote user
    *
    * @return the message recieved from the client
-   * @throws IOException
    */
   public String receive() {
     String message = "";
     try {
+      this.input = this.socket.getInputStream();
+      this.reader = new BufferedReader(new InputStreamReader(input));
       message = message + reader.readLine();
-      System.out.println("Server recieved this message: " + message);
     } catch (IOException e) {
-      System.out.println("Unable to receive message");
+      System.out.println("Unable to receive message with error: " + e);
     }
     return message;
   }
@@ -151,7 +155,6 @@ public class RemoteUser implements User {
    * Executes a players turn.
    *
    * @param scanner that we don't use here
-   * @return
    */
   @Override
   public Action turn(Scanner scanner) {

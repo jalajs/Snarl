@@ -397,7 +397,7 @@ public class GameManagerClass implements GameManager {
     String interactionTypeDescription = interpretInteractionType(interactionType);
     String event = "";
     if (turn < this.users.size()) {
-      event = "Player " + this.users.get(turn).getName() + " " + interactionTypeDescription;
+      event =  "Player " + this.users.get(turn).getName() + " " + interactionTypeDescription;
     } else {
       event = "Adversary " + this.adversaries.get(turn - this.users.size()).getName() + " " + interactionTypeDescription;
     }
