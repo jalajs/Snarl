@@ -300,7 +300,6 @@ public class Level {
       levelPosition = room.generateRandomUnoccupiedTile();
       actor.setPosition(levelPosition);
       tileGrid[levelPosition.getRow()][levelPosition.getCol()].setOccupier(actor);
-      System.out.println("actor name: " + actor.getName());
       levelGrid[levelPosition.getRow()][levelPosition.getCol()] = actor.representation();
     }
   }
@@ -406,7 +405,7 @@ public class Level {
     // add player to new position if there no current occupier
     if (newTile.getOccupier() == null) {
       newTile.setOccupier(p);
-      levelGrid[newRow][newCol] = "O";
+      levelGrid[newRow][newCol] = p.representation();
     }
     return newTile;
   }

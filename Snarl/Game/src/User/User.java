@@ -99,4 +99,6 @@ public interface User {
   int getNumKeysCollected();
 
   void updateStats(boolean isEjected, boolean isExited, boolean isKeyFinder);
+
+  public void renderView();
 }

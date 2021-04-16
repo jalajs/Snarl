@@ -129,8 +129,6 @@ public class Tile {
     return !this.isWall &&  occupier == null;
   }
 
-
-
   public Actor getOccupier() {
     return occupier;
   }

@@ -150,7 +150,6 @@ public class GameManagerClass implements GameManager {
 
   @Override
   public void runRemoteGame(boolean observeValue) {
-    System.out.println("Remote game is running");
     String gameCondition = "";
     int levelNumber = startLevel;
     // start each level and let it play through
@@ -161,7 +160,6 @@ public class GameManagerClass implements GameManager {
       gameCondition = startLocalLevel(currentLevel, levelNumber, observeValue);
       // if the game is over, break out of the level advancement
       this.updateAllUserStats();
-      System.out.println("Game condition: " + gameCondition);
       if (gameCondition.equals("Win") || gameCondition.equals("Loss")) {
         break;
       }
@@ -189,6 +187,7 @@ public class GameManagerClass implements GameManager {
   }
 
   /**
+   *
    * Gets the name list corresponding to the given list of players
    * @param players the given list of players
    * @return a list of strings for the names of each players
@@ -211,7 +210,7 @@ public class GameManagerClass implements GameManager {
     JSONArray playerScoreList = new JSONArray();
     for (User user: this.users) {
       JSONObject playerScoreObject = new JSONObject();
-      playerScoreObject.put("type", user.getName());
+      playerScoreObject.put("name", user.getName());
       playerScoreObject.put("exits", user.getNumExits());
       playerScoreObject.put("ejects", user.getNumEjects());
       playerScoreObject.put("keys", user.getNumKeysCollected());
@@ -322,9 +321,10 @@ public class GameManagerClass implements GameManager {
    */
   private List<Actor> userListToActors() {
     List<Actor> players = new ArrayList<>();
-    for (User user : this.users) {
+    for (int i = 0; i < this.users.size(); i++) {
+      User user = users.get(i);
       user.setExitable(false);
-      Actor player = new Player(user.getName());
+      Actor player = new Player(user.getName(), i+1);
       players.add(player);
     }
     return players;
@@ -553,9 +553,6 @@ public class GameManagerClass implements GameManager {
       System.out.println("It is user " + user.getName() + "'s turn");
       List<String> ejectedPlayers = this.getNameListFromPlayers(gs.getEjectedPlayers());
       List<String> exitedPlayers = this.getNameListFromPlayers(gs.getExitedPlayers());
-      if (ejectedPlayers.size() > 0) {
-        System.out.println(ejectedPlayers.get(0));
-      }
       if (!ejectedPlayers.contains(user.getName()) &&  !exitedPlayers.contains(user.getName())) {
         MoveAction action = (MoveAction) user.turn(scanner);
         this.executeAction(action, user);
@@ -577,7 +574,6 @@ public class GameManagerClass implements GameManager {
    * Called after each turn, increased the turn count or sets it to zero
    */
   public void updateTurn() {
-    System.out.println("turn: " + turn);
     if (this.turn == this.users.size() + this.adversaries.size() - 1) {
       this.turn = 0;
     } else {

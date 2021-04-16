@@ -1,18 +1,31 @@
 ## Welcome to SNARL  
-### Game Play Instructions  
+### Server Setup Instructions
+-   Start the snarlServer by running ./snarlServer and providing any optional arguments.
+-   The server's observer can be used in a terminal    
+-   The server will wait for clients to connect on its specified address and port. Once the max number of 
+    clients have connected or the timeout has lapsed, the server will start running a game.
 
--   Run the local game using the command ./p8, adding any optional arguments if desired
--   Once the game starts, enter a name to register yourself
-    -   our local demo currently only supports one user
--   The game will render the user's surroundings (5x5) and its current position relative the level.
--   The user must enter a coordinate for a move (row, col) to move
-    -   this coordinate must be relative to the level as well
-    -   the user will be given the same prompt and update if an invalid move is entered
-    -   to input a move, type the desired row then the col with no other non-numerical characters and a space between (ex. "2 1")  
-          
+### Client Setup Instructions
+-   Start the snarlClient by running ./snarlClient and providing any optional arguments.
+-   The client can be used in a terminal    
+-   The users will be prompted to enter the name and connect to the server on the given address and port
+        - the user will be disconnected if they enter an existing/duplicate name from the game
+-   After connecting, the client should follow the assignment's protocol and allow the user to play a 
+    Snarl game on the server
+    
+### Game Play Instructions
+
+- After all users are registered, the first player will be prompted for there move and showed their 5x5
+  grid.
+- To move, please type the coordinate (row, col) you would like to move. Separate the row and col 
+  numbers by a single space with no punctuations.
+- If the move you give is invalid, you will be prompted. We allow for infinite invalid moves.  
+- After every user's turn, each user will see their 5x5 layout and get an update message on what just 
+happened
+  
           
 ### Key
--   0 = player
+-   1 - 4 = player
 -   X = wall
 -   . = walkable tile
 -   | = door

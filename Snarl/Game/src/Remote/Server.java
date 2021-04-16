@@ -24,6 +24,7 @@ public class Server {
   private static int port = 45678;
   private static int delayValue;
   private static boolean observe;
+  private static List<String> existingNames;
 
   public Server(String hostName, int port, GameManager gameManager, int delayValue, boolean observe, int maxNumber) {
     try {
@@ -36,6 +37,7 @@ public class Server {
     this.delayValue = delayValue;
     this.observe = observe;
     this.maxNumber = maxNumber;
+    this.existingNames = new ArrayList<>();
   }
 
   /**
@@ -57,7 +59,7 @@ public class Server {
       System.out.println("No additional players");
     }
 
-    gameManager.runRemoteGame(false);
+    gameManager.runRemoteGame(observe);
 
     for (Socket socket : playerSockets) {
       socket.close();
@@ -71,12 +73,17 @@ public class Server {
       Socket playerSocket = serverSocket.accept();
       playerSockets.add(playerSocket);
       RemoteUser user = new RemoteUser(playerSocket);
-      gameManager.addRemotePlayer(user);
       JSONObject serverWelcome = new JSONObject();
       serverWelcome.put("type", "welcome");
       serverWelcome.put("info", "Laressea");
       user.send(serverWelcome.toString());
-      user.promptName();
+      String name = user.promptName();
+      if (!existingNames.contains(name)) {
+        gameManager.addRemotePlayer(user);
+        existingNames.add(name);
+      } else {
+        user.send("invalid_name");
+      }
     }
   }
 }

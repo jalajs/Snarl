@@ -190,7 +190,6 @@ public class GameStateModel implements GameState {
    * @param oldPosition    the position the player/adversary moves from
    */
   public void handlePlayerExpulsion(Player ejectedPlayer, Posn oldPosition) {
-    System.out.println("handling the player " + ejectedPlayer.getName() + "'s ejection");
     this.ejectedPlayers.add(ejectedPlayer);
     this.actors.remove(ejectedPlayer);
     this.level.expelPlayer(oldPosition);

@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 
 import GameManager.GameManager;
@@ -160,18 +161,13 @@ public class RemoteUtils {
 
   /**
    * This method takes in the JSON representation of a tile layout and converts it into a list of
-   * list of tiles
-   *{
-   *   "type": "player-update",
-   *   "layout": (tile-layout),
-   *   "position": (point),
-   *   "objects": (object-list),
-   *   "actors": (actor-position-list)
-   * }
+   * list of tiles { "type": "player-update", "layout": (tile-layout), "position": (point),
+   * "objects": (object-list), "actors": (actor-position-list) }
+   *
    * @param playerUpdateObject the player update json object
    * @return
    */
-  public List<List<Tile>> jsonToSurroundings(JSONObject playerUpdateObject) {
+  public List<List<Tile>> jsonToSurroundings(String playerName, JSONObject playerUpdateObject, Map<String, Integer> playerIdMap) {
     JSONArray layout = (JSONArray) playerUpdateObject.get("layout");
     List<List<Tile>> surroundings = new ArrayList<>();
     for (int i = 0; i < layout.length(); i++) {
@@ -193,60 +189,104 @@ public class RemoteUtils {
           tile.setDoor(door);
           row.add(tile);
         }
-        this.setTileInfo(tile, i, j, playerUpdateObject);
+        this.setTileInfo(playerName, tile, i, j, playerUpdateObject, playerIdMap);
       }
       surroundings.add(row);
     }
     return surroundings;
   }
-  private void setTileInfo(Tile tile, int row, int col, JSONObject playerUpdateObject) {
+
+  /**
+   * This method sets the tile information based on the given params
+   * @param playerName
+   * @param tile the
+   * @param row the row of the tile
+   * @param col the col of the tile
+   * @param playerUpdateObject
+   * @param playerIdMap
+   */
+  private void setTileInfo(String playerName, Tile tile, int row, int col, JSONObject playerUpdateObject, Map<String, Integer> playerIdMap) {
     Posn playerCurrentPosition = jsonToPosn((JSONArray) playerUpdateObject.get("position"));
+    JSONArray actorPositionList = (JSONArray) playerUpdateObject.get("actors");
+
+    setTileOccupiersUsingActorPosnList(actorPositionList, tile, row, col, playerIdMap, playerCurrentPosition);
+    JSONArray objectPositionList = (JSONArray) playerUpdateObject.get("objects");
+    setTileObjectsUsingObjectList(objectPositionList, tile, row, col, playerCurrentPosition);
+
     if (row == 2 && col == 2) {
-      tile.setOccupier(new Player());
-    } else {
-      JSONArray actorPositionList = (JSONArray) playerUpdateObject.get("actors");
-      for (int i = 0; i < actorPositionList.length(); i++) {
-        JSONObject actorPosnObj = (JSONObject) actorPositionList.get(i);
-        Posn actorPosn = jsonToPosn((JSONArray) actorPosnObj.get("position"));
-        Posn actorPosnRelToSurroundings = generatePosnRelativeToSurroundings(actorPosn.getRow(), actorPosn.getCol(), playerCurrentPosition);
-        if (actorPosnRelToSurroundings.equals(new Posn(row, col))) {
-          String type = (String) actorPosnObj.get("type");
-          if (type.equals("player")) {
-            tile.setOccupier(new Player());
-          } else if (type.equals("Zombie")) {
-            tile.setOccupier(new Adversary("Zombie", "Zombie"));
-          } else if (type.equals("Ghost")) {
-            tile.setOccupier(new Adversary("Ghost", "Ghost"));
-          }
-        }
-      }
-      JSONArray objectPositionList = (JSONArray) playerUpdateObject.get("objects");
-      for (int i = 0; i < objectPositionList.length(); i++) {
-        JSONObject objectPosnObj = (JSONObject) objectPositionList.get(i);
-        String type = (String) objectPosnObj.get("type");
-        Posn objectPosn = jsonToPosn((JSONArray) objectPosnObj.get("position"));
-        Posn objectPosnRelToSurroundings = generatePosnRelativeToSurroundings(objectPosn.getRow(), objectPosn.getCol(), playerCurrentPosition);
-        if (objectPosnRelToSurroundings.equals(new Posn(row, col))) {
-          if (type.equals("key")) {
-            tile.setCollectable(new ExitKey(new Posn(row, col)));
-          } else if (type.equals("exit")) {
-            Door exit = new Door();
-            exit.setLevelExit(true);
-            tile.setDoor(exit);
-          }
+      setCurrentPlayer(playerName, tile, playerIdMap);
+    }
+  }
+
+  /**
+   * This method sets the current player to the given tile
+   * @param playerName
+   * @param tile
+   * @param playerIdMap
+   */
+  private void setCurrentPlayer(String playerName, Tile tile, Map<String, Integer> playerIdMap) {
+      int playerId = playerIdMap.get(playerName);
+      tile.setOccupier(new Player(playerId));
+  }
+
+  /**
+   * This method uses the given actor position list to set the give tiles occupiers
+   * @param actorPositionList contains all nearby actors
+   * @param tile the tile who needs an occupier
+   * @param row
+   * @param col
+   * @param playerIdMap the map
+   */
+  private void setTileOccupiersUsingActorPosnList(JSONArray actorPositionList, Tile tile,
+                                                  int row, int col, Map<String, Integer> playerIdMap,
+  Posn playerCurrentPosition) {
+    for (int i = 0; i < actorPositionList.length(); i++) {
+      JSONObject actorPosnObj = (JSONObject) actorPositionList.get(i);
+      Posn actorPosn = jsonToPosn((JSONArray) actorPosnObj.get("position"));
+      Posn actorPosnRelToSurroundings = generatePosnRelativeToSurroundings(actorPosn.getRow(), actorPosn.getCol(), playerCurrentPosition);
+      if (actorPosnRelToSurroundings.equals(new Posn(row, col))) {
+        String type = (String) actorPosnObj.get("type");
+        if (type.equals("player")) {
+          String name = (String) actorPosnObj.get("name");
+          int id = playerIdMap.get(name);
+          tile.setOccupier(new Player(id));
+        } else if (type.equals("Zombie")) {
+          tile.setOccupier(new Adversary("Zombie", "Zombie"));
+        } else if (type.equals("Ghost")) {
+          tile.setOccupier(new Adversary("Ghost", "Ghost"));
         }
       }
     }
   }
 
+  private void setTileObjectsUsingObjectList(JSONArray objectPositionList, Tile tile, int row, int col, Posn playerCurrentPosition) {
+    for (int i = 0; i < objectPositionList.length(); i++) {
+      JSONObject objectPosnObj = (JSONObject) objectPositionList.get(i);
+      String type = (String) objectPosnObj.get("type");
+      Posn objectPosn = jsonToPosn((JSONArray) objectPosnObj.get("position"));
+      Posn objectPosnRelToSurroundings = generatePosnRelativeToSurroundings(objectPosn.getRow(), objectPosn.getCol(), playerCurrentPosition);
+      if (objectPosnRelToSurroundings.equals(new Posn(row, col))) {
+        if (type.equals("key")) {
+          tile.setCollectable(new ExitKey(new Posn(row, col)));
+        } else if (type.equals("exit")) {
+          Door exit = new Door();
+          exit.setLevelExit(true);
+          tile.setDoor(exit);
+        }
+      }
+    }
+  }
+
+
   /**
    * Calculate the position relative to the surroundings (rather than rel to the level)
+   *
    * @param levelRow
    * @param levelCol
    * @return
    */
   private Posn generatePosnRelativeToSurroundings(int levelRow, int levelCol, Posn currentPosition) {
-    int x = 2 + (levelRow- currentPosition.getRow());
+    int x = 2 + (levelRow - currentPosition.getRow());
     int y = 2 + (levelCol - currentPosition.getCol());
     return new Posn(x, y);
   }

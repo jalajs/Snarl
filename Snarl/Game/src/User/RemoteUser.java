@@ -28,14 +28,14 @@ public class RemoteUser implements User {
   private String name;
   private Posn currentPosition;
   private List<List<Tile>> surroundings;
-  private boolean isExitable;
   private static InputStream input;
   private static BufferedReader reader;
   private static OutputStream output;
   private static PrintWriter writer;
-  private static int numExits;
-  private static int numEjects;
-  private static int numKeysCollected;
+  private static boolean isExitable;
+  private int numExits;
+  private int numEjects;
+  private int numKeysCollected;
 
   /**
    * This constructs a remote user with the given socket. To set a name, it prompts the client for
@@ -48,7 +48,6 @@ public class RemoteUser implements User {
     this.numKeysCollected = 0;
     this.name = "";
     try {
-
       this.input = this.socket.getInputStream();
       this.reader = new BufferedReader(new InputStreamReader(input));
       this.output = this.socket.getOutputStream();
@@ -58,10 +57,27 @@ public class RemoteUser implements User {
     }
   }
 
-  public void promptName() {
+  /**
+   * This method controls sending and recieving the name request from the socket.
+   */
+  public String promptName() {
     String nameRequest = "name";
     send(nameRequest);
     this.name = receive();
+    return this.name;
+  }
+
+  /**
+   * This method counts the number of times a name has been used before
+   * @param existingNames
+   * @return
+   */
+  private int numOfPrevNameUsages(List<String> existingNames) {
+    int i = 0;
+    for(String existingName : existingNames) {
+      i++;
+    }
+    return i;
   }
 
   /**
@@ -256,5 +272,10 @@ public class RemoteUser implements User {
     this.numEjects = isEjected ? this.numEjects + 1 : this.numEjects;
     this.numExits = isExited ? this.numExits + 1 : this.numExits;
     this.numKeysCollected = isKeyFinder ? this.numKeysCollected + 1 : this.numKeysCollected;
+  }
+
+  @Override
+  public void renderView() {
+
   }
 }

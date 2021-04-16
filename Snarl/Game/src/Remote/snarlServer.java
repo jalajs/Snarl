@@ -53,8 +53,6 @@ public class snarlServer {
 
     GameManager gameManager = new GameManagerClass(levels, startLevel);
 
-    // todo: give player number idenitifier and make exit door look different
-
     Server server = new Server(addressValue, portValue, gameManager, delayValue, observerValue, clientValue);
     server.run();
   }

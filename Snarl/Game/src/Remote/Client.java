@@ -11,7 +11,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import Action.Action;
@@ -31,6 +33,7 @@ public class Client {
     private static OutputStream output;
     private static PrintWriter writer;
     private static boolean alive;
+    private static Map<String, Integer> playerIdMap;
 
     /**
      * This constructs a basic client that owns a LocalUser
@@ -47,6 +50,7 @@ public class Client {
         this.output = this.socket.getOutputStream();
         this.writer = new PrintWriter(output, true);
         this.alive = true;
+        this.playerIdMap = new HashMap<>();
     }
 
     /**
@@ -57,11 +61,13 @@ public class Client {
     public void run() {
         while (alive) {
             String serverData = receive();
-            if (serverData.equals("null")) {
+            if (serverData.equals("null") || (serverData.equals("invalid_name"))) {
                 try {
+                    System.out.println("Closing connection, server data: " + serverData);
+                    alive = false;
                     socket.close();
                 } catch (IOException e) {
-                    System.out.println(e);
+                    System.out.println("Recevied null data from the server. Cannot close socket.\n" + e);
                 }
             } else if (!serverData.equals("")) {
                 String response = executeServerRequest(serverData);
@@ -84,10 +90,7 @@ public class Client {
         if (serverData.equals("name")) {
             return user.promptForName(userScanner);
         } else if (serverData.equals("move") || serverData.equals("Invalid")) {
-            Action action = user.turn(userScanner);
-            response.put("type", "move");
-            response.put("to", utils.posnToJson(action.getDestination()));
-            return response.toString();
+         return promptMove(response);
         } else if (serverData.charAt(0) == '{') {
             JSONObject serverRequest = new JSONObject(serverData);
             String type = (String) serverRequest.get("type");
@@ -105,14 +108,7 @@ public class Client {
                     displayEndLevel(serverRequest);
                     break;
                 case "end-game":
-                    try {
-                        System.out.println("The game is donezo! Thank you for playing SNARL.");
-                        printScores((JSONArray) serverRequest.get("scores"));
-                        alive = false;
-                        socket.close();
-                    } catch (IOException e) {
-                        System.out.println("did not let the socket close on end game :(");
-                    }
+                    displayEndGame(serverRequest);
                     break;
                 default:
                     System.out.println("Something mysterious is happening");
@@ -123,21 +119,50 @@ public class Client {
     }
 
     /**
+     * This method prompts the user for a move and builds the response
+     * @param response
+     * @return
+     */
+    private static String promptMove(JSONObject response) {
+        Action action = user.turn(userScanner);
+        response.put("type", "move");
+        response.put("to", utils.posnToJson(action.getDestination()));
+        return response.toString();
+    }
+
+    /**
+     * This method displays the end game method to the user
+     * @param serverRequest
+     */
+    private static void displayEndGame(JSONObject serverRequest) {
+        try {
+            System.out.println("The game is donezo! Thank you for playing SNARL.");
+            printScores((JSONArray) serverRequest.get("scores"));
+            alive = false;
+            socket.close();
+        } catch (IOException e) {
+            System.out.println("did not let the socket close on end game :(");
+        }
+    }
+
+    /**
      * Display the start level message to the user
      * @param serverRequest
      */
     private static void displayStartLevel(JSONObject serverRequest) {
-        Posn currentPosition = utils.jsonToPosn((JSONArray) serverRequest.get("position"));
-        user.setCurrentPosition(currentPosition);
-
-        List<List<Tile>> surroundings = utils.jsonToSurroundings(serverRequest);
-        user.setSurroundings(surroundings);
-
-        String message = (String) serverRequest.get("message");
-        if (message.contains("key")) {
-            user.setExitable(true);
+        int levelNum = (int) serverRequest.get("level");
+        levelNum++;
+        // map the active players in the game to a number
+        playerIdMap = new HashMap<>();
+        JSONArray nameList = (JSONArray) serverRequest.get("players");
+        for (int i = 0; i < nameList.length(); i++) {
+            String name = (String) nameList.get(i);
+            int id = i + 1;
+            System.out.println("Player " + name + " is represented as " + id);
+            playerIdMap.put(name, id);
         }
-        System.out.println("game update: " + message);
+        System.out.println("Level " + levelNum + " about to start");
+        user.setExitable(false);
     }
 
     /**
@@ -150,13 +175,14 @@ public class Client {
         Posn currentPosition = utils.jsonToPosn((JSONArray) serverRequest.get("position"));
         user.setCurrentPosition(currentPosition);
 
-        List<List<Tile>> surroundings = utils.jsonToSurroundings(serverRequest);
+        List<List<Tile>> surroundings = utils.jsonToSurroundings(user.getName(), serverRequest, playerIdMap);
         user.setSurroundings(surroundings);
 
         String message = (String) serverRequest.get("message");
         if (message.contains("key")) {
             user.setExitable(true);
         }
+        user.renderView();
         System.out.println("game update: " + message);
     }
 
@@ -172,8 +198,8 @@ public class Client {
         JSONArray ejects = (JSONArray) serverRequest.get("ejects");
         String keyFinder = (String) serverRequest.get("key");
         System.out.println("Player " + keyFinder + " found the key");
-        System.out.println("Player(s) " + exits.toString().replace("]", "").replace("\"", "") + " exited");
-        System.out.println("Player(s) " + ejects.toString().replace("]", "").replace("\"", "") + " ejected");
+        System.out.println("Player(s) exited: " + exits.toString().replace("]", "").replace("[", "").replace("\"", ""));
+        System.out.println("Player(s) ejected: " + ejects.toString().replace("]", "").replace("[", "").replace("\"", "") );
 
     }
 
@@ -195,16 +221,24 @@ public class Client {
         }
     }
 
+    /**
+     * This method writes a message to the server
+     * @param message
+     */
     private void send(String message) {
         writer.println(message);
     }
 
+    /**
+     * This method receives a message from the server
+     * @return
+     */
     private String receive() {
         String message = "";
         try {
             message = message + reader.readLine();
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println("Error thrown while receiving data: " + e);
         }
         return message;
     }
