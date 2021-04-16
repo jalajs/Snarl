@@ -284,10 +284,7 @@ public class GameStateModel implements GameState {
    * @return whether or not the given Level is over or not
    */
   public boolean isLevelEnd() {
-    if (this.numberOfPlayers() == 0) {
-      return true;
-    }
-    return this.isExitable && this.playerIsOnExit;
+    return this.numberOfPlayers() == 0;
   }
 
 
@@ -402,7 +399,6 @@ public class GameStateModel implements GameState {
   }
 
   private void handleInteractionType(String interactionType, Posn destination, Adversary adversary) {
-    System.out.println("INTERACTIONTYPE IS " + interactionType);
     switch(interactionType) {
       case "Adversary Eject":
         Player player = (Player) this.level.getTileGrid()[destination.getRow()][destination.getCol()].getOccupier();

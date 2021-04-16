@@ -278,7 +278,7 @@ public class GameManagerClass implements GameManager {
 
   /**
    * This method starts the game by initializing the GameState. This entails setting the level and
-   * creating Player objects to represent each User object.
+   * creating Player objects to represent each User object. Returns the gamecondition once ALL PLAYERS HAVE EXITED.
    *
    * @param level the actual level to play the game with
    * @param levelNumber the level number to run
@@ -530,10 +530,11 @@ public class GameManagerClass implements GameManager {
         case "Key":
           return "found the key.";
         default:
-          return "acted mysteriously.";
+          return "is waiting for the other players.";
       }
     }
-    return "";
+    // only ever returned for the first update describing the init conditions
+    return "will move first";
   }
 
   /**
