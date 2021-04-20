@@ -19,6 +19,7 @@ import GameObjects.Tile;
  */
 public class Ghost extends SnarlAdversaryAbstract {
   private static int searchRadius = 4;
+  private final int damagePoints = 50;
 
   public Ghost(Level level, Posn currentPosition) {
     super(level, currentPosition);
@@ -45,10 +46,9 @@ public class Ghost extends SnarlAdversaryAbstract {
     if (destinations.size() > 0) {
       Posn destination = this.getBestMove(players, destinations);
       // return the action to the gameManager
-      this.currentPosition = destination;
-      return new MoveAction(destination, this.currentPosition);
+     return new MoveAction(destination, this.currentPosition, this.damagePoints);
     }
-    return new MoveAction(this.currentPosition, this.currentPosition);
+    return new MoveAction(this.currentPosition, this.currentPosition, this.damagePoints);
   }
 
   /**

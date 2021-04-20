@@ -1,6 +1,5 @@
 package Action;
 
-import Action.Action;
 import GameObjects.Posn;
 import GameState.GameState;
 
@@ -10,7 +9,9 @@ import GameState.GameState;
 public class MoveAction implements Action {
   private Posn destination;
   private Posn currentPosition;
-  private String interactionType;
+  private InteractionType interactionType = InteractionType.NONE;
+  private int damage;
+  private String victimName;
 
   /**
    * This constructor builds a move with a destination and a currentPosition
@@ -22,7 +23,25 @@ public class MoveAction implements Action {
       this.destination = destination;
     }
     this.currentPosition = currentPosition;
-    this.interactionType = "";
+    this.damage = 0;
+    this.victimName = "";
+  }
+
+  /**
+   * This constructor builds a move with a destination and a currentPosition, as well as a damage number
+   */
+  public MoveAction(Posn destination, Posn currentPosition, int damage) {
+    if (destination == null) {
+      this.destination = currentPosition;
+    } else {
+      this.destination = destination;
+    }
+    this.currentPosition = currentPosition;
+    this.damage = damage;
+    this.victimName = "";
+  }
+
+  public MoveAction() {
   }
 
   @Override
@@ -51,7 +70,29 @@ public class MoveAction implements Action {
     this.currentPosition = currentPosition;
   }
 
-  public void setInteractionType(String interactionType) { this.interactionType = interactionType; }
+  public InteractionType getInteractionType() {
+    return interactionType;
+  }
 
-  public String getInteractionType() { return this.interactionType; }
+  public void setInteractionType(InteractionType interactionType) {
+    this.interactionType = interactionType;
+  }
+
+  public int getDamage() {
+    return damage;
+  }
+
+  public void setDamage(int damage) {
+    this.damage = damage;
+  }
+
+  @Override
+  public String getVictimName() {
+    return victimName;
+  }
+
+  @Override
+  public void setVictimName(String victimName) {
+    this.victimName = victimName;
+  }
 }

@@ -3,6 +3,7 @@ package GameState;
 import java.util.List;
 import java.util.Map;
 
+import Action.InteractionType;
 import GameObjects.Actor;
 import GameObjects.Level;
 import GameObjects.Player;
@@ -134,7 +135,7 @@ public interface GameState {
    * @param posn
    * @return
    */
-  String handleMovePlayer(Player p, Posn posn);
+  InteractionType calculateInteractionType(Player p, Posn posn);
 
   /**
    * This method handles a very simple move performed by an adversary that has already been
@@ -155,7 +156,7 @@ public interface GameState {
    * Modifies the game state after a player/adversary collects exit key
    * @param player the player who collected the key
    */
-  void handleKeyCollection(Player player);
+  void handleKeyCollection(Player player, MoveAction action);
 
   /**
    * Get the surrounding tiles around the given posn

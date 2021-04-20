@@ -1,7 +1,7 @@
 package GameObjects;
 
 import Action.Action;
-
+import Action.InteractionType;
 import Action.MoveAction;
 
 /**
@@ -86,47 +86,49 @@ public class Tile {
 
   /**
    * If a player lands on this tile, this interaction will take place
+   *
    * @param player the player making the interaction on this tile
-   * @return the string representation of the interaction type
-   *         Possible interaction types are: Key, Adversary, None
+   * @return the string representation of the interaction type Possible interaction types are: Key,
+   * Adversary, None
    */
-  public String getInteraction(Player player) {
+  public InteractionType getInteraction(Player player) {
+    if (occupier != null) {
+      if (!occupier.isPlayer()) {
+        return InteractionType.ATTACK;
+      }
+    }
     if (door != null) {
-      if(this.door.isLevelExit()) {
-        return "Exit";
+      if (this.door.isLevelExit()) {
+        return InteractionType.EXIT;
       } else {
-        return "OK";
+        return InteractionType.OK;
       }
     }
     if (collectable != null) {
-      return "Key";
+      return InteractionType.KEY;
     }
-    if (occupier != null) {
-      if (!occupier.isPlayer()) {
-        return "Eject";
-      }
-    }
-      return "OK";
+    return InteractionType.OK;
   }
 
   /**
-   * Creates an action for the new tile
-   *  possible actions: move, ejected, pickUpKey
+   * Creates an action for the new tile possible actions: move, ejected, pickUpKey
+   *
    * @param originalPosition the original position the user is moving from
    * @return
    */
   public Action buildAction(Posn originalPosition, String playerName) {
-      return new MoveAction(position, originalPosition);
+    return new MoveAction(position, originalPosition);
   }
 
   /**
-   * Checks that the given tile is a valid tile for a ghost to transport to in a room.
-   * A tile is valid to transport to if it is not another wall or there is not occupied.
-   * We allow a ghost to transport to a door/exit.
+   * Checks that the given tile is a valid tile for a ghost to transport to in a room. A tile is
+   * valid to transport to if it is not another wall or there is not occupied. We allow a ghost to
+   * transport to a door/exit.
+   *
    * @return whether or not this tile is a valid transport tile.
    */
   public boolean validTransportTile() {
-    return !this.isWall &&  occupier == null;
+    return !this.isWall && occupier == null;
   }
 
   public Actor getOccupier() {

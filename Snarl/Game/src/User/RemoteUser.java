@@ -36,6 +36,8 @@ public class RemoteUser implements User {
   private int numExits;
   private int numEjects;
   private int numKeysCollected;
+  private int hitPoints = 100;
+
 
   /**
    * This constructs a remote user with the given socket. To set a name, it prompts the client for
@@ -162,6 +164,8 @@ public class RemoteUser implements User {
     JSONArray actorPositionList = RemoteUtils.createActorPositionList(actors, remainingPlayers);
     playerUpdate.put("actors", actorPositionList);
 
+    playerUpdate.put("hitPoints", this.hitPoints);
+
     playerUpdate.put("message", event.equals("") ? null : event);
 
     this.send(playerUpdate.toString());
@@ -277,5 +281,19 @@ public class RemoteUser implements User {
   @Override
   public void renderView() {
 
+  }
+
+  public void subtractFromHitPoints(int damage) {
+    this.hitPoints = this.hitPoints - damage;
+  }
+
+  @Override
+  public void setHitPoints(int hitPoints) {
+    this.hitPoints = hitPoints;
+  }
+
+  @Override
+  public int getHitPoints() {
+    return hitPoints;
   }
 }

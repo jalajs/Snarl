@@ -20,6 +20,7 @@ import GameObjects.Tile;
  */
 public class Zombie extends SnarlAdversaryAbstract {
   private static final int searchRadius = 3;
+  private final int damagePoints = 25;
 
   /**
    * this constructor builds a zombie with a given level and position
@@ -53,10 +54,9 @@ public class Zombie extends SnarlAdversaryAbstract {
       // this employs our strategies to select the best possible move
       Posn destination = this.getBestMove(players, destinations);
       // return the action to the gameManager
-      this.currentPosition = destination;
-      return new MoveAction(destination, this.currentPosition);
+      return new MoveAction(destination, this.currentPosition, damagePoints);
     }
-    return new MoveAction(this.currentPosition, this.currentPosition);
+    return new MoveAction(this.currentPosition, this.currentPosition, damagePoints);
   }
 
   /**

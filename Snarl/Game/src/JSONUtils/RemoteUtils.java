@@ -8,14 +8,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
 import GameManager.GameManager;
 import GameObjects.Actor;
 import GameObjects.Adversary;
-import GameObjects.Collectable;
 import GameObjects.Door;
 import GameObjects.ExitKey;
 import GameObjects.Hallway;
@@ -26,11 +24,10 @@ import GameObjects.Room;
 import GameObjects.Tile;
 import User.User;
 
+/**
+ * Class that holds all the utils for the remote protocol
+ */
 public class RemoteUtils {
-  private static testLevel testLevel;
-  private static testRoom testRoom;
-  private static testState testState;
-
 
   /**
    * Creates a player update JSONObject that looks like this from the given name and manager {

@@ -24,6 +24,7 @@ public class LocalUser implements User {
   private Posn currentPosition;
   private boolean isExitable;
   private final RuleChecker ruleChecker = new RuleCheckerClass();
+  private int hitPoints = 100;
 
   public LocalUser() {
     this.surroundings = new ArrayList<>();
@@ -324,4 +325,16 @@ public class LocalUser implements User {
       isExitable = exitable;
     }
 
+    public int getHitPoints() {
+    return hitPoints;
   }
+
+  public void setHitPoints(int hitPoints) {
+    this.hitPoints = hitPoints;
+  }
+
+  public void subtractFromHitPoints(int damage) {
+      this.hitPoints = this.hitPoints - damage;
+  }
+
+}

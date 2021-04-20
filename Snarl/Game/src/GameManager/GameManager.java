@@ -9,6 +9,7 @@ import java.util.Scanner;
 import Adversary.SnarlAdversary;
 import GameObjects.Level;
 import Action.Action;
+import Action.InteractionType;
 import GameObjects.Posn;
 import GameState.GameState;
 import User.User;
@@ -64,7 +65,7 @@ public interface GameManager {
    * GameState.
    *
    */
-  void updateUsers(String interactionType);
+  void updateUsers(Action action);
 
   /**
    * This method prompts the correct Actor to take a turn by calling the correct User's turn method
@@ -75,7 +76,7 @@ public interface GameManager {
    * If it is an Adversary's turn, it's automated turn code is called.
    * @return
    */
-  String promptPlayerTurn(Scanner scanner);
+  Action promptPlayerTurn(Scanner scanner);
 
   /**
    * Execute the give action performed by the given user

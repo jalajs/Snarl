@@ -100,5 +100,13 @@ public interface User {
 
   void updateStats(boolean isEjected, boolean isExited, boolean isKeyFinder);
 
-  public void renderView();
+  void renderView();
+
+  void subtractFromHitPoints(int damage);
+
+  void setHitPoints(int hitPoints);
+
+  int getHitPoints();
+
+
 }

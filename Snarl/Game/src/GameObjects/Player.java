@@ -7,6 +7,7 @@ package GameObjects;
 public class Player extends Actor {
   private String name;
   private int id = 0;
+  private int hitPoints = 100;
   /**
    * This is blank slate constructor for testing
    */
@@ -46,4 +47,10 @@ public class Player extends Actor {
   public boolean isPlayer() {
     return true;
   }
+
+  public int getHitPoints() { return this.hitPoints; }
+
+  public void setHitPoints(int hitPoints) { this.hitPoints = hitPoints; }
+
+  public void subtractFromHitPoints(int damage) { this.hitPoints = this.hitPoints - damage; }
 }

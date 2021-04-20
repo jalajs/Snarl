@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import Action.InteractionType;
 import GameObjects.Actor;
 import GameObjects.Adversary;
 import GameObjects.Hallway;
@@ -152,7 +153,7 @@ public class testState {
     JSONArray outputArray = new JSONArray();
     Player player = findPlayer(name, players);
     Posn oldPosition = player.getPosition();
-    String interactionType = gs.handleMovePlayer(player, point);
+    InteractionType interactionType = gs.calculateInteractionType(player, point);
     if (gs.isPlayerIsOnExit() && !exitLocked) {
       gs.handlePlayerExpulsion(player, oldPosition);
       outputArray.put("Success");
@@ -160,7 +161,7 @@ public class testState {
       outputArray.put(name);
       outputArray.put(" exited.");
       outputArray.put(gameStateToJSONObject(gs, levelObject));
-    } else if (interactionType.equals("None") || interactionType.equals("Key")) {
+    } else if (interactionType.type.equals("None") || interactionType.type.equals("Key")) {
       outputArray.put("Success");
       outputArray.put(gameStateToJSONObject(gs, levelObject));
 

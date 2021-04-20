@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import Action.Action;
+import Action.InteractionType;
 import GameObjects.Actor;
 import GameObjects.Adversary;
 import GameObjects.Collectable;
@@ -31,6 +33,7 @@ public class GameStateModel implements GameState {
 
   /**
    * This constructor initializes a game state with a set of levels
+   *
    * @param level
    */
   public GameStateModel(Level level) {
@@ -164,10 +167,12 @@ public class GameStateModel implements GameState {
   /**
    * Modifies the game state after a player/adversary collects exit key
    */
-  public void handleKeyCollection(Player player) {
+  public void handleKeyCollection(Player player, MoveAction action) {
     this.keyFinder = player;
     this.isExitable = true;
     this.level.removeKey();
+    this.level.handlePlayerMove(player, action.getDestination());
+    player.setPosition(action.getDestination());
   }
 
   /**
@@ -187,7 +192,7 @@ public class GameStateModel implements GameState {
    * Modifies the game state after a player is expelled
    *
    * @param ejectedPlayer
-   * @param oldPosition    the position the player/adversary moves from
+   * @param oldPosition   the position the player/adversary moves from
    */
   public void handlePlayerExpulsion(Player ejectedPlayer, Posn oldPosition) {
     this.ejectedPlayers.add(ejectedPlayer);
@@ -199,40 +204,45 @@ public class GameStateModel implements GameState {
   /**
    * Modifies the game state after a player is expelled
    *
-   * @param exitedPlayer
-   * @param oldPosition  the position the player/adversary moves from
+   * @param player is the player who performed the move
+   * @param action contains all the information about the move
    */
-  public void handlePlayerExit(Player exitedPlayer, Posn oldPosition) {
-    this.exitedPlayers.add(exitedPlayer);
-    this.actors.remove(exitedPlayer);
-    this.level.expelPlayer(oldPosition);
-    this.level.clearExitDoor();
+  public void handlePlayerExit(Player player, MoveAction action) {
+    Posn currentPosition = action.getCurrentPosition();
+    if (this.isExitable()) {
+      this.exitedPlayers.add(player);
+      this.actors.remove(player);
+      this.level.expelPlayer(currentPosition);
+      this.level.clearExitDoor();
+    } else {
+      this.level.handlePlayerMove(player, action.getDestination());
+      player.setPosition(action.getDestination());
+      action.setInteractionType(InteractionType.OK);
+    }
   }
 
 
   /**
-   * Modifies the game state to reflect a player move. This method assumed the move has already been
-   * validated by the Rule Component.
+   * Modifies the game state to reflect a player move and returns the interaction type. This method
+   * assumed the move has already been validated by the Rule Component.
    *
-   * @param p    refers to player who has just moved
-   * @param posn is the new position of the
+   * @param p           refers to player who has just moved
+   * @param destination is the new position of the
    */
-  public String handleMovePlayer(Player p, Posn posn) {
-    Tile dest = this.level.handlePlayerMove(p, posn);
+  public InteractionType calculateInteractionType(Player p, Posn destination) {
+    Tile dest = this.level.getTileGrid()[destination.getRow()][destination.getCol()];
     Tile currentPosition = this.level.getTileGrid()[p.getPosition().getRow()][p.getPosition().getCol()];
     if (dest.getDoor() != null) {
       Door door = dest.getDoor();
       this.playerIsOnExit = door.isLevelExit();
     }
-//    // set playerOnExitToFalse if it is moving off an exit
-    if  (currentPosition.getDoor() != null && !p.getPosition().equals(posn)) {
+    // set playerOnExitToFalse if it is moving off an exit
+    if (currentPosition.getDoor() != null && !p.getPosition().equals(destination)) {
       Door door = currentPosition.getDoor();
       if (door.isLevelExit()) {
         this.playerIsOnExit = false;
       }
     }
-    // set the player's position to the new posn
-    p.setPosition(posn);
     return dest.getInteraction(p);
   }
 
@@ -338,14 +348,14 @@ public class GameStateModel implements GameState {
       if (checker.isInteractionValid(this.isExitable, player,
               this.level.getTileGrid()[destination.getRow()][destination.getCol()])) {
         // move the player to the new tile
-        String interactionType = this.handleMovePlayer(player, destination);
+        InteractionType interactionType = this.calculateInteractionType(player, destination);
         action.setInteractionType(interactionType);
         // perform the prescribed interaction
-        handleInteractionType(interactionType, player, currentPosition, action);
+        handleInteractionType(player, action);
         return true;
       }
     }
-    action.setInteractionType("Invalid");
+    action.setInteractionType(InteractionType.INVALID);
     return false;
   }
 
@@ -360,21 +370,21 @@ public class GameStateModel implements GameState {
     Posn destination = action.getDestination();
     Adversary adversary = getAdversaryByName(snarlAdversary.getName());
     // for an adversary, the interaction type can be Eject or Move
-    String interactionType = this.handleMoveAdversary(adversary, destination);
+    InteractionType interactionType = this.handleMoveAdversary(adversary, destination);
     action.setInteractionType(interactionType);
     // perform the prescribed interaction
-    handleInteractionType(interactionType, destination, adversary);
+    handleInteractionType(adversary, action);
     return true;
   }
 
   /**
-   * Retrieve the adversary with the given name
-   * todo : what if player names self "Ghost 1" ?
+   * Retrieve the adversary with the given name todo : what if player names self "Ghost 1" ?
+   *
    * @param name
    * @return
    */
   private Adversary getAdversaryByName(String name) {
-    for(Actor actor : actors) {
+    for (Actor actor : actors) {
       if (actor.getName().equals(name)) {
         return (Adversary) actor;
       }
@@ -383,63 +393,109 @@ public class GameStateModel implements GameState {
   }
 
   /**
-   * This method c
+   * This method handles an adversary move by determining the interaction Type
+   *
    * @param adversary
-   * @param  destination
+   * @param destination
    * @return
    */
-  private String handleMoveAdversary(Adversary adversary, Posn destination) {
+  private InteractionType handleMoveAdversary(Adversary adversary, Posn destination) {
     Tile tile = this.level.getTileGrid()[destination.getRow()][destination.getCol()];
     if (tile.getOccupier() != null && tile.getOccupier().isPlayer()) {
-      return "Adversary Eject";
+      return InteractionType.ATTACK;
     } else {
-      return "OK";
+      return InteractionType.OK;
     }
   }
 
-  private void handleInteractionType(String interactionType, Posn destination, Adversary adversary) {
-    switch(interactionType) {
-      case "Adversary Eject":
+  /**
+   * This method handles the interaction type produced by a move with an adversary
+   *
+   * @param adversary
+   * @param action
+   */
+  private void handleInteractionType(Adversary adversary, Action action) {
+    InteractionType interactionType = action.getInteractionType();
+    Posn destination = action.getDestination();
+    switch (interactionType) {
+      case ATTACK:
+        this.handleAdversaryAttack(adversary, action);
+        break;
+      case EJECT:
         Player player = (Player) this.level.getTileGrid()[destination.getRow()][destination.getCol()].getOccupier();
         this.handlePlayerExpulsion(player, destination);
+        this.level.handleAdversaryMove(adversary, destination);
+        adversary.setPosition(destination);
         break;
-      case "Eject":
-        player = (Player) this.level.getTileGrid()[destination.getRow()][destination.getCol()].getOccupier();
-        this.handlePlayerExpulsion(player, destination);
-        break;
-      case "OK":
-        // as of this moment, no additional work is needed for this interaction type
+      case OK:
+        this.level.handleAdversaryMove(adversary, destination);
+        adversary.setPosition(destination);
         break;
     }
-    this.level.handleAdversaryMove(adversary, destination);
-    adversary.setPosition(destination);
+  }
+
+  private void handleAdversaryAttack(Adversary adversary, Action action) {
+    Posn destination = action.getDestination();
+    Player player = (Player) this.level.getTileGrid()[destination.getRow()][destination.getCol()].getOccupier();
+    player.subtractFromHitPoints(adversary.getDamagePoints());
+    action.setVictimName(player.getName());
+    if (player.getHitPoints() <= 0) {
+      action.setInteractionType(InteractionType.EJECT);
+      handleInteractionType(adversary, action);
+    } else {
+      // if it can't eject the adversary, turn the move into an identity move
+      action.setDestination(action.getCurrentPosition());
+    }
   }
 
   /**
    * This method handles the interactionType and performs the appropriate mutation
    *
-   * @param interactionType
    * @param player
-   * @param currentPosition
    * @param action
    */
-  private void handleInteractionType(String interactionType, Player player, Posn currentPosition, MoveAction action) {
+  private void handleInteractionType(Player player, MoveAction action) {
+    InteractionType interactionType = action.getInteractionType();
+    Posn currentPosition = action.getCurrentPosition();
+    Posn destination = action.getDestination();
     switch (interactionType) {
-      case "Exit":
-        if (this.isExitable()) {
-          this.handlePlayerExit(player, currentPosition);
-        } else {
-          action.setInteractionType("OK");
-        }
+      case EXIT:
+        this.handlePlayerExit(player, action);
         break;
-      case "Key":
-        this.handleKeyCollection(player);
+      case KEY:
+        this.handleKeyCollection(player, action);
         break;
-      case "Eject":
+      case ATTACK:
+        this.handlePlayerAttack(action, player);
+        break;
+      case EJECT:
         this.handlePlayerExpulsion(player, currentPosition);
         break;
-      case "OK":
+      case OK:
+        this.level.handlePlayerMove(player, action.getDestination());
+        player.setPosition(action.getDestination());
         break;
+    }
+  }
+
+  /**
+   * Handles when a player has landed on an adversary causing it to attack the player. The player
+   * first takes damage. If the damage is enough to kill the player, the action is re-run with an
+   * 'EJECT' interaction.
+   *
+   * @param action
+   * @param player
+   */
+  private void handlePlayerAttack(MoveAction action, Player player) {
+    Posn destination = action.getDestination();
+    Adversary adversary = (Adversary) this.level.getTileGrid()[destination.getRow()][destination.getCol()].getOccupier();
+    player.subtractFromHitPoints(adversary.getDamagePoints());
+    action.setVictimName(player.getName());
+    action.setDestination(action.getCurrentPosition());
+    action.setDamage(adversary.getDamagePoints());
+    if (player.getHitPoints() <= 0) {
+      action.setInteractionType(InteractionType.EJECT);
+      handleInteractionType(player, action);
     }
   }
 

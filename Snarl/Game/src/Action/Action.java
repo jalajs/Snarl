@@ -15,11 +15,6 @@ public interface Action {
    */
   void execute(GameState gameState);
 
-
-  /**
-   * This method returns the type of action. It is unique for every implementing class.
-   *
-   */
   String getType();
 
   /**
@@ -27,4 +22,26 @@ public interface Action {
    * @return
    */
   Posn getDestination();
+
+  /**
+   * Sets the destination position for this action
+   */
+  void setDestination(Posn destination);
+
+  InteractionType getInteractionType();
+
+  void setInteractionType(InteractionType interactionType);
+
+  /** Gets the current position/ "from" position for this aciton
+   *
+   *
+   * @return
+   */
+  Posn getCurrentPosition();
+
+  void setDamage(int damage);
+
+  String getVictimName();
+
+  void setVictimName(String victimName);
 }

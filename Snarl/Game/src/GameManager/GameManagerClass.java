@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import Action.Action;
+import Action.InteractionType;
 import GameObjects.Actor;
 import GameObjects.Adversary;
 import GameObjects.Level;
@@ -89,6 +90,7 @@ public class GameManagerClass implements GameManager {
 
   /**
    * Adds a remote user to the gameManager. assumes name validation has already happened
+   *
    * @param user
    */
   public void addRemotePlayer(User user) {
@@ -178,7 +180,7 @@ public class GameManagerClass implements GameManager {
     List<String> exitedPlayers = this.getNameListFromPlayers(gs.getExitedPlayers());
     List<String> expelledPlayers = this.getNameListFromPlayers(gs.getEjectedPlayers());
     boolean wasTheKeyFound = this.gs.getKeyFinder() != null;
-    for (User user: this.users) {
+    for (User user : this.users) {
       boolean isExited = exitedPlayers.contains(user.getName());
       boolean isEjected = expelledPlayers.contains(user.getName());
       boolean isKeyFinder = wasTheKeyFound && this.gs.getKeyFinder().getName().equals(user.getName());
@@ -187,11 +189,11 @@ public class GameManagerClass implements GameManager {
   }
 
   /**
-   *
    * Gets the name list corresponding to the given list of players
+   *
    * @param players the given list of players
    * @return a list of strings for the names of each players
-   *                **/
+   **/
   private List<String> getNameListFromPlayers(List<Player> players) {
     List<String> nameList = new ArrayList<>();
     for (Player player : players) {
@@ -208,7 +210,7 @@ public class GameManagerClass implements GameManager {
     JSONObject endGameNotification = new JSONObject();
     endGameNotification.put("type", "end-game");
     JSONArray playerScoreList = new JSONArray();
-    for (User user: this.users) {
+    for (User user : this.users) {
       JSONObject playerScoreObject = new JSONObject();
       playerScoreObject.put("name", user.getName());
       playerScoreObject.put("exits", user.getNumExits());
@@ -224,11 +226,9 @@ public class GameManagerClass implements GameManager {
 
 
   /**
-   * Sends each remote user the start notification
-   *  {"type": "start-level",
-   *   "level": (natural),
-   *   "players": (name-list)
-   *  }
+   * Sends each remote user the start notification {"type": "start-level", "level": (natural),
+   * "players": (name-list) }
+   *
    * @param currentLevel
    */
   private void notifyAllUsersLevelStart(int currentLevel) {
@@ -241,7 +241,7 @@ public class GameManagerClass implements GameManager {
     }
     startNotification.put("players", nameList);
 
-    for(User user : this.users) {
+    for (User user : this.users) {
       user.send(startNotification.toString());
     }
   }
@@ -270,16 +270,17 @@ public class GameManagerClass implements GameManager {
     }
     endNotification.put("ejects", ejectedPlayerNames);
 
-    for(User user : this.users) {
+    for (User user : this.users) {
       user.send(endNotification.toString());
     }
   }
 
   /**
    * This method starts the game by initializing the GameState. This entails setting the level and
-   * creating Player objects to represent each User object. Returns the gamecondition once ALL PLAYERS HAVE EXITED.
+   * creating Player objects to represent each User object. Returns the gamecondition once ALL
+   * PLAYERS HAVE EXITED.
    *
-   * @param level the actual level to play the game with
+   * @param level       the actual level to play the game with
    * @param levelNumber the level number to run
    */
   @Override
@@ -304,8 +305,8 @@ public class GameManagerClass implements GameManager {
 
     // run game
     while (!ruleChecker.isLevelEnd(this.gs)) {
-      String interactionType = this.promptPlayerTurn(scanner);
-      this.updateEveryone(interactionType);
+      Action action = this.promptPlayerTurn(scanner);
+      this.updateEveryone(action);
       this.updateTurn();
       if (observeValue) {
         System.out.println(this.gs.getLevel().createLevelString());
@@ -317,6 +318,7 @@ public class GameManagerClass implements GameManager {
 
   /**
    * This method converts each user to an actor and returns the list of converted actors.
+   *
    * @return List of actors corresponding to the users playing the game
    */
   private List<Actor> userListToActors() {
@@ -324,7 +326,7 @@ public class GameManagerClass implements GameManager {
     for (int i = 0; i < this.users.size(); i++) {
       User user = users.get(i);
       user.setExitable(false);
-      Actor player = new Player(user.getName(), i+1);
+      Actor player = new Player(user.getName(), i + 1);
       players.add(player);
     }
     return players;
@@ -332,6 +334,7 @@ public class GameManagerClass implements GameManager {
 
   /**
    * This method converts each snarlAdversary to an actor and returns the list of converted actors.
+   *
    * @return List of actors corresponding to the snarlAdversaries in the game
    */
   private List<Actor> snarlAdversaryListToActors() {
@@ -361,8 +364,8 @@ public class GameManagerClass implements GameManager {
   /**
    * this method updates everyone (users and snarlAdversaries)
    */
-  private void updateEveryone(String interactionType) {
-    this.updateUsers(interactionType);
+  private void updateEveryone(Action action) {
+    this.updateUsers(action);
     this.updateSnarlAdversaries();
   }
 
@@ -376,12 +379,13 @@ public class GameManagerClass implements GameManager {
   /**
    * This method contacts every user via their update method and provides them with the newest
    * relevant information, namely their new visible tiles and whether or not the level is exitable.
-   * @param interactionType describes what happened last move
+   *
+   * @param action describes what happened last move
    */
   @Override
-  public void updateUsers(String interactionType) {
+  public void updateUsers(Action action) {
     List<String> remainingPlayers = getRemainingPlayers();
-    String event = this.buildEvent(interactionType);
+    String event = this.buildEvent(action);
     for (User user : this.users) {
       user.update(this.gs.getSurroundingsForPosn(user.getCurrentPosition()), this.gs.isExitable(), user.getCurrentPosition(), remainingPlayers, event);
     }
@@ -390,15 +394,17 @@ public class GameManagerClass implements GameManager {
 
   /**
    * Builds the event description that is sent as a message to the user
-   * @param interactionType
+   *
+   * @param action
    * @return
    */
-  private String buildEvent(String interactionType) {
-    String interactionTypeDescription = interpretInteractionType(interactionType);
+  private String buildEvent(Action action) {
     String event = "";
     if (turn < this.users.size()) {
-      event =  "Player " + this.users.get(turn).getName() + " " + interactionTypeDescription;
+      String interactionTypeDescription = interpretInteractionType(action, true);
+      event = "Player " + this.users.get(turn).getName() + " " + interactionTypeDescription;
     } else {
+      String interactionTypeDescription = interpretInteractionType(action, false);
       event = "Adversary " + this.adversaries.get(turn - this.users.size()).getName() + " " + interactionTypeDescription;
     }
     return event;
@@ -407,6 +413,7 @@ public class GameManagerClass implements GameManager {
 
   /**
    * Generates a map of game object adversaries to their positions
+   *
    * @return a map of adversaries to positions
    */
   private Map<Posn, Adversary> generateAdversaryMap() {
@@ -420,6 +427,7 @@ public class GameManagerClass implements GameManager {
 
   /**
    * Generates a map of game object players to their positions
+   *
    * @return a map of players to their current positions
    */
   private Map<Posn, Player> generatePlayerMap() {
@@ -513,21 +521,31 @@ public class GameManagerClass implements GameManager {
   /**
    * Creates a message to tack onto the end of the event. The message is based on the given
    * interaction type.
-   * @param interactionType
+   *
+   * @param action
+   * @param isPlayer whether or not the action is being interpreted for a player or adversary
    * @return
    */
-  private String interpretInteractionType(String interactionType) {
-    if (interactionType != null) {
+  private String interpretInteractionType(Action action, boolean isPlayer) {
+    if (action != null) {
+      InteractionType interactionType = action.getInteractionType();
+      String victimName = action.getVictimName();
       switch (interactionType) {
-        case "OK":
+        case OK:
           return "moved.";
-        case "Eject":
-          return "was ejected.";
-        case "Adversary Eject":
-          return "ejected a player.";
-        case "Exit":
+        case EJECT:
+          if (isPlayer) {
+            return "was ejected";
+          }
+          return "ejected Player " + victimName + ".";
+        case ATTACK:
+          if (isPlayer) {
+            return "suffered damage.";
+          }
+          return "attacked Player " + victimName + ".";
+        case EXIT:
           return "exited the level";
-        case "Key":
+        case KEY:
           return "found the key.";
         default:
           return "is waiting for the other players.";
@@ -540,11 +558,12 @@ public class GameManagerClass implements GameManager {
   /**
    * This method prompts the next player to take their turn. It then executes the action returned
    * from the turn. This method is expected to run continously throughout the levels duration.
+   *
    * @return
    */
   @Override
-  public String promptPlayerTurn(Scanner scanner) {
-    String interactionType = "";
+  public Action promptPlayerTurn(Scanner scanner) {
+    Action finalAction = new MoveAction();
     // check if it is the user's turn
     if (turn < this.users.size()) {
       // ask for input again if invalid
@@ -553,10 +572,10 @@ public class GameManagerClass implements GameManager {
       System.out.println("It is user " + user.getName() + "'s turn");
       List<String> ejectedPlayers = this.getNameListFromPlayers(gs.getEjectedPlayers());
       List<String> exitedPlayers = this.getNameListFromPlayers(gs.getExitedPlayers());
-      if (!ejectedPlayers.contains(user.getName()) &&  !exitedPlayers.contains(user.getName())) {
+      if (!ejectedPlayers.contains(user.getName()) && !exitedPlayers.contains(user.getName())) {
         MoveAction action = (MoveAction) user.turn(scanner);
         this.executeAction(action, user);
-        interactionType = action.getInteractionType();
+        finalAction = action;
       }
     }
     // check if it is an adversaries turn
@@ -564,10 +583,10 @@ public class GameManagerClass implements GameManager {
       SnarlAdversary snarlAdversary = adversaries.get(turn - this.users.size());
       MoveAction action = (MoveAction) snarlAdversary.turn(this.generatePlayerMap(), this.generateAdversaryMap());
       this.executeAction(action, snarlAdversary);
-      interactionType = action.getInteractionType();
-
+      snarlAdversary.setCurrentPosition(action.getDestination());
+      finalAction = action;
     }
-    return interactionType;
+    return finalAction;
   }
 
   /**
@@ -583,29 +602,40 @@ public class GameManagerClass implements GameManager {
 
   /**
    * This method executes the given action on the game state.
+   *
    * @param user
    * @param action
    */
   @Override
   public void executeAction(Action action, User user) {
-      MoveAction moveAction = (MoveAction) action;
-      this.gs.handleMoveAction(moveAction, ruleChecker);
-      String interactionType = moveAction.getInteractionType();
-      // if playing a remote game of snarl, this will send the result to the user
-      this.users.get(turn).send(interactionType);
-      if (interactionType.equals("Eject")) {
-        System.out.println("Player " + user.getName() + " was expelled");
-      } else if (interactionType.equals("Key")) {
+    MoveAction moveAction = (MoveAction) action;
+    this.gs.handleMoveAction(moveAction, ruleChecker);
+    InteractionType interactionType = moveAction.getInteractionType();
+    System.out.println("move action damage: "  + moveAction.getDamage());
+    // todo: clean this up!
+    int hitPointsBefore = user.getHitPoints();
+    System.out.println("hit points before: " + hitPointsBefore);
+    user.subtractFromHitPoints(moveAction.getDamage());
+    int hitPointsAfter = user.getHitPoints();
+    System.out.println("hit points after: " + hitPointsAfter);
+    // if playing a remote game of snarl, this will send the result to the user
+    user.send(interactionType.type);
+    if (interactionType.equals(InteractionType.EJECT)) {
+      System.out.println("Player " + user.getName() + " was expelled");
+    } else {
+      if (interactionType.equals(InteractionType.KEY)) {
         System.out.println("Player " + user.getName() + " found the key");
-      }
-      else if (interactionType.equals("Exit")) {
+      } else if (interactionType.equals(InteractionType.EXIT)) {
         System.out.println("Player " + user.getName() + " exited");
       }
       user.setCurrentPosition(moveAction.getDestination());
+    }
+
   }
 
   /**
    * This executes the action of the give snarlAdversary
+   *
    * @param action
    * @param snarlAdversary indicates the snarlAdversary involved in the action
    */
@@ -613,8 +643,16 @@ public class GameManagerClass implements GameManager {
   public void executeAction(Action action, SnarlAdversary snarlAdversary) {
     MoveAction moveAction = (MoveAction) action;
     this.gs.handleMoveAction(moveAction, snarlAdversary);
-    if (moveAction.getInteractionType().equals("Eject")) {
-      String mostRecentEjectionName = this.gs.getExitedPlayers().get(this.gs.getExitedPlayers().size() - 1).getName();
+    if (!action.getVictimName().equals("")) {
+      System.out.println("move action damage: "  + moveAction.getDamage());
+      int hitPointsBefore = getUserByString(action.getVictimName()).getHitPoints();
+      System.out.println("hit points before: " + hitPointsBefore);
+      getUserByString(action.getVictimName()).subtractFromHitPoints(moveAction.getDamage());
+      int hitPointsAfter = getUserByString(action.getVictimName()).getHitPoints();
+      System.out.println("hit points after: " + hitPointsAfter);
+    }
+    if (moveAction.getInteractionType().equals(InteractionType.EJECT)) {
+      String mostRecentEjectionName = this.gs.getEjectedPlayers().get(this.gs.getEjectedPlayers().size() - 1).getName();
       System.out.println("Player " + mostRecentEjectionName + " was expelled");
     }
   }
@@ -703,7 +741,7 @@ public class GameManagerClass implements GameManager {
       managerTrace.put(moveResponse);
 
       // break if the level has been completed
-      if (move.getInteractionType().equals("Exit")) {
+      if (move.getInteractionType().equals(InteractionType.EXIT)) {
         break;
       }
       movesList.remove(dest);
@@ -790,7 +828,6 @@ public class GameManagerClass implements GameManager {
     }
     return remainingPlayers;
   }
-
 
 
   public GameState getGs() {

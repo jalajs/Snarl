@@ -304,7 +304,7 @@ public class Room {
       int randomX = random.nextInt(rows);
       int randomY = random.nextInt(cols);
       String tileString = tileGrid[randomX][randomY].toString();
-      if (tileString.equals(".") || tileString.equals("K") || tileString.equals("|")) {
+      if (tileString.equals(".") || tileString.equals("K")) {
         posn.setRow(randomX);
         posn.setCol(randomY);
         break;

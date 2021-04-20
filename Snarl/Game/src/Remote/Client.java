@@ -178,12 +178,17 @@ public class Client {
         List<List<Tile>> surroundings = utils.jsonToSurroundings(user.getName(), serverRequest, playerIdMap);
         user.setSurroundings(surroundings);
 
+        int hitPoints = (int) serverRequest.get("hitPoints");
+        user.setHitPoints(hitPoints <= 0 ? 0 : hitPoints);
+
+        String hitPointMessage = user.getHitPoints() > 50 ? " You're doing great!" : " Be careful!";
         String message = (String) serverRequest.get("message");
         if (message.contains("key")) {
             user.setExitable(true);
         }
         user.renderView();
-        System.out.println("game update: " + message);
+        System.out.println("Game update: " + message);
+        System.out.println("You have " + user.getHitPoints() + " hit points left." + hitPointMessage);
     }
 
 
@@ -200,7 +205,7 @@ public class Client {
         System.out.println("Player " + keyFinder + " found the key");
         System.out.println("Player(s) exited: " + exits.toString().replace("]", "").replace("[", "").replace("\"", ""));
         System.out.println("Player(s) ejected: " + ejects.toString().replace("]", "").replace("[", "").replace("\"", "") );
-
+        System.out.println("You ended this level with " + user.getHitPoints() + " hit points.");
     }
 
 
@@ -217,7 +222,7 @@ public class Client {
             int exits = (int) scoreObject.get("exits");
             int ejects = (int) scoreObject.get("ejects");
             int keys = (int) scoreObject.get("keys");
-            System.out.println(name + ", you exited " + exits + " time(s), were ejected " + ejects + " time(s), and found " + keys + " keys");
+            System.out.println(name + ", you exited " + exits + " time(s), were ejected " + ejects + " time(s), and found " + keys + " keys.");
         }
     }
 
