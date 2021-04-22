@@ -1,4 +1,4 @@
-# #Multi Game
+## Multi Game
 ### Code changes:
 - SnarlServer:
   - We added a new command option called boolean --multi to run a multi game session.
