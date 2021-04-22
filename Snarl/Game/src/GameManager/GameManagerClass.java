@@ -390,7 +390,6 @@ public class GameManagerClass implements GameManager {
     List<Actor> players = userListToActors();
     // create SnarlAdversaries
     addSnarlAdversaries(levelNumber, level);
-    System.out.println("adversary size : " + this.adversaries.size());
     // create game object adversaries from snarl adversaries
     List<Actor> actorAdversaries = snarlAdversaryListToActors();
     // populate the level with key, players, and adversaries

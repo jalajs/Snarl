@@ -271,6 +271,7 @@ public class Level {
    */
   public void spawnActorsRandomly(List<Actor> players, List<Actor> adversaries) {
     List<Room> copyRooms = new ArrayList<>(this.rooms);
+    this.removeExistingOccupiers();
     if (copyRooms.size() == 1) {
       Room room = copyRooms.get(0);
       // place actors on traversable tiles in a random room
@@ -285,6 +286,19 @@ public class Level {
       this.placeActorsInRoomRand(room1, players);
       // place adversaries on traversable tiles a seperate random room
       this.placeActorsInRoomRand(room2, adversaries);
+    }
+  }
+
+  /**
+   * Remove all the occupiers in a level. This will get rid of any lurkers
+   * from previous play throughs of the game.
+   */
+  private void removeExistingOccupiers() {
+    for (int i = 0; i < this.levelRows; i++) {
+      for (int j = 0; j < this.levelCols; j++) {
+        this.tileGrid[i][j].setOccupier(null);
+        this.levelGrid[i][j] = this.tileGrid[i][j].toString();
+      }
     }
   }
 
