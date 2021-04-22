@@ -275,16 +275,6 @@ public class GameStateModel implements GameState {
     return this.currentLevelNumber == this.totalLevels && this.isLevelEnd();
   }
 
-  @Override
-  public void updateGame() {
-
-  }
-
-  @Override
-  public void endGame() {
-
-  }
-
 
   /**
    * A level is over if the exit door is unlocked and a player goes through it or if all players in

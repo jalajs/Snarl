@@ -179,17 +179,21 @@ public class GameManagerClass implements GameManager {
       Level currentLevel = levels.get(i);
       // send start-level json
       this.notifyAllUsersLevelStart(i);
-
+      // runs the level using the same code for a local level
       GameCondition gameCondition = startLocalLevel(currentLevel, levelNumber, observeValue);
-      // if the game is over, break out of the level advancement
-      this.updateAllUserStats();
+      // updates all the users game stats
+      this.updateAllUserGameStats();
+      // updates all the leader board stats
       this.updateAllUserLeaderBoardStats();
+      // sets the turn to zero
       turn = 0;
+      // breaks if the game condition indicates the game is over or continues on to next level
       if (gameCondition.equals(GameCondition.WIN) || gameCondition.equals(GameCondition.LOSS)) {
         break;
+      } else {
+        this.notifyAllUsersLevelEnd();
+        levelNumber++;
       }
-      this.notifyAllUsersLevelEnd();
-      levelNumber++;
     }
   }
 
@@ -203,7 +207,7 @@ public class GameManagerClass implements GameManager {
   }
 
   /**
-   * Update the leader board stats for
+   * Update the leader board stats for each user
    */
   private void updateAllUserLeaderBoardStats() {
     for (User user : this.users) {
@@ -216,7 +220,7 @@ public class GameManagerClass implements GameManager {
   /**
    * Updates the stats for each user at the end of a level
    */
-  private void updateAllUserStats() {
+  private void updateAllUserGameStats() {
     List<String> exitedPlayers = this.getNameListFromPlayers(gs.getExitedPlayers());
     List<String> expelledPlayers = this.getNameListFromPlayers(gs.getEjectedPlayers());
     boolean wasTheKeyFound = this.gs.getKeyFinder() != null;
@@ -251,16 +255,26 @@ public class GameManagerClass implements GameManager {
     endGameNotification.put("type", "end-game");
     JSONArray playerScoreList = new JSONArray();
     JSONArray leaderBoardList = new JSONArray();
+    this.mutateLeaderBoardPlayerScoreList(playerScoreList, leaderBoardList);
+    endGameNotification.put("scores", playerScoreList);
+    endGameNotification.put("leader-board", leaderBoardList);
+    for (User user : this.users) {
+      user.send(endGameNotification.toString());
+    }
+  }
+
+  /**
+   * This method populates the given JSON arrays with information from each user about
+   * their game scores all-time scores
+   * @param playerScoreList
+   * @param leaderBoardList
+   */
+  private void mutateLeaderBoardPlayerScoreList(JSONArray playerScoreList, JSONArray leaderBoardList) {
     for (User user : this.users) {
       JSONObject playerScoreObject = createPlayerScoreObject(user);
       playerScoreList.put(playerScoreObject);
       JSONObject playerLeaderBoardObject = createLeaderBoardObject(user);
       leaderBoardList.put(playerLeaderBoardObject);
-    }
-    endGameNotification.put("scores", playerScoreList);
-    endGameNotification.put("leader-board", leaderBoardList);
-    for (User user : this.users) {
-      user.send(endGameNotification.toString());
     }
   }
 
@@ -308,7 +322,6 @@ public class GameManagerClass implements GameManager {
       nameList.put(user.getName());
     }
     startNotification.put("players", nameList);
-
     for (User user : this.users) {
       user.send(startNotification.toString());
     }
@@ -354,25 +367,47 @@ public class GameManagerClass implements GameManager {
    */
   @Override
   public GameCondition startLocalLevel(Level level, int levelNumber, boolean observeValue) {
-    this.gs = new GameStateModel(level);
-    List<Actor> players = userListToActors();
-    // add adversaries to the game manager using the assignment specs
-    addLocalAdversaries(levelNumber, level);
-    List<Actor> actorAdversaries = snarlAdversaryListToActors();
-
-    Map<String, Posn> actorNameToLocation =
-            this.gs.initLocalGameState(players, actorAdversaries, level.getExitKeyPosition());
-
-    this.gs.setCurrentLevelNumber(levelNumber);
-    this.gs.setTotalLevels(this.levels.size());
-
-    this.useActorsToSetUserPositionsAndSurroundings(actorNameToLocation);
+    this.initLevel(level, levelNumber);
 
     Scanner scanner = new Scanner(System.in);
-
     this.updateEveryone(null);
 
-    // run game
+    // run the level
+    this.runLevel(scanner, observeValue);
+
+    // return the gameCondition
+    return ruleChecker.getGameCondition(this.gs);
+  }
+
+  /**
+   * This method sets up everything necessary to play a level of SNARL.
+   * @param level the provided level structure
+   * @param levelNumber
+   */
+  private void initLevel(Level level, int levelNumber) {
+    // initialize the game state
+    this.gs = new GameStateModel(level);
+    // turn the Users into players
+    List<Actor> players = userListToActors();
+    // create SnarlAdversaries
+    addSnarlAdversaries(levelNumber, level);
+    // create game object adversaries from snarl adversaries
+    List<Actor> actorAdversaries = snarlAdversaryListToActors();
+    // populate the level with key, players, and adversaries
+    Map<String, Posn> actorNameToLocation =
+            this.gs.initLocalGameState(players, actorAdversaries, level.getExitKeyPosition());
+    this.gs.setCurrentLevelNumber(levelNumber);
+    this.gs.setTotalLevels(this.levels.size());
+    // use the positions returned by init game state to init each user with position + surroundings
+    this.useActorsToSetUserPositionsAndSurroundings(actorNameToLocation);
+  }
+
+  /**
+   * This method is tasked with running the individual level
+   * @param scanner
+   * @param observeValue
+   */
+  private void runLevel(Scanner scanner, boolean observeValue) {
     while (!ruleChecker.isLevelEnd(this.gs)) {
       Action action = this.promptPlayerTurn(scanner);
       this.updateEveryone(action);
@@ -381,8 +416,6 @@ public class GameManagerClass implements GameManager {
         System.out.println(this.gs.getLevel().createLevelString());
       }
     }
-    // return the gameCondition
-    return ruleChecker.getGameCondition(this.gs);
   }
 
   /**
@@ -415,6 +448,11 @@ public class GameManagerClass implements GameManager {
     return actorAdversaries;
   }
 
+  /**
+   * This method prints out the end result
+   * @param gameCondition
+   * @param levelNumber
+   */
   private void printEndResult(GameCondition gameCondition, int levelNumber) {
     int exitNumber = levelNumber - (startLevel - 1);
     int keyNumber = levelNumber - (startLevel - 1);
@@ -425,8 +463,7 @@ public class GameManagerClass implements GameManager {
       exitNumber--;
       keyNumber = this.gs.isExitable() ? keyNumber : keyNumber - 1;
     }
-    // note, only one player is in the game right now. Notification will be more complicated
-    // for larger games
+    // note, only one player is in the game right now. Notification will be more complicated for larger games
     System.out.println("Player " + users.get(0).getName() + " exited " + exitNumber + " levels and collected " + keyNumber + " keys.");
   }
 
@@ -438,6 +475,9 @@ public class GameManagerClass implements GameManager {
     this.updateSnarlAdversaries();
   }
 
+  /**
+   *  Send an update to every snarl adversary.
+   */
   private void updateSnarlAdversaries() {
     Map<Posn, Adversary> adversaryPosnMap = this.generateAdversaryMap();
     for (SnarlAdversary snarlAdversary : this.adversaries) {
@@ -534,7 +574,7 @@ public class GameManagerClass implements GameManager {
    * @param l     the current level number
    * @param level the provided level the adversaries are added
    */
-  private void addLocalAdversaries(int l, Level level) {
+  private void addSnarlAdversaries(int l, Level level) {
     this.adversaries = new ArrayList<>();
     int numZombies = Math.floorDiv(l, 2) + 1;
     int numGhosts = Math.floorDiv((l - 1), 2);

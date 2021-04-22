@@ -3,7 +3,10 @@
 -   Start the snarlServer by running ./snarlServer and providing any optional arguments.
 -   The server's observer can be used in a terminal    
 -   The server will wait for clients to connect on its specified address and port. Once the max number of 
-    clients have connected or the timeout has lapsed, the server will start running a game.
+    clients have connected or the timeout has lapsed, the server will start running a game
+-   If the "--multi" flag is given, multiple games can be run in sequence     
+    - the admin for the server can shut down / continue playing a new game after a game finishes
+    - enter "exit" to shut it down when prompted, or any other key to keep it going
 
 ### Client Setup Instructions
 -   Start the snarlClient by running ./snarlClient and providing any optional arguments.

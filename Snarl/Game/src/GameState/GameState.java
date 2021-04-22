@@ -82,18 +82,6 @@ public interface GameState {
    */
   boolean isGameComplete();
 
-  /**
-   *   Updates and rerenders the level with the newest data
-   * @return
-   */
-  void updateGame();
-
-  /**
-   *  Returns to the gameManager that game is done and the conditions that resulted in game finishing (loss/win)
-   */
-  void endGame();
-
-
   boolean isLevelEnd();
 
   /**

@@ -85,9 +85,7 @@ public class Server {
       }
     }
 
-
     for (User user : remoteUsers) {
-      System.out.println("sending exit to client");
       user.send("terminate");
     }
 
