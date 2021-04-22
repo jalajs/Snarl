@@ -301,11 +301,18 @@ public class RemoteUser implements User {
    * @param isKeyFinder
    */
   @Override
-  public void updateStats(boolean isEjected, boolean isExited, boolean isKeyFinder) {
+  public void updateGameStats(boolean isEjected, boolean isExited, boolean isKeyFinder) {
     // update game level stats
     this.numEjects = isEjected ? this.numEjects + 1 : this.numEjects;
     this.numExits = isExited ? this.numExits + 1 : this.numExits;
     this.numKeysCollected = isKeyFinder ? this.numKeysCollected + 1 : this.numKeysCollected;
+  }
+
+  @Override
+  public void resetGameStats() {
+    this.numEjects = 0;
+    this.numExits = 0;
+    this.numKeysCollected = 0;
   }
 
   /**
@@ -313,9 +320,10 @@ public class RemoteUser implements User {
    */
   @Override
   public void updateLeaderBoardStats() {
-    this.totalNumEjects +=  this.numEjects;
-    this.totalNumExits += this.numExits;
-    this.totalNumKeysCollected += this.numKeysCollected;
+    this.totalNumEjects = this.totalNumEjects +  this.numEjects;
+    this.totalNumExits = this.totalNumExits + this.numExits;
+    this.totalNumKeysCollected = this.totalNumKeysCollected + this.numKeysCollected;
+    System.out.println("Remote Name: " + this.name + " ejects: " + this.totalNumEjects + " exits: " + totalNumExits + " keys: " + totalNumKeysCollected);
   }
 
 

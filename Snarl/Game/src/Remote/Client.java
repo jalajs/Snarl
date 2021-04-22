@@ -156,7 +156,7 @@ public class Client {
     System.out.println("The game is donezo! Thank you for playing SNARL.");
     printScores((JSONArray) serverRequest.get("scores"));
     // add scores from this game to leaderboard
-    printLeaderboard((JSONArray) serverRequest.get("leaderboard"));
+    printLeaderboard((JSONArray) serverRequest.get("leader-board"));
     // running leaderboard of players from the games finished so far
   }
 
@@ -270,7 +270,7 @@ public class Client {
     }
 
     for (Object[] row : leaderboard) {
-      System.out.format("%15s%15s%15s%n", row);
+      System.out.format("%15s%15s%15s%15s%n", row);
     }
   }
 

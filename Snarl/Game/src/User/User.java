@@ -104,7 +104,7 @@ public interface User {
 
   int getTotalNumKeysCollected();
 
-  void updateStats(boolean isEjected, boolean isExited, boolean isKeyFinder);
+  void updateGameStats(boolean isEjected, boolean isExited, boolean isKeyFinder);
 
   void renderView();
 
@@ -115,6 +115,8 @@ public interface User {
   int getHitPoints();
 
   void updateLeaderBoardStats();
+
+  void resetGameStats();
 
 
 }

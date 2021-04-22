@@ -10,7 +10,6 @@ import Adversary.SnarlAdversary;
 import GameObjects.AdversaryType;
 import GameObjects.Level;
 import Action.Action;
-import Action.InteractionType;
 import GameObjects.Posn;
 import GameState.GameState;
 import RuleChecker.GameCondition;

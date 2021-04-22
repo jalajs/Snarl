@@ -99,7 +99,10 @@ public class LocalUser implements User {
   }
 
   @Override
-  public void updateStats(boolean isEjected, boolean isExited, boolean isKeyFinder) {
+  public void updateGameStats(boolean isEjected, boolean isExited, boolean isKeyFinder) {  }
+
+  @Override
+  public void resetGameStats() {
 
   }
 

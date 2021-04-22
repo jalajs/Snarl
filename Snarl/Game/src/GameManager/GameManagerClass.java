@@ -152,32 +152,62 @@ public class GameManagerClass implements GameManager {
     this.printEndResult(gameCondition, levelNumber);
   }
 
+  /**
+   * This method runs a remote game of SNARL.
+   * @param observeValue
+   */
   @Override
   public void runRemoteGame(boolean observeValue) {
-    GameCondition gameCondition = GameCondition.ONGOING;
     int levelNumber = startLevel;
     // start each level and let it play through
+    this.runRemoteLevels(levelNumber, observeValue);
+    // notify all the users the game is over
+    this.notifyAllUsersGameEnd();
+    // reset all the game level (not leader board stats) to zero
+    this.resetAllUsersGameStats();
+    // set the turn to zero
+    turn = 0;
+  }
+
+  /**
+   * This method is in charge of running the sequence of levels in a remote game of SNARL.
+   * @param levelNumber
+   * @param observeValue
+   */
+  private void runRemoteLevels(int levelNumber, boolean observeValue) {
     for (int i = startLevel - 1; i < levels.size(); i++) {
       Level currentLevel = levels.get(i);
       // send start-level json
       this.notifyAllUsersLevelStart(i);
-      gameCondition = startLocalLevel(currentLevel, levelNumber, observeValue);
+
+      GameCondition gameCondition = startLocalLevel(currentLevel, levelNumber, observeValue);
       // if the game is over, break out of the level advancement
       this.updateAllUserStats();
+      this.updateAllUserLeaderBoardStats();
+      turn = 0;
       if (gameCondition.equals(GameCondition.WIN) || gameCondition.equals(GameCondition.LOSS)) {
         break;
       }
-      this.updateAllUserLeaderBoardStats();
       this.notifyAllUsersLevelEnd();
       levelNumber++;
-      turn = 0;
     }
-    this.notifyAllUsersGameEnd();
   }
 
+  /**
+   * Resets all the game stats to 0. This includes the exits, ejects, and keys found.
+   */
+  private void resetAllUsersGameStats() {
+    for (User user : this.users) {
+      user.resetGameStats();
+    }
+  }
 
+  /**
+   * Update the leader board stats for
+   */
   private void updateAllUserLeaderBoardStats() {
     for (User user : this.users) {
+      System.out.println("updating user " + user.getName() + " leader board stats");
       user.updateLeaderBoardStats();
     }
   }
@@ -194,7 +224,7 @@ public class GameManagerClass implements GameManager {
       boolean isExited = exitedPlayers.contains(user.getName());
       boolean isEjected = expelledPlayers.contains(user.getName());
       boolean isKeyFinder = wasTheKeyFound && this.gs.getKeyFinder().getName().equals(user.getName());
-      user.updateStats(isEjected, isExited, isKeyFinder);
+      user.updateGameStats(isEjected, isExited, isKeyFinder);
     }
   }
 
