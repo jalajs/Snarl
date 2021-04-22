@@ -323,7 +323,6 @@ public class RemoteUser implements User {
     this.totalNumEjects = this.totalNumEjects +  this.numEjects;
     this.totalNumExits = this.totalNumExits + this.numExits;
     this.totalNumKeysCollected = this.totalNumKeysCollected + this.numKeysCollected;
-    System.out.println("Remote Name: " + this.name + " ejects: " + this.totalNumEjects + " exits: " + totalNumExits + " keys: " + totalNumKeysCollected);
   }
 
 

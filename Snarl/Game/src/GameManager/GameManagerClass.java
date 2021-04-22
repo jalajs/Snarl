@@ -158,10 +158,12 @@ public class GameManagerClass implements GameManager {
    */
   @Override
   public void runRemoteGame(boolean observeValue) {
-    int levelNumber = startLevel;
+    int levelNumber = 1;
     // start each level and let it play through
     this.runRemoteLevels(levelNumber, observeValue);
-    // notify all the users the game is over
+    //updates all the leader board stats
+    this.updateAllUserLeaderBoardStats();
+    // notify all the users the game is over and provide them with game/leaderboard stats
     this.notifyAllUsersGameEnd();
     // reset all the game level (not leader board stats) to zero
     this.resetAllUsersGameStats();
@@ -175,7 +177,7 @@ public class GameManagerClass implements GameManager {
    * @param observeValue
    */
   private void runRemoteLevels(int levelNumber, boolean observeValue) {
-    for (int i = startLevel - 1; i < levels.size(); i++) {
+    for (int i = levelNumber - 1; i < levels.size(); i++) {
       Level currentLevel = levels.get(i);
       // send start-level json
       this.notifyAllUsersLevelStart(i);
@@ -183,8 +185,6 @@ public class GameManagerClass implements GameManager {
       GameCondition gameCondition = startLocalLevel(currentLevel, levelNumber, observeValue);
       // updates all the users game stats
       this.updateAllUserGameStats();
-      // updates all the leader board stats
-      this.updateAllUserLeaderBoardStats();
       // sets the turn to zero
       turn = 0;
       // breaks if the game condition indicates the game is over or continues on to next level
@@ -211,7 +211,6 @@ public class GameManagerClass implements GameManager {
    */
   private void updateAllUserLeaderBoardStats() {
     for (User user : this.users) {
-      System.out.println("updating user " + user.getName() + " leader board stats");
       user.updateLeaderBoardStats();
     }
   }
@@ -391,6 +390,7 @@ public class GameManagerClass implements GameManager {
     List<Actor> players = userListToActors();
     // create SnarlAdversaries
     addSnarlAdversaries(levelNumber, level);
+    System.out.println("adversary size : " + this.adversaries.size());
     // create game object adversaries from snarl adversaries
     List<Actor> actorAdversaries = snarlAdversaryListToActors();
     // populate the level with key, players, and adversaries
