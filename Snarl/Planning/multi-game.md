@@ -1,4 +1,4 @@
-##Multi Game
+# #Multi Game
 ### Code changes:
 - SnarlServer:
   - We added a new command option called boolean --multi to run a multi game session.
@@ -17,5 +17,5 @@
 ### Protocol Changes
 - added a "terminate" command that the server sends to the client when they want to shut down and not continue playing any new games
     - instead of exiting after an end-game object is sent, clients now close and exit when this command is sent
-  - modified end-game JSON object by adding a "leader-board" : (player-score-list) field which holds the running stats of the players from the games finished so far
+- modified end-game JSON object by adding a "leader-board" : (player-score-list) field which holds the running stats of the players from the games finished so far
     
