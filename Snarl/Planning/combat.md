@@ -1,4 +1,4 @@
-##Hit Point and Combat System: Give players a fighting chance (or something hoaky this ??)
+## Hit Point and Combat System: Give players a fighting chance (or something hoaky this ??)
 - In order to accommodate a hit point and combat system, we modified our Action/interaction system and added fields to player and adversary data structures
   - In players, we added a field that kept track of hit points. We decided every player should have 100 hit points start.
     - RemoteUsers and LocalUsers were given this field as well.
